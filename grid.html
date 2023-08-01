@@ -4,17 +4,6 @@
 </head>
 <body>
     <div class="grid_root">
-        <div marker_opp   >test   </div>
-        <div marker test=1>testest</div>
-        <div marker_opp   >test   </div>
-        <div marker test=1>testest</div>
-        <div marker_opp   >test   </div>
-        <div marker test=1>testest</div>
-        <div marker_opp   >test   </div>
-        <div marker test=1>testest</div>
-        <div marker_opp   >test   </div>
-        <div marker test=1>testest</div>
-        <div marker_opp   >test   </div>
         <div marker test=1>testest</div>
         <div marker_opp   >test   </div>
         <div marker test=1>testest</div>
@@ -49,29 +38,23 @@
     body {
         display: table-cell;
         vertical-align: middle;
-        border: solid .1rem;
-        border-color: goldenrod;
     }
 
     .grid_root {
         display: grid;
-        grid-template-columns: auto auto auto auto auto;
         gap: .1rem;
         justify-content: space-evenly;
         align-content: space-evenly;
+        grid-template-areas: "b a a" "b a a" "c a a";
     }
 
-    div {
+    /* .grid_root > div {
+        background-color: lime;
+    } */
+
+    /* div {
         border: ridge gold;
         border-radius: .2em;
-    }
-
-    div[marker] {
-        background-color: #907;
-    }
-
-    div[marker_opp] {
-        background-color: #394;
-    }
+    } */
 </style>
 </html>
