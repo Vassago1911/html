@@ -251,11 +251,13 @@
     //console.log("last up: "+last_mouse_up_coods);
     d = [last_mouse_up_coods[0]-last_mouse_down_coods[0],
          last_mouse_up_coods[1]-last_mouse_down_coods[1]];
+    if (last_down_on_white) {
+      send_white_ball_along_d()
+    }
     last_down_on_white = false;
-    send_white_ball_across_d()
   }
 
-  function send_white_ball_across_d() {
+  function send_white_ball_along_d() {
     console.log(d)
   }
 
