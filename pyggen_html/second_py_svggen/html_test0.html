@@ -219,12 +219,16 @@
 </svg>
 </body>
 <script type="text/javascript">
+  function get_player_ball() {
+    return document.getElementById("player_ball_sprite");
+  }
+
   var last_mouse_down_coods = [-100,100];
   var last_mouse_up_coods = [-100,100];
   var last_down_on_white = false;
   var d = [0,0];
 
-  player_ball = document.getElementById("player_ball_sprite");
+  player_ball = get_player_ball();
   svg = document.getElementsByTagName("svg")[0]
 
   var pt = svg.createSVGPoint();  // Created once for document
