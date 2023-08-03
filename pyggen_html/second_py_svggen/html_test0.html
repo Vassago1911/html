@@ -262,7 +262,10 @@
   }
 
   function send_white_ball_along_d() {
-    console.log(d)
+    white_ball = get_player_ball();
+    cx = parseInt(document.getElementById("player_ball_sprite").getAttribute("cx")) + d[0];
+    cy = parseInt(document.getElementById("player_ball_sprite").getAttribute("cy")) + d[1];
+    console.log(cx,cy)
   }
 
   function im_white(evt) {
