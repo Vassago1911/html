@@ -1,6 +1,4 @@
-def gen_rocky_svg()->str:
-    svg_plus_black_bg_intro = \
-    """
+
     <!DOCTYPE html>
     <html>
     <head>
@@ -11,12 +9,11 @@ def gen_rocky_svg()->str:
     </head>
     <body>
     <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024">
-    """
-    fingerprint_svg_path = \
-    f"""
+    
+
     <path
       style=" fill:none;
-                   stroke:{get_css_color(0,127,0)};
+                   stroke:rgb(0,127,0);
                    stroke-width:1"
     d = "M 3 15
          q 1 -2 1 -5
@@ -34,12 +31,11 @@ def gen_rocky_svg()->str:
          q 3 -3 4 -9"
     >
     </path>
-    """
-    one_hex = \
-    f"""
+    
+
       <path
-           style=" fill:{get_css_color(127,0,31)};
-                   stroke:{get_css_color(0,127,31)};
+           style=" fill:rgb(127,0,31);
+                   stroke:rgb(0,127,31);
                    stroke-width:16"
            d="
            M110 14
@@ -56,44 +52,26 @@ def gen_rocky_svg()->str:
                 a  40  40 0 0 1  20 -36
                 z" transform="translate(42,12)">
     </path>
-    """
-    svg_outro = """</svg>
+    
+</svg>
                     </body>
                     <style type="text/css">
-                       html,body {
-                          height: 100%;
-                          width: 100%;
-                          margin: 0;
-                       }
-                       body {
-                          border: 2px solid;
-                          border-color: #cc1199;
-                       }
-                       html {
+                       html, body {
+                          width: 80%
+                          height: 80%;
                           background-color: #000;
                        }
+                       html {
+                           /* display: table; */
+                           /* margin: auto; */
+                       }
+                       body {
+                           margin: max(2vh,2vw);
+                           /* display: table-cell; */
+                           /* horizontal-align: middle; */
+                           /* vertical-align: middle; */
+                           border: 2px solid;
+                           border-color: #cc1199;
+                       }
                     </style>
-                    </html>"""
-    svg_string = svg_plus_black_bg_intro + \
-                   '\n' + \
-                   fingerprint_svg_path + \
-                   '\n' + \
-                   one_hex + \
-                   '\n' + \
-                   svg_outro
-    print(svg_string)
-    print(); print(); print()
-    import time
-    fname = f'gen_svg_{time.strftime("%y%m%d_%H%M")}.html'
-    print(f"++++ writing file: {fname} ++++")
-    with open(fname,'w') as fi:
-        fi.write(svg_string)
-    return fname
-
-def get_css_color(r:int,g:int,b:int)->str:
-    return f"rgb({r},{g},{b})"
-
-if __name__=="__main__":
-    import webbrowser
-    fname = gen_rocky_svg()
-    webbrowser.open(f"http://localhost:8080/{fname}")
+                    </html>
