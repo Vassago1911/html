@@ -2,6 +2,9 @@
 <html>
 <head>
 <style type="text/css">
+   .heavy {
+      font: bold 30px monospace;
+   }
    html, body {
      background: #000;
      margin: max(1vw,1vh);
@@ -186,7 +189,7 @@
     <rect class="rght_bdy  lr_bds boundaries"></rect>
   </g>
   <g id="player_ball">
-    <circle class="ball_00 player_ball balls"/>
+    <circle id="player_ball_sprite" class="ball_00 player_ball balls"/>
   </g>
   <g id="cfl_balls">
     <circle class="ball_01 solids balls"/>
@@ -216,5 +219,53 @@
 </svg>
 </body>
 <script type="text/javascript">
+  var last_mouse_down_coods = [-100,100];
+  var last_mouse_up_coods = [-100,100];
+
+  player_ball = document.getElementById("player_ball_sprite");
+  svg = document.getElementsByTagName("svg")[0]
+
+  var pt = svg.createSVGPoint();  // Created once for document
+
+  function mouse_down_coods_to_svg_cood_state(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    last_mouse_down_coods = [cursorpt.x,cursorpt.y];
+  }
+
+  function mouse_up_coods_to_svg_cood_state(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    last_mouse_up_coods = [cursorpt.x,cursorpt.y];
+  }
+
+  player_ball.addEventListener("mousedown",mouse_down_coods_to_svg_cood_state);
+  player_ball.addEventListener("mouseup",mouse_up_coods_to_svg_cood_state);
+
+  function mouse_click_coods_to_svg_coods(evt) {
+      pt.x = evt.clientX;
+      pt.y = evt.clientY;
+      // The cursor point, translated into svg coordinates
+      var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+      cursorpt.x = parseInt(cursorpt.x);
+      cursorpt.y = parseInt(cursorpt.y);
+      console.log(cursorpt);
+  }
+
+  player_ball.addEventListener("click",mouse_click_coods_to_svg_coods);
+
+  balls = document.getElementsByClassName("balls");
+  for ( let i = 0; i < balls.length; i++ ) {
+    ball = balls[i];
+    ball.addEventListener("click",mouse_click_coods_to_svg_coods);
+  }
 </script>
 </html>
