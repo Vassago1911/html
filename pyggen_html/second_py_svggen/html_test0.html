@@ -14,29 +14,35 @@
     <rect class="rght_bdy  lr_bds boundaries"></rect>
   </g>
   <g id="player_ball">
-    <circle class="player_ball balls"/>
+    <circle class="ball_00 player_ball balls"/>
   </g>
   <g id="cfl_balls">
-    <circle class="ball_01 balls"/>
-    <circle class="ball_02 balls"/>
-    <circle class="ball_03 balls"/>
-    <circle class="ball_04 balls"/>
-    <circle class="ball_05 balls"/>
-    <circle class="ball_06 balls"/>
-    <circle class="ball_07 balls"/>
-    <circle class="ball_08 balls"/>
-    <circle class="ball_09 balls"/>
-    <circle class="ball_10 balls"/>
-    <circle class="ball_11 balls"/>
-    <circle class="ball_12 balls"/>
-    <circle class="ball_13 balls"/>
-    <circle class="ball_14 balls"/>
-    <circle class="ball_15 balls"/>
+    <circle class="ball_01 solids balls"/>
+    <circle class="ball_02 solids balls"/>
+    <circle class="ball_03 solids balls"/>
+    <circle class="ball_04 solids balls"/>
+    <circle class="ball_05 solids balls"/>
+    <circle class="ball_06 solids balls"/>
+    <circle class="ball_07 solids balls"/>
+    <circle class="ball_08 ball08 balls"/>
+    <circle class="ball_09 striped balls"/>
+    <circle class="ball_10 striped balls"/>
+    <circle class="ball_11 striped balls"/>
+    <circle class="ball_12 striped balls"/>
+    <circle class="ball_13 striped balls"/>
+    <circle class="ball_14 striped balls"/>
+    <circle class="ball_15 striped balls"/>
+  </g>
+  <g id="holes">
+    <circle class="holes hole1"/>
+    <circle class="holes hole2"/>
+    <circle class="holes hole3"/>
+    <circle class="holes hole4"/>
+    <circle class="holes hole5"/>
+    <circle class="holes hole6"/>
   </g>
 </svg>
 </body>
-<script type="text/javascript">
-</script>
 <style type="text/css">
    html, body {
      background: #000;
@@ -74,80 +80,141 @@
      x: 1920;
      y: 0;
    }
+
+   .holes {
+     r: 40;
+     stroke: #888;
+     stroke-width: 1px;
+     fill: #000;
+   }
+   .hole1 {
+      cx: 128px;
+      cy: 128px;
+   }
+   .hole2 {
+      cx: 128px;
+      cy: 1920px;
+   }
+   .hole3 {
+      cx: 128px;
+      cy: 1024px;
+   }
+   .hole4 {
+      cx: 1920px;
+      cy: 128px;
+   }
+   .hole5 {
+      cx: 1920px;
+      cy: 1920px;
+   }
+   .hole6 {
+      cx: 1920px;
+      cy: 1024px;
+   }
+
    .balls {
      r: 30;
      stroke: #ccc;
      stroke-width: 2px;
    }
+   .solids {
+     stroke-width: 0px;
+   }
+   .ball08 {
+    stroke-width: 0px;
+    fill: #000;
+   }
+   .striped {
+     stroke-width: 8px;
+     stroke: #bb8;
+     r: 27;
+   }
    .player_ball {
      cx: 1024;
      cy: 1450;
-     fill: #fff;
-   }
-
-   .ball_01 {
-     cx: 1024;
-     cy:  640;
-   }
-
-   .ball_02 {
-     cx:  993;
-     cy:  586;
-   }
-   .ball_03 {
-     cx: 1055;
-     cy:  586;
+     fill: #999;
    }
 
    .ball_04 {
-     cx:  962;
-     cy:  532;
-   }
-   .ball_05 {
      cx: 1024;
-     cy:  532;
-   }
-   .ball_06 {
-     cx: 1086;
-     cy:  532;
+     cy:  640;
+     fill: #909;
    }
 
-   .ball_07 {
-     cx:  931;
-     cy:  478;
-   }
-   .ball_08 {
-     cx:  993;
-     cy:  478;
-   }
-   .ball_09 {
-     cx: 1055;
-     cy:  478;
-   }
    .ball_10 {
-     cx: 1117;
-     cy:  478;
-   }
-
-   .ball_11 {
-     cx:  900;
-     cy:  424;
-   }
-   .ball_12 {
-     cx:  962;
-     cy:  424;
-   }
-   .ball_13 {
-     cx: 1024;
-     cy:  424;
+     cx:  993;
+     cy:  586;
+     fill: #009;
    }
    .ball_14 {
+     cx: 1055;
+     cy:  586;
+     fill: #090;
+   }
+
+   .ball_03 {
+     cx:  962;
+     cy:  532;
+     fill: #900;
+   }
+   .ball_08 {
+     cx: 1024;
+     cy:  532;
+     fill: #000;
+   }
+   .ball_01 {
      cx: 1086;
-     cy:  424;
+     cy:  532;
+     fill: #990;
+   }
+
+   .ball_06 {
+     cx:  931;
+     cy:  478;
+     fill: #090;
+   }
+   .ball_11 {
+     cx:  993;
+     cy:  478;
+     fill: #900;
+   }
+   .ball_13 {
+     cx: 1055;
+     cy:  478;
+     fill: #550;
    }
    .ball_15 {
+     cx: 1117;
+     cy:  478;
+     fill: #502;
+   }
+
+   .ball_02 {
+     cx:  900;
+     cy:  424;
+     fill: #009;
+   }
+   .ball_09 {
+     cx:  962;
+     cy:  424;
+     fill: #990;
+   }
+   .ball_07 {
+     cx: 1024;
+     cy:  424;
+     fill: #502;
+   }
+   .ball_05 {
+     cx: 1086;
+     cy:  424;
+     fill: #550;
+   }
+   .ball_12 {
      cx: 1148;
      cy:  424;
+     fill: #909;
    }
 </style>
+<script type="text/javascript">
+</script>
 </html>
