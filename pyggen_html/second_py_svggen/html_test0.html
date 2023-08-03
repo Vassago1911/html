@@ -3,7 +3,36 @@
 <head>
 </head>
 <body>
-<svg class="canvas_svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+<svg class="table_svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+  <g id="table_felt">
+    <rect x=0 y=0 width=100% height=100% fill=#106510></rect>
+  </g>
+  <g id="bdy_group">
+    <rect class="upper_bdy ul_bds boundaries"></rect>
+    <rect class="lower_bdy ul_bds boundaries"></rect>
+    <rect class="left_bdy  lr_bds boundaries"></rect>
+    <rect class="rght_bdy  lr_bds boundaries"></rect>
+  </g>
+  <g id="player_ball">
+    <circle class="player_ball balls"/>
+  </g>
+  <g id="cfl_balls">
+    <circle class="ball_01 balls"/>
+    <circle class="ball_02 balls"/>
+    <circle class="ball_03 balls"/>
+    <circle class="ball_04 balls"/>
+    <circle class="ball_05 balls"/>
+    <circle class="ball_06 balls"/>
+    <circle class="ball_07 balls"/>
+    <circle class="ball_08 balls"/>
+    <circle class="ball_09 balls"/>
+    <circle class="ball_10 balls"/>
+    <circle class="ball_11 balls"/>
+    <circle class="ball_12 balls"/>
+    <circle class="ball_13 balls"/>
+    <circle class="ball_14 balls"/>
+    <circle class="ball_15 balls"/>
+  </g>
 </svg>
 </body>
 <script type="text/javascript">
@@ -12,13 +41,113 @@
    html, body {
      background: #000;
      margin: max(1vw,1vh);
-     width: min(80vh,80vw);
-     height: min(80vh,80vw);
    }
-   .canvas_svg {
-     background-color: #601;
-     height: 100%;
+   .table_svg {
+     display: block;
+     top: 5vh;
+     left: 5vw;
+     width: 95vw;
+     height: 95vh;
+     /*background-color: #601;*/
+   }
+   .boundaries {
+     fill: #630;
+     height: 128px;
+     width: 128px;
+     stroke-width: 4px;
+     stroke: #930;
+   }
+   .ul_bds {
      width: 100%;
+   }
+   .lr_bds {
+     height: 100%;
+   }
+   .upper_bdy {
+     y: 0;
+   }
+   .lower_bdy {
+     x: 0;
+     y: 1920;
+   }
+   .rght_bdy {
+     x: 1920;
+     y: 0;
+   }
+   .balls {
+     r: 30;
+     stroke: #ccc;
+     stroke-width: 2px;
+   }
+   .player_ball {
+     cx: 1024;
+     cy: 1450;
+     fill: #fff;
+   }
+
+   .ball_01 {
+     cx: 1024;
+     cy:  640;
+   }
+
+   .ball_02 {
+     cx:  993;
+     cy:  586;
+   }
+   .ball_03 {
+     cx: 1055;
+     cy:  586;
+   }
+
+   .ball_04 {
+     cx:  962;
+     cy:  532;
+   }
+   .ball_05 {
+     cx: 1024;
+     cy:  532;
+   }
+   .ball_06 {
+     cx: 1086;
+     cy:  532;
+   }
+
+   .ball_07 {
+     cx:  931;
+     cy:  478;
+   }
+   .ball_08 {
+     cx:  993;
+     cy:  478;
+   }
+   .ball_09 {
+     cx: 1055;
+     cy:  478;
+   }
+   .ball_10 {
+     cx: 1117;
+     cy:  478;
+   }
+
+   .ball_11 {
+     cx:  900;
+     cy:  424;
+   }
+   .ball_12 {
+     cx:  962;
+     cy:  424;
+   }
+   .ball_13 {
+     cx: 1024;
+     cy:  424;
+   }
+   .ball_14 {
+     cx: 1086;
+     cy:  424;
+   }
+   .ball_15 {
+     cx: 1148;
+     cy:  424;
    }
 </style>
 </html>
