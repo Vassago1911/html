@@ -86,9 +86,9 @@
     fill: #000;
    }
    .striped {
-     stroke-width: 8px;
+     stroke-width: 13px;
      stroke: #bb8;
-     r: 27;
+     r: 22;
    }
    .player_ball {
      cx: 1024;
@@ -221,6 +221,8 @@
 <script type="text/javascript">
   var last_mouse_down_coods = [-100,100];
   var last_mouse_up_coods = [-100,100];
+  var last_down_on_white = false;
+  var d = [0,0];
 
   player_ball = document.getElementById("player_ball_sprite");
   svg = document.getElementsByTagName("svg")[0]
@@ -235,6 +237,7 @@
     cursorpt.x = parseInt(cursorpt.x);
     cursorpt.y = parseInt(cursorpt.y);
     last_mouse_down_coods = [cursorpt.x,cursorpt.y];
+    //console.log("last down: "+last_mouse_down_coods);
   }
 
   function mouse_up_coods_to_svg_cood_state(evt) {
@@ -245,10 +248,25 @@
     cursorpt.x = parseInt(cursorpt.x);
     cursorpt.y = parseInt(cursorpt.y);
     last_mouse_up_coods = [cursorpt.x,cursorpt.y];
+    //console.log("last up: "+last_mouse_up_coods);
+    d = [last_mouse_up_coods[0]-last_mouse_down_coods[0],
+         last_mouse_up_coods[1]-last_mouse_down_coods[1]];
+    last_down_on_white = false;
+    send_white_ball_across_d()
   }
 
+  function send_white_ball_across_d() {
+    console.log(d)
+  }
+
+  function im_white(evt) {
+    last_down_on_white = true;
+    //console.log(last_down_on_white)
+  }
+
+  player_ball.addEventListener("mousedown",im_white);
   player_ball.addEventListener("mousedown",mouse_down_coods_to_svg_cood_state);
-  player_ball.addEventListener("mouseup",mouse_up_coods_to_svg_cood_state);
+  svg.addEventListener("mouseup",mouse_up_coods_to_svg_cood_state);
 
   function mouse_click_coods_to_svg_coods(evt) {
       pt.x = evt.clientX;
@@ -257,7 +275,7 @@
       var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
       cursorpt.x = parseInt(cursorpt.x);
       cursorpt.y = parseInt(cursorpt.y);
-      console.log(cursorpt);
+      //console.log(cursorpt);
   }
 
   player_ball.addEventListener("click",mouse_click_coods_to_svg_coods);
