@@ -19,7 +19,7 @@
    }
    .boundaries {
      fill: #630;
-     height: 128px;
+     height: 137px;
      width: 128px;
      stroke-width: 4px;
      stroke: #930;
@@ -50,11 +50,11 @@
    }
    .hole1 {
       cx: 128px;
-      cy: 128px;
+      cy: 137px;
    }
    .hole2 {
       cx: 128px;
-      cy: 1920px;
+      cy: 1911px;
    }
    .hole3 {
       cx: 128px;
@@ -62,11 +62,11 @@
    }
    .hole4 {
       cx: 1920px;
-      cy: 128px;
+      cy: 137px;
    }
    .hole5 {
       cx: 1920px;
-      cy: 1920px;
+      cy: 1911px;
    }
    .hole6 {
       cx: 1920px;
@@ -99,14 +99,14 @@
    }
 
    .ball_10 {
-     fill: #009;
+     fill: #219;
    }
    .ball_14 {
-     fill: #090;
+     fill: #191;
    }
 
    .ball_03 {
-     fill: #900;
+     fill: #712;
    }
    .ball_08 {
      fill: #000;
@@ -119,20 +119,20 @@
    }
 
    .ball_06 {
-     fill: #090;
+     fill: #191;
    }
    .ball_11 {
-     fill: #900;
+     fill: #712;
    }
    .ball_13 {
-     fill: #550;
+     fill: #a57b0d;
    }
    .ball_15 {
      fill: #502;
    }
 
    .ball_02 {
-     fill: #009;
+     fill: #219;
    }
    .ball_09 {
      fill: #990;
@@ -141,7 +141,7 @@
      fill: #502;
    }
    .ball_05 {
-     fill: #550;
+     fill: #a57b0d;
    }
    .ball_12 {
      fill: #305;
@@ -234,52 +234,51 @@
   set_balls_at_rest();
 
   function move_all_balls(ms_step) {
+    //NO SPEEDS LEFT? kill next tick,
+    //hence physics loop
     var total_v = 0;
     balls = get_ball_array();
-    //check if there's movement to be done still
     for ( let i=0; i<balls.length; i++)
     {
       total_v += Math.abs(balls[i].getAttribute("vx"));
       total_v += Math.abs(balls[i].getAttribute("vy"));
     }
-    //not enough total velocity? kill next tick,
-    //hence physics loop
-    if ( Math.abs(total_v) < 10 ){
+    if ( Math.abs(total_v) < 96 ){
         cancel_next_tick = true;
         set_balls_at_rest();
         return cancel_next_tick;
     }
 
-    //dampen all, felt-table friction or so
+    //DAMPEN all, felt-table friction or so
     for ( let i = 0; i < balls.length; i++ ){
       b = balls[i]
       vx = b.getAttribute("vx")
       vy = b.getAttribute("vy")
-      n_old = Math.sqrt(vx*vx+vy*vy)
-      n_new = n_old*97/100 //dampen by 3%
-      vx = parseInt(Math.floor(vx*n_new/n_old))
-      vy = parseInt(Math.floor(vy*n_new/n_old))
-      //b.setAttribute("vx", vx)
-      //b.setAttribute("vy", vy)
+      vx = vx*(.9994)
+      vy = vy*(.9994)
+      b.setAttribute("vx", vx)
+      b.setAttribute("vy", vy)
     }
 
     //preplan moving all balls according to their v's
-    //collide them with boundaries
+    //collide them with BOUNDARIES
     //update v's accordingly
     for ( let i = 0; i < balls.length; i++ ){
       b = balls[i]
       cx = parseInt(b.getAttribute("cx"))
       cy = parseInt(b.getAttribute("cy"))
-      vx = parseInt(b.getAttribute("vx"))
-      vy = parseInt(b.getAttribute("vy"))
+      vx = b.getAttribute("vx")
+      vy = b.getAttribute("vy")
       r  = 32 //parseInt(b.getAttribute("r"))
-      if ( ( cx - r <= 128 ) || ( cx + r >= 1920 ) ) {
-        vx = -vx
+      if ( ( cx - r <= 132 ) || ( cx + r >= 1912 ) ) {
+        vx = -.95*vx
         b.setAttribute("vx",vx)
+        b.setAttribute("cx",Math.min( Math.max(165,b.getAttribute("cx")), 1886 ) )
       }
-      if ( ( cy - r <= 128 ) || ( cy + r >= 1920 ) ) {
-        b.vy = -b.vy
-        b.setAttribute("vy",b.vy)
+      if ( ( cy - r <= 137 ) || ( cy + r >= 1916 ) ) {
+        vy = -.95*vy
+        b.setAttribute("vy",vy)
+        b.setAttribute("cy",Math.min( Math.max(165,b.getAttribute("cy")), 1883 ) )
       }
     }
     //collide them with other balls
@@ -287,33 +286,36 @@
     for ( let i = 0; i < balls.length; i++ ) {
       for ( let j = i + 1; j < balls.length; j++ ) {
         b1 = balls[i];
-        b1.cx = parseInt(b1.getAttribute("cx"))
-        b1.cy = parseInt(b1.getAttribute("cy"))
-        b1.vx = parseInt(b1.getAttribute("vx"))
-        b1.vy = parseInt(b1.getAttribute("vy"))
+        b1.cx = 1*b1.getAttribute("cx")
+        b1.cy = 1*b1.getAttribute("cy")
+        b1.vx = 1*b1.getAttribute("vx")
+        b1.vy = 1*b1.getAttribute("vy")
 
         b2 = balls[j];
-        b2.cx = parseInt(b2.getAttribute("cx"))
-        b2.cy = parseInt(b2.getAttribute("cy"))
-        b2.vx = parseInt(b2.getAttribute("vx"))
-        b2.vy = parseInt(b2.getAttribute("vy"))
+        b2.cx = 1*b2.getAttribute("cx")
+        b2.cy = 1*b2.getAttribute("cy")
+        b2.vx = 1*b2.getAttribute("vx")
+        b2.vy = 1*b2.getAttribute("vy")
 
         dx = b1.cx - b2.cx
         dy = b1.cy - b2.cy
         distance = Math.floor(Math.sqrt(dx*dx+dy*dy));
 
-        coll_distance = 1*b1.getAttribute("r")+1*b2.getAttribute("r")
+        coll_distance = 2*32
 
         if ( distance <= coll_distance + 4 ) {
-          // collide them
+          console.log(b1,b2);
+          console.log('in collision')
         }
       }
     }
 
     // move the sprites
     for ( let i = 0; i < balls.length; i++ ){
-      balls[i].setAttribute("cx",1*balls[i].getAttribute("cx")+(ms_step/2000)*balls[i].getAttribute("vx"))
-      balls[i].setAttribute("cy",1*balls[i].getAttribute("cy")+(ms_step/2000)*balls[i].getAttribute("vy"))
+      balls[i].setAttribute("cx",
+        1*balls[i].getAttribute("cx")+(ms_step/1000)*balls[i].getAttribute("vx"))
+      balls[i].setAttribute("cy",
+        1*balls[i].getAttribute("cy")+(ms_step/1000)*balls[i].getAttribute("vy"))
     }
 
     cancel_next_tick = false;
@@ -344,6 +346,7 @@
       py = parseInt(player_ball.getAttribute("cy"));
       d = [last_mouse_up_coods[0]-px,
            last_mouse_up_coods[1]-py];
+      nd = Math.sqrt(d[0]*d[0]+d[1]*d[1])
       set_white_ball_velocity();
       last_down_on_white = false;
     }
@@ -353,11 +356,6 @@
     player_ball = get_player_ball();
     old_px = parseInt(player_ball.getAttribute("cx"))
     old_py = parseInt(player_ball.getAttribute("cy"))
-    new_px = old_px + d[0];
-    new_py = old_py + d[1];
-    //console.log(new_px,new_py);
-    player_ball.setAttribute("cx",new_px);
-    player_ball.setAttribute("cy",new_py);
     player_ball.setAttribute("vx",d[0]);
     player_ball.setAttribute("vy",d[1]);
     bind_to_clock_tick(move_all_balls,5);
