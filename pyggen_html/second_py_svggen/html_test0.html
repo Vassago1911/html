@@ -91,88 +91,56 @@
      r: 22;
    }
    .player_ball {
-     cx: 1024;
-     cy: 1450;
      fill: #999;
    }
 
    .ball_04 {
-     cx: 1024;
-     cy:  640;
      fill: #909;
    }
 
    .ball_10 {
-     cx:  993;
-     cy:  586;
      fill: #009;
    }
    .ball_14 {
-     cx: 1055;
-     cy:  586;
      fill: #090;
    }
 
    .ball_03 {
-     cx:  962;
-     cy:  532;
      fill: #900;
    }
    .ball_08 {
-     cx: 1024;
-     cy:  532;
      fill: #000;
    }
    .ball_01 {
-     cx: 1086;
-     cy:  532;
      fill: #990;
    }
 
    .ball_06 {
-     cx:  931;
-     cy:  478;
      fill: #090;
    }
    .ball_11 {
-     cx:  993;
-     cy:  478;
      fill: #900;
    }
    .ball_13 {
-     cx: 1055;
-     cy:  478;
      fill: #550;
    }
    .ball_15 {
-     cx: 1117;
-     cy:  478;
      fill: #502;
    }
 
    .ball_02 {
-     cx:  900;
-     cy:  424;
      fill: #009;
    }
    .ball_09 {
-     cx:  962;
-     cy:  424;
      fill: #990;
    }
    .ball_07 {
-     cx: 1024;
-     cy:  424;
      fill: #502;
    }
    .ball_05 {
-     cx: 1086;
-     cy:  424;
      fill: #550;
    }
    .ball_12 {
-     cx: 1148;
-     cy:  424;
      fill: #909;
    }
 </style>
@@ -188,26 +156,6 @@
     <rect class="left_bdy  lr_bds boundaries"></rect>
     <rect class="rght_bdy  lr_bds boundaries"></rect>
   </g>
-  <g id="player_ball">
-    <circle id="player_ball_sprite" class="ball_00 player_ball balls"/>
-  </g>
-  <g id="cfl_balls">
-    <circle class="ball_01 solids balls"/>
-    <circle class="ball_02 solids balls"/>
-    <circle class="ball_03 solids balls"/>
-    <circle class="ball_04 solids balls"/>
-    <circle class="ball_05 solids balls"/>
-    <circle class="ball_06 solids balls"/>
-    <circle class="ball_07 solids balls"/>
-    <circle class="ball_08 ball08 balls"/>
-    <circle class="ball_09 striped balls"/>
-    <circle class="ball_10 striped balls"/>
-    <circle class="ball_11 striped balls"/>
-    <circle class="ball_12 striped balls"/>
-    <circle class="ball_13 striped balls"/>
-    <circle class="ball_14 striped balls"/>
-    <circle class="ball_15 striped balls"/>
-  </g>
   <g id="holes">
     <circle class="holes hole1"/>
     <circle class="holes hole2"/>
@@ -216,83 +164,158 @@
     <circle class="holes hole5"/>
     <circle class="holes hole6"/>
   </g>
+  <g id="cfl_balls">
+    <circle cx=1086 cy=532 class="ball_01 solids  balls object_balls"/>
+    <circle  cx=900 cy=424 class="ball_02 solids  balls object_balls"/>
+    <circle  cx=962 cy=532 class="ball_03 solids  balls object_balls"/>
+    <circle cx=1024 cy=640 class="ball_04 solids  balls object_balls"/>
+    <circle cx=1086 cy=424 class="ball_05 solids  balls object_balls"/>
+    <circle  cx=931 cy=478 class="ball_06 solids  balls object_balls"/>
+    <circle cx=1024 cy=424 class="ball_07 solids  balls object_balls"/>
+    <circle cx=1024 cy=532 class="ball_08 ball08  balls object_balls"/>
+    <circle  cx=962 cy=424 class="ball_09 striped balls object_balls"/>
+    <circle  cx=993 cy=586 class="ball_10 striped balls object_balls"/>
+    <circle  cx=993 cy=478 class="ball_11 striped balls object_balls"/>
+    <circle cx=1148 cy=424 class="ball_12 striped balls object_balls"/>
+    <circle cx=1055 cy=478 class="ball_13 striped balls object_balls"/>
+    <circle cx=1055 cy=586 class="ball_14 striped balls object_balls"/>
+    <circle cx=1117 cy=478 class="ball_15 striped balls object_balls"/>
+  </g>
+  <g id="player_ball">
+    <circle cx=1024 cy=1450 id="player_ball_sprite" class="ball_00 player_ball balls"/>
+  </g>
 </svg>
 </body>
 <script type="text/javascript">
-  function get_player_ball() {
-    return document.getElementById("player_ball_sprite");
-  }
-
-  var last_mouse_down_coods = [-100,100];
   var last_mouse_up_coods = [-100,100];
   var last_down_on_white = false;
   var d = [0,0];
 
-  player_ball = get_player_ball();
-  svg = document.getElementsByTagName("svg")[0]
-
-  var pt = svg.createSVGPoint();  // Created once for document
-
-  function mouse_down_coods_to_svg_cood_state(evt) {
-    pt.x = evt.clientX;
-    pt.y = evt.clientY;
-    // The cursor point, translated into svg coordinates
-    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
-    cursorpt.x = parseInt(cursorpt.x);
-    cursorpt.y = parseInt(cursorpt.y);
-    last_mouse_down_coods = [cursorpt.x,cursorpt.y];
-    //console.log("last down: "+last_mouse_down_coods);
-  }
-
-  function mouse_up_coods_to_svg_cood_state(evt) {
-    pt.x = evt.clientX;
-    pt.y = evt.clientY;
-    // The cursor point, translated into svg coordinates
-    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
-    cursorpt.x = parseInt(cursorpt.x);
-    cursorpt.y = parseInt(cursorpt.y);
-    last_mouse_up_coods = [cursorpt.x,cursorpt.y];
-    //console.log("last up: "+last_mouse_up_coods);
-    d = [last_mouse_up_coods[0]-last_mouse_down_coods[0],
-         last_mouse_up_coods[1]-last_mouse_down_coods[1]];
-    if (last_down_on_white) {
-      send_white_ball_along_d()
+  function bind_to_clock_tick(ticked_action, millisecond_step) {
+    function tick() {
+      // ticked_action -> bool (weitermachen oder nicht?)
+      var cancel_tick = ticked_action(millisecond_step);
+      var now = Date.now();
+      if ( !cancel_tick ) {
+        //if not cancelled, schedule next tick
+        setTimeout(tick, millisecond_step - (now%millisecond_step));
+      }
     }
-    last_down_on_white = false;
+    tick()
   }
 
-  function send_white_ball_along_d() {
-    white_ball = get_player_ball();
-    cx = parseInt(document.getElementById("player_ball_sprite").getAttribute("cx")) + d[0];
-    cy = parseInt(document.getElementById("player_ball_sprite").getAttribute("cy")) + d[1];
-    console.log(cx,cy)
+  function get_player_ball() {
+    return document.getElementById("player_ball_sprite");
   }
 
-  function im_white(evt) {
+  function get_ball_array() {
+    // [...<html-collection> ] casts it to array
+    balls = [...document.getElementsByClassName("object_balls")];
+    player_ball = get_player_ball();
+    player_ball_array = [player_ball,];
+    balls = player_ball_array.concat(balls);
+    return balls;
+  }
+
+  function initialize_ball_physics_attributes() {
+    balls = get_ball_array();
+    for ( let i = 0; i < balls.length; i++ )
+    {
+      ball = balls[i];
+      ball.cx = parseInt(ball.getAttribute("cx"))
+      ball.cy = parseInt(ball.getAttribute("cy"))
+      ball.vx = 0
+      ball.vy = 0
+      ball.setAttribute("vx",0)
+      ball.setAttribute("vy",0)
+    }
+  }
+  initialize_ball_physics_attributes();
+
+  function move_all_balls(ms_step) {
+    var total_v = 0;
+    balls = get_ball_array();
+    for ( let i=0; i<balls.length; i++)
+    {
+      total_v += Math.abs(balls[i].getAttribute("vx"));
+      total_v += Math.abs(balls[i].getAttribute("vy"));
+    }
+    if ( Math.abs(total_v) < 2 ){
+        cancel_next_tick = true;
+    } else {
+        cancel_next_tick = false;
+    }
+    console.log("moved all balls "+` ${ms_step}`);
+    return cancel_next_tick;
+  }
+
+
+
+
+
+  //bind_to_clock_tick(move_all_balls,250);
+
+  function white_mousedown(evt) {
     last_down_on_white = true;
-    //console.log(last_down_on_white)
   }
 
-  player_ball.addEventListener("mousedown",im_white);
-  player_ball.addEventListener("mousedown",mouse_down_coods_to_svg_cood_state);
-  svg.addEventListener("mouseup",mouse_up_coods_to_svg_cood_state);
-
-  function mouse_click_coods_to_svg_coods(evt) {
+  svg = document.getElementsByTagName("svg")[0]
+  var pt = svg.createSVGPoint();  // Created once for document
+  function mouse_up_from_white_down(evt) {
+    if (last_down_on_white) {
       pt.x = evt.clientX;
       pt.y = evt.clientY;
       // The cursor point, translated into svg coordinates
       var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
       cursorpt.x = parseInt(cursorpt.x);
       cursorpt.y = parseInt(cursorpt.y);
-      //console.log(cursorpt);
+      last_mouse_up_coods = [cursorpt.x,cursorpt.y];
+      //console.log("last up: "+last_mouse_up_coods);
+      player_ball = get_player_ball();
+      px = parseInt(player_ball.getAttribute("cx"));
+      py = parseInt(player_ball.getAttribute("cy"));
+      d = [last_mouse_up_coods[0]-px,
+           last_mouse_up_coods[1]-py];
+      send_white_ball_along_d();
+      bind_to_clock_tick(move_all_balls,250);
+      last_down_on_white = false;
+    }
   }
 
-  player_ball.addEventListener("click",mouse_click_coods_to_svg_coods);
+  function send_white_ball_along_d() {
+    player_ball = get_player_ball();
+    old_px = parseInt(player_ball.getAttribute("cx"))
+    old_py = parseInt(player_ball.getAttribute("cy"))
+    new_px = old_px + d[0];
+    new_py = old_py + d[1];
+    console.log(new_px,new_py);
+    player_ball.setAttribute("cx",new_px);
+    player_ball.setAttribute("cy",new_py);
+    player_ball.setAttribute("vx",d[0]);
+    player_ball.setAttribute("vy",d[1]);
+  }
 
-  balls = document.getElementsByClassName("balls");
-  for ( let i = 0; i < balls.length; i++ ) {
-    ball = balls[i];
-    ball.addEventListener("click",mouse_click_coods_to_svg_coods);
+  player_ball.addEventListener("mousedown",white_mousedown);
+  svg.addEventListener("mouseup",mouse_up_from_white_down);
+
+  function collide(ball1,ball2) {
+
+  }
+
+  function check_all_ball_distances() {
+    balls = get_ball_array()
+    for ( let i = 0; i < balls.length; i++ ) {
+      ball1 = balls[i];
+      for ( let j = i + 1; j < balls.length; j++ ){
+        ball2 = balls[j];
+        dbx = parseInt(ball1.getAttribute("cx")) - parseInt(ball2.getAttribute("cx"))
+        dby = parseInt(ball1.getAttribute("cy")) - parseInt(ball2.getAttribute("cy"))
+        distance = Math.floor(Math.sqrt(dbx*dbx+dby*dby));
+        if (distance < 62) {
+          collide(ball1,ball2);
+        }
+      }
+    }
   }
 </script>
 </html>
