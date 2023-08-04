@@ -95,7 +95,7 @@
    }
 
    .ball_04 {
-     fill: #909;
+     fill: #305;
    }
 
    .ball_10 {
@@ -110,9 +110,9 @@
    }
    .ball_08 {
      fill: #000;
-     r: 26;
-     stroke-width: 6px;
-     stroke: #402;
+     r: 28;
+     stroke-width: 8px;
+     stroke: #c3c;
    }
    .ball_01 {
      fill: #990;
@@ -144,7 +144,7 @@
      fill: #550;
    }
    .ball_12 {
-     fill: #909;
+     fill: #305;
    }
 </style>
 </head>
@@ -250,10 +250,22 @@
         return cancel_next_tick;
     }
 
+    //dampen all, felt-table friction or so
+    for ( let i = 0; i < balls.length; i++ ){
+      b = balls[i]
+      vx = b.getAttribute("vx")
+      vy = b.getAttribute("vy")
+      n_old = Math.sqrt(vx*vx+vy*vy)
+      n_new = n_old*97/100 //dampen by 3%
+      vx = parseInt(Math.floor(vx*n_new/n_old))
+      vy = parseInt(Math.floor(vy*n_new/n_old))
+      //b.setAttribute("vx", vx)
+      //b.setAttribute("vy", vy)
+    }
+
     //preplan moving all balls according to their v's
     //collide them with boundaries
     //update v's accordingly
-    // move the sprites
     for ( let i = 0; i < balls.length; i++ ){
       b = balls[i]
       cx = parseInt(b.getAttribute("cx"))
@@ -264,12 +276,10 @@
       if ( ( cx - r <= 128 ) || ( cx + r >= 1920 ) ) {
         vx = -vx
         b.setAttribute("vx",vx)
-        console.log("flipped x velocity")
       }
       if ( ( cy - r <= 128 ) || ( cy + r >= 1920 ) ) {
         b.vy = -b.vy
         b.setAttribute("vy",b.vy)
-        console.log("flipped y velocity")
       }
     }
     //collide them with other balls
@@ -311,8 +321,6 @@
     return cancel_next_tick;
   }
 
-  //bind_to_clock_tick(move_all_balls,250);
-
   function white_mousedown(evt) {
     last_down_on_white = true;
   }
@@ -347,7 +355,7 @@
     old_py = parseInt(player_ball.getAttribute("cy"))
     new_px = old_px + d[0];
     new_py = old_py + d[1];
-    console.log(new_px,new_py);
+    //console.log(new_px,new_py);
     player_ball.setAttribute("cx",new_px);
     player_ball.setAttribute("cy",new_py);
     player_ball.setAttribute("vx",d[0]);
