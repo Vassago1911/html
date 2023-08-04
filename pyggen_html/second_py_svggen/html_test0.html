@@ -110,6 +110,9 @@
    }
    .ball_08 {
      fill: #000;
+     r: 26;
+     stroke-width: 6px;
+     stroke: #402;
    }
    .ball_01 {
      fill: #990;
@@ -217,41 +220,96 @@
     return balls;
   }
 
-  function initialize_ball_physics_attributes() {
+  function set_balls_at_rest() {
     balls = get_ball_array();
     for ( let i = 0; i < balls.length; i++ )
     {
       ball = balls[i];
-      ball.cx = parseInt(ball.getAttribute("cx"))
-      ball.cy = parseInt(ball.getAttribute("cy"))
       ball.vx = 0
       ball.vy = 0
       ball.setAttribute("vx",0)
       ball.setAttribute("vy",0)
     }
   }
-  initialize_ball_physics_attributes();
+  set_balls_at_rest();
 
   function move_all_balls(ms_step) {
     var total_v = 0;
     balls = get_ball_array();
+    //check if there's movement to be done still
     for ( let i=0; i<balls.length; i++)
     {
       total_v += Math.abs(balls[i].getAttribute("vx"));
       total_v += Math.abs(balls[i].getAttribute("vy"));
     }
-    if ( Math.abs(total_v) < 2 ){
+    //not enough total velocity? kill next tick,
+    //hence physics loop
+    if ( Math.abs(total_v) < 10 ){
         cancel_next_tick = true;
-    } else {
-        cancel_next_tick = false;
+        set_balls_at_rest();
+        return cancel_next_tick;
     }
-    console.log("moved all balls "+` ${ms_step}`);
+
+    //preplan moving all balls according to their v's
+    //collide them with boundaries
+    //update v's accordingly
+    // move the sprites
+    for ( let i = 0; i < balls.length; i++ ){
+      b = balls[i]
+      cx = parseInt(b.getAttribute("cx"))
+      cy = parseInt(b.getAttribute("cy"))
+      vx = parseInt(b.getAttribute("vx"))
+      vy = parseInt(b.getAttribute("vy"))
+      r  = 32 //parseInt(b.getAttribute("r"))
+      if ( ( cx - r <= 128 ) || ( cx + r >= 1920 ) ) {
+        vx = -vx
+        b.setAttribute("vx",vx)
+        console.log("flipped x velocity")
+      }
+      if ( ( cy - r <= 128 ) || ( cy + r >= 1920 ) ) {
+        b.vy = -b.vy
+        b.setAttribute("vy",b.vy)
+        console.log("flipped y velocity")
+      }
+    }
+    //collide them with other balls
+    //update v's accordingly
+    for ( let i = 0; i < balls.length; i++ ) {
+      for ( let j = i + 1; j < balls.length; j++ ) {
+        b1 = balls[i];
+        b1.cx = parseInt(b1.getAttribute("cx"))
+        b1.cy = parseInt(b1.getAttribute("cy"))
+        b1.vx = parseInt(b1.getAttribute("vx"))
+        b1.vy = parseInt(b1.getAttribute("vy"))
+
+        b2 = balls[j];
+        b2.cx = parseInt(b2.getAttribute("cx"))
+        b2.cy = parseInt(b2.getAttribute("cy"))
+        b2.vx = parseInt(b2.getAttribute("vx"))
+        b2.vy = parseInt(b2.getAttribute("vy"))
+
+        dx = b1.cx - b2.cx
+        dy = b1.cy - b2.cy
+        distance = Math.floor(Math.sqrt(dx*dx+dy*dy));
+
+        coll_distance = 1*b1.getAttribute("r")+1*b2.getAttribute("r")
+
+        if ( distance <= coll_distance + 4 ) {
+          // collide them
+        }
+      }
+    }
+
+    // move the sprites
+    for ( let i = 0; i < balls.length; i++ ){
+      balls[i].setAttribute("cx",1*balls[i].getAttribute("cx")+(ms_step/2000)*balls[i].getAttribute("vx"))
+      balls[i].setAttribute("cy",1*balls[i].getAttribute("cy")+(ms_step/2000)*balls[i].getAttribute("vy"))
+    }
+
+    cancel_next_tick = false;
+    //console.log("moved all balls "+` ${ms_step}`);
     return cancel_next_tick;
   }
-
-
-
-
 
   //bind_to_clock_tick(move_all_balls,250);
 
@@ -261,6 +319,8 @@
 
   svg = document.getElementsByTagName("svg")[0]
   var pt = svg.createSVGPoint();  // Created once for document
+  //calls "set_white_ball_velocity" to start
+  //movement tick
   function mouse_up_from_white_down(evt) {
     if (last_down_on_white) {
       pt.x = evt.clientX;
@@ -276,13 +336,12 @@
       py = parseInt(player_ball.getAttribute("cy"));
       d = [last_mouse_up_coods[0]-px,
            last_mouse_up_coods[1]-py];
-      send_white_ball_along_d();
-      bind_to_clock_tick(move_all_balls,250);
+      set_white_ball_velocity();
       last_down_on_white = false;
     }
   }
 
-  function send_white_ball_along_d() {
+  function set_white_ball_velocity() {
     player_ball = get_player_ball();
     old_px = parseInt(player_ball.getAttribute("cx"))
     old_py = parseInt(player_ball.getAttribute("cy"))
@@ -293,29 +352,10 @@
     player_ball.setAttribute("cy",new_py);
     player_ball.setAttribute("vx",d[0]);
     player_ball.setAttribute("vy",d[1]);
+    bind_to_clock_tick(move_all_balls,5);
   }
 
   player_ball.addEventListener("mousedown",white_mousedown);
   svg.addEventListener("mouseup",mouse_up_from_white_down);
-
-  function collide(ball1,ball2) {
-
-  }
-
-  function check_all_ball_distances() {
-    balls = get_ball_array()
-    for ( let i = 0; i < balls.length; i++ ) {
-      ball1 = balls[i];
-      for ( let j = i + 1; j < balls.length; j++ ){
-        ball2 = balls[j];
-        dbx = parseInt(ball1.getAttribute("cx")) - parseInt(ball2.getAttribute("cx"))
-        dby = parseInt(ball1.getAttribute("cy")) - parseInt(ball2.getAttribute("cy"))
-        distance = Math.floor(Math.sqrt(dbx*dbx+dby*dby));
-        if (distance < 62) {
-          collide(ball1,ball2);
-        }
-      }
-    }
-  }
 </script>
 </html>
