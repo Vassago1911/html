@@ -33,14 +33,12 @@
    }
 
    .holes {
-     r: 40;
      stroke: #888;
      stroke-width: 1px;
      fill: #000;
    }
 
    .balls {
-     r: 30;
      stroke: #ccc;
      stroke-width: 2px;
    }
@@ -50,7 +48,6 @@
    .striped {
      stroke-width: 8px;
      stroke: #996;
-     r: 26;
    }
    .player_ball {
      fill: #999;
@@ -72,7 +69,6 @@
    }
    .ball_08 {
      fill: #000;
-     r: 28;
      stroke-width: 8px;
      stroke: #555;
    }
@@ -157,32 +153,32 @@
     <rect x=1920 y=0 class="rght_bdy  lr_bds boundaries"></rect>
   </g>
   <g id="holes">
-    <circle class="holes hole1" cx="128" cy="137" />
-    <circle class="holes hole2" cx="128" cy="1024"/>
-    <circle class="holes hole3" cx="128" cy="1911"/>
-    <circle class="holes hole4" cx="1920" cy="137" />
-    <circle class="holes hole5" cx="1920" cy="1024"/>
-    <circle class="holes hole6" cx="1920" cy="1911"/>
+    <circle class="holes hole1" r="40" cx="128" cy="137" />
+    <circle class="holes hole2" r="40" cx="128" cy="1024"/>
+    <circle class="holes hole3" r="40" cx="128" cy="1911"/>
+    <circle class="holes hole4" r="40" cx="1920" cy="137" />
+    <circle class="holes hole5" r="40" cx="1920" cy="1024"/>
+    <circle class="holes hole6" r="40" cx="1920" cy="1911"/>
   </g>
   <g id="cfl_balls">
-    <circle  cx=962 cy=532 class="ball_03 solids  balls object_balls"/>
-    <circle cx=1086 cy=532 class="ball_01 solids  balls object_balls"/>
-    <circle cx=1024 cy=640 class="ball_04 solids  balls object_balls"/>
-    <circle  cx=900 cy=424 class="ball_02 solids  balls object_balls"/>
-    <circle  cx=962 cy=424 class="ball_09 striped balls object_balls"/>
-    <circle cx=1024 cy=424 class="ball_07 solids  balls object_balls"/>
-    <circle cx=1086 cy=424 class="ball_05 solids  balls object_balls"/>
-    <circle  cx=931 cy=478 class="ball_06 solids  balls object_balls"/>
-    <circle cx=1024 cy=532 class="ball_08 object_balls"/>
-    <circle  cx=993 cy=586 class="ball_10 striped balls object_balls"/>
-    <circle  cx=993 cy=478 class="ball_11 striped balls object_balls"/>
-    <circle cx=1148 cy=424 class="ball_12 striped balls object_balls"/>
-    <circle cx=1055 cy=478 class="ball_13 striped balls object_balls"/>
-    <circle cx=1055 cy=586 class="ball_14 striped balls object_balls"/>
-    <circle cx=1117 cy=478 class="ball_15 striped balls object_balls"/>
+    <circle r="30" cx=962 cy=532 class="ball_03 solids  balls object_balls"/>
+    <circle r="30" cx=1086 cy=532 class="ball_01 solids  balls object_balls"/>
+    <circle r="30" cx=1024 cy=640 class="ball_04 solids  balls object_balls"/>
+    <circle r="30"  cx=900 cy=424 class="ball_02 solids  balls object_balls"/>
+    <circle r="30" cx=1024 cy=424 class="ball_07 solids  balls object_balls"/>
+    <circle r="30" cx=1086 cy=424 class="ball_05 solids  balls object_balls"/>
+    <circle r="30"  cx=931 cy=478 class="ball_06 solids  balls object_balls"/>
+    <circle r="28" cx=1024 cy=532 class="ball_08 object_balls"/>
+    <circle r="26"  cx=962 cy=424 class="ball_09 striped balls object_balls"/>
+    <circle r="26"  cx=993 cy=586 class="ball_10 striped balls object_balls"/>
+    <circle r="26"  cx=993 cy=478 class="ball_11 striped balls object_balls"/>
+    <circle r="26" cx=1148 cy=424 class="ball_12 striped balls object_balls"/>
+    <circle r="26" cx=1055 cy=478 class="ball_13 striped balls object_balls"/>
+    <circle r="26" cx=1055 cy=586 class="ball_14 striped balls object_balls"/>
+    <circle r="26" cx=1117 cy=478 class="ball_15 striped balls object_balls"/>
   </g>
   <g id="player_ball">
-    <circle cx=1024 cy=1450 id="player_ball_sprite" class="ball_00 player_ball balls"/>
+    <circle r="30" cx=1024 cy=1450 id="player_ball_sprite" class="ball_00 player_ball balls"/>
   </g>
 </svg>
 </body>
