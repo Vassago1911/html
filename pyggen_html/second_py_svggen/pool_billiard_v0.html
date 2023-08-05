@@ -295,8 +295,8 @@
       if ( balls[i]!= undefined ) {
         vx = b.getAttribute("vx")
         vy = b.getAttribute("vy")
-        vx = vx*(.999)
-        vy = vy*(.999)
+        vx = vx*(.993)
+        vy = vy*(.993)
         b.setAttribute("vx", vx)
         b.setAttribute("vy", vy)
       }
@@ -328,6 +328,7 @@
     //collide them with other balls
     //update v's accordingly
     collision_pairs = [ ];
+    /* Randomize array in-place using Durstenfeld shuffle algorithm */
     for ( let i = 0; i < balls.length; i++ ) {
       for ( let j = i + 1; j < balls.length; j++ ) {
         b1 = balls[i];
@@ -347,11 +348,12 @@
         dx = b1cx - b2cx
         dy = b1cy - b2cy
         distance = Math.floor(Math.sqrt(dx*dx+dy*dy));
+        unit_distance_vector = [dx/distance,dy/distance];
 
-        coll_distance = 60
+        coll_distance = 62
 
         // if colliding, calc collision
-        if ( distance <= coll_distance ) {
+        if ( distance < coll_distance ) {
           collision_pairs = collision_pairs.concat([[i,j,distance],])
 
           // scp = < v1-v2 | x1-x2 >
@@ -361,18 +363,17 @@
           // https://en.wikipedia.org/wiki/Elastic_collision
           b1_vx_new = b1vx - 1/(distance*distance)*dx*scp
           b1_vy_new = b1vy - 1/(distance*distance)*dy*scp
-          b1_vx_new = .9991 * b1_vx_new
-          b1_vy_new = .9991 * b1_vy_new
 
           b2_vx_new = b2vx + 1/(distance*distance)*dx*scp
           b2_vy_new = b2vy + 1/(distance*distance)*dy*scp
-          b2_vx_new = .9991 * b2_vx_new
-          b2_vy_new = .9991 * b2_vy_new
 
           b1.setAttribute("vx",b1_vx_new);
           b1.setAttribute("vy",b1_vy_new);
           b2.setAttribute("vx",b2_vx_new);
           b2.setAttribute("vy",b2_vy_new);
+
+          b1.setAttribute("cx",1*b1.getAttribute("cx")+2*unit_distance_vector[0])
+          b1.setAttribute("cy",1*b1.getAttribute("cy")+2*unit_distance_vector[1])
 
           play_collide_sound();
         }
@@ -428,8 +429,8 @@
     if ( player_ball != undefined ) {
       old_px = parseInt(player_ball.getAttribute("cx"))
       old_py = parseInt(player_ball.getAttribute("cy"))
-      player_ball.setAttribute("vx",3*d[0]);
-      player_ball.setAttribute("vy",3*d[1]);
+      player_ball.setAttribute("vx",2.5*d[0]);
+      player_ball.setAttribute("vy",2.5*d[1]);
       bind_to_clock_tick(move_all_balls,5);
     }
   }
