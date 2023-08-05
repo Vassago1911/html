@@ -307,13 +307,16 @@
       }
     }
     //only white remaining? YOU WIN! (level0)
-    a = get_ball_array();
+    /* a = get_ball_array();
     you_win_display = document.getElementById("you_win_overlay");
     if ( a.length <= 1 ) {
         you_win_display.style.display = "block";
     } else {
         you_win_display.style.display = "none";
-    }
+    } */
+
+    //respawn "hostile" balls every so often
+    
 
     // put holed balls onto the boundary
     for ( let b = 0; b < holed_balls.length; b++ ){
