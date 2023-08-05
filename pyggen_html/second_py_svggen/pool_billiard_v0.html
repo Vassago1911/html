@@ -161,9 +161,50 @@
   <g id="player_ball">
     <circle r="30" cx=1024 cy=1450 id="player_ball_sprite" class="ball_00 player_ball balls"/>
   </g>
+  <g id="you_win_overlay" style="display: none;">
+    <text
+       xml:space="preserve"
+       style="fill:rgb(123, 107, 12);font-size:max(12vh,12vw);font-family:'MesloLGS NF'"
+       id="text236"><tspan
+         x="800"
+         y="800"
+         id="tspan2757">YOU
+</tspan><tspan
+         x="800"
+         y="1000"
+         id="tspan2759">WIN</tspan></text>
+  </g>
 </svg>
 </body>
 <script type="text/javascript">
+  function gen_std_trgl(){
+    ball_descriptions = 
+    [
+      //solids
+      { name: "ball_01", r: "30", cx: "1086", cy: "532", classes: ["ball_01", "solids","balls","object_balls"]  },
+      { name: "ball_02", r: "30", cx:  "900", cy: "424", classes: ["ball_02", "solids","balls","object_balls"]  },
+      { name: "ball_03", r: "30", cx:  "962", cy: "532", classes: ["ball_03", "solids","balls","object_balls"]  },
+      { name: "ball_04", r: "30", cx: "1024", cy: "640", classes: ["ball_04", "solids","balls","object_balls"]  },
+      { name: "ball_05", r: "30", cx: "1086", cy: "424", classes: ["ball_05", "solids","balls","object_balls"]  },
+      { name: "ball_06", r: "30", cx:  "931", cy: "478", classes: ["ball_06", "solids","balls","object_balls"]  },
+      { name: "ball_07", r: "30", cx: "1024", cy: "424", classes: ["ball_07", "solids","balls","object_balls"]  },
+      //8-ball
+      { name: "ball_08", r: "28", cx: "1024", cy: "532", classes: ["ball_08", "object_balls"]  },
+      //stripes
+      { name: "ball_09", r: "26", cx: "1086", cy: "424", classes: ["ball_09", "striped","balls","object_balls"] },
+      { name: "ball_10", r: "26", cx: "1086", cy: "586", classes: ["ball_10", "striped","balls","object_balls"] },
+      { name: "ball_11", r: "26", cx: "1086", cy: "478", classes: ["ball_11", "striped","balls","object_balls"] },
+      { name: "ball_12", r: "26", cx: "1086", cy: "424", classes: ["ball_12", "striped","balls","object_balls"] },
+      { name: "ball_13", r: "26", cx: "1086", cy: "478", classes: ["ball_13", "striped","balls","object_balls"] },
+      { name: "ball_14", r: "26", cx: "1086", cy: "586", classes: ["ball_14", "striped","balls","object_balls"] },
+      { name: "ball_15", r: "26", cx: "1086", cy: "478", classes: ["ball_15", "striped","balls","object_balls"] }      
+    ]
+    new_balls = [];
+    for ( let i = 0; i < ball_descriptions.length; i++ ) {
+      new_balls = new_balls.concat([])
+    }
+  }
+
   var last_mouse_up_coods = [-100,100];
   var last_down_on_white = false;
   var d = [0,0];
@@ -265,6 +306,14 @@
           //holed_balls = holed_balls.concat([balls[b],]);
         }
       }
+    }
+    //only white remaining? YOU WIN! (level0)
+    a = get_ball_array();
+    you_win_display = document.getElementById("you_win_overlay");
+    if ( a.length == 1 ) {
+        you_win_display.style.display = "block";
+    } else {
+        you_win_display.style.display = "none";
     }
 
     // put holed balls onto the boundary
