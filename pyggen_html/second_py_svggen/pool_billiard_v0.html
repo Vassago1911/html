@@ -2,8 +2,9 @@
 <html>
 <head>
 <style type="text/css">
-   .heavy {
-      font: bold 30px monospace;
+   html {
+     font-family: monospace;
+     height: 100%;
    }
    html, body {
      background: #000;
@@ -21,25 +22,14 @@
      fill: #630;
      height: 137px;
      width: 128px;
-     stroke-width: 4px;
-     stroke: #930;
+     /*stroke-width: 4px;
+     stroke: #930;*/
    }
    .ul_bds {
      width: 100%;
    }
    .lr_bds {
      height: 100%;
-   }
-   .upper_bdy {
-     y: 0;
-   }
-   .lower_bdy {
-     x: 0;
-     y: 1920;
-   }
-   .rght_bdy {
-     x: 1920;
-     y: 0;
    }
 
    .holes {
@@ -56,10 +46,6 @@
    }
    .solids {
      stroke-width: 0px;
-   }
-   .ball08 {
-    stroke-width: 0px;
-    fill: #000;
    }
    .striped {
      stroke-width: 13px;
@@ -122,6 +108,13 @@
    .ball_12 {
      fill: #305;
    }
+   button {
+    background-color: rgba(96,16,48,32);
+    font-family: monospace;
+    color: white;
+    position: relative;
+    width: 100%;
+    }
 </style>
 </head>
 <body>
@@ -135,15 +128,33 @@
 <audio id="collide_sound_3">
   <source src="collide3.wav" type="audio/wav">
 </audio>
+<table id="controls">
+<tr>
+<td>
+    <button type="button" onclick="kill_loop()" >get_white_ball_back!</button>
+</td>
+<td>
+<button type="button" onclick="start_loop()" >StartAnimation!</button>
+</td>
+</tr>
+<tr>
+<td>
+<button type="button" onclick="reroll_velocities()"> new directions! </button>
+</td>
+<td>
+<button type="button"> tbd </button>
+</td>
+</tr>
+</table>
 <svg class="table_svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
   <g id="table_felt">
     <rect x=0 y=0 width=100% height=100% fill=#106510></rect>
   </g>
   <g id="bdy_group">
-    <rect class="upper_bdy ul_bds boundaries"></rect>
-    <rect class="lower_bdy ul_bds boundaries"></rect>
-    <rect class="left_bdy  lr_bds boundaries"></rect>
-    <rect class="rght_bdy  lr_bds boundaries"></rect>
+    <rect x=0 y=0 class="upper_bdy ul_bds boundaries"></rect>
+    <rect x=0 y=1920 class="lower_bdy ul_bds boundaries"></rect>
+    <rect x=0 y=0 class="left_bdy  lr_bds boundaries"></rect>
+    <rect x=1920 y=0 class="rght_bdy  lr_bds boundaries"></rect>
   </g>
   <g id="holes">
     <circle class="holes hole1" cx="128" cy="137" />
@@ -162,7 +173,7 @@
     <circle cx=1024 cy=424 class="ball_07 solids  balls object_balls"/>
     <circle cx=1086 cy=424 class="ball_05 solids  balls object_balls"/>
     <circle  cx=931 cy=478 class="ball_06 solids  balls object_balls"/>
-    <circle cx=1024 cy=532 class="ball_08 ball08  balls object_balls"/>
+    <circle cx=1024 cy=532 class="ball_08 object_balls"/>
     <circle  cx=993 cy=586 class="ball_10 striped balls object_balls"/>
     <circle  cx=993 cy=478 class="ball_11 striped balls object_balls"/>
     <circle cx=1148 cy=424 class="ball_12 striped balls object_balls"/>
@@ -179,10 +190,11 @@
   var last_mouse_up_coods = [-100,100];
   var last_down_on_white = false;
   var d = [0,0];
+  var holed_balls = [];
   var click_sounds =
     [ "collide1.wav",
       "collide2.wav",
-      "collide3.wav",]
+      "collide3.wav",];
 
   click_count_this_interval = 0;
   collected_ms = 0;
@@ -263,8 +275,18 @@
         distance = Math.sqrt( dx*dx + dy*dy )
         if ( distance < 65 ) {
           balls[b].remove()
+          //remove balls[b] from the balls array
+          //balls.splice(b,1);
+          //and put into holed_balls array
+          //holed_balls = holed_balls.concat([balls[b],]);
         }
       }
+    }
+
+    // put holed balls onto the boundary
+    for ( let b = 0; b < holed_balls.length; b++ ){
+      holed_balls[b].setAttribute("cy",-66);
+      holed_balls[b].setAttribute("cx",1866 - 66*b);
     }
 
     //NO SPEEDS LEFT? kill next tick,
@@ -295,8 +317,8 @@
       if ( balls[i]!= undefined ) {
         vx = b.getAttribute("vx")
         vy = b.getAttribute("vy")
-        vx = vx*(.999)
-        vy = vy*(.999)
+        vx = vx*(.996)
+        vy = vy*(.996)
         b.setAttribute("vx", vx)
         b.setAttribute("vy", vy)
       }
@@ -313,15 +335,15 @@
         vx = b.getAttribute("vx")
         vy = b.getAttribute("vy")
         r  = 32 //parseInt(b.getAttribute("r"))
-        if ( ( cx - r <= 132 ) || ( cx + r >= 1912 ) ) {
-          vx = -.95*vx
+        if ( ( cx - r <= 130 ) || ( cx + r >= 1914 ) ) {
+          vx = -.96*vx
           b.setAttribute("vx",vx)
           b.setAttribute("cx",Math.min( Math.max(168,b.getAttribute("cx")), 1883 ) )
         }
         if ( ( cy - r <= 137 ) || ( cy + r >= 1916 ) ) {
-          vy = -.95*vy
+          vy = -.96*vy
           b.setAttribute("vy",vy)
-          b.setAttribute("cy",Math.min( Math.max(170,b.getAttribute("cy")), 1883 ) )
+          b.setAttribute("cy",Math.min( Math.max(168,b.getAttribute("cy")), 1885 ) )
         }
       }
     }
@@ -361,13 +383,9 @@
           // https://en.wikipedia.org/wiki/Elastic_collision
           b1_vx_new = b1vx - 1/(distance*distance)*dx*scp
           b1_vy_new = b1vy - 1/(distance*distance)*dy*scp
-          b1_vx_new = .9991 * b1_vx_new
-          b1_vy_new = .9991 * b1_vy_new
 
           b2_vx_new = b2vx + 1/(distance*distance)*dx*scp
           b2_vy_new = b2vy + 1/(distance*distance)*dy*scp
-          b2_vx_new = .9991 * b2_vx_new
-          b2_vy_new = .9991 * b2_vy_new
 
           b1.setAttribute("vx",b1_vx_new);
           b1.setAttribute("vy",b1_vy_new);
@@ -414,11 +432,13 @@
       last_mouse_up_coods = [cursorpt.x,cursorpt.y];
       //console.log("last up: "+last_mouse_up_coods);
       player_ball = get_player_ball();
-      px = parseInt(player_ball.getAttribute("cx"));
-      py = parseInt(player_ball.getAttribute("cy"));
-      d = [last_mouse_up_coods[0]-px,
-           last_mouse_up_coods[1]-py];
-      set_white_ball_velocity();
+      if ( player_ball != undefined ) {
+        px = parseInt(player_ball.getAttribute("cx"));
+        py = parseInt(player_ball.getAttribute("cy"));
+        d = [last_mouse_up_coods[0]-px,
+             last_mouse_up_coods[1]-py];
+        set_white_ball_velocity();
+      }
       last_down_on_white = false;
     }
   }
