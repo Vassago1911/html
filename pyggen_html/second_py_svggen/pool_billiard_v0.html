@@ -53,7 +53,7 @@
    }
 
    .ball_04 {
-     fill: #6500a9;
+     fill: #571f7c;
    }
 
    .ball_10 {
@@ -101,7 +101,7 @@
      fill: #ef8620;
    }
    .ball_12 {
-     fill: #6500a9;
+     fill: #571f7c;
    }
    button {
     background-color: rgba(96,16,48,32);
@@ -123,24 +123,6 @@
 <audio id="collide_sound_3">
   <source src="collide3.wav" type="audio/wav">
 </audio>
-<table id="controls">
-<tr>
-<td>
-    <button type="button" onclick="kill_loop()" >get_white_ball_back!</button>
-</td>
-<td>
-<button type="button" onclick="start_loop()" >StartAnimation!</button>
-</td>
-</tr>
-<tr>
-<td>
-<button type="button" onclick="reroll_velocities()"> new directions! </button>
-</td>
-<td>
-<button type="button"> tbd </button>
-</td>
-</tr>
-</table>
 <svg class="table_svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
   <g id="table_felt">
     <rect x=0 y=0 width=100% height=100% fill=#106510></rect>
@@ -160,13 +142,13 @@
     <circle class="holes hole6" r="40" cx="1920" cy="1911"/>
   </g>
   <g id="cfl_balls">
-    <circle r="30" cx=962 cy=532 class="ball_03 solids  balls object_balls"/>
     <circle r="30" cx=1086 cy=532 class="ball_01 solids  balls object_balls"/>
-    <circle r="30" cx=1024 cy=640 class="ball_04 solids  balls object_balls"/>
     <circle r="30"  cx=900 cy=424 class="ball_02 solids  balls object_balls"/>
-    <circle r="30" cx=1024 cy=424 class="ball_07 solids  balls object_balls"/>
+    <circle r="30"  cx=962 cy=532 class="ball_03 solids  balls object_balls"/>
+    <circle r="30" cx=1024 cy=640 class="ball_04 solids  balls object_balls"/>
     <circle r="30" cx=1086 cy=424 class="ball_05 solids  balls object_balls"/>
     <circle r="30"  cx=931 cy=478 class="ball_06 solids  balls object_balls"/>
+    <circle r="30" cx=1024 cy=424 class="ball_07 solids  balls object_balls"/>
     <circle r="28" cx=1024 cy=532 class="ball_08 object_balls"/>
     <circle r="26"  cx=962 cy=424 class="ball_09 striped balls object_balls"/>
     <circle r="26"  cx=993 cy=586 class="ball_10 striped balls object_balls"/>
@@ -269,7 +251,14 @@
         dy = by - hy
         distance = Math.sqrt( dx*dx + dy*dy )
         if ( distance < 65 ) {
-          balls[b].remove()
+          if ( balls[b].id != "player_ball_sprite" ) {
+            balls[b].remove()
+          } else {
+            balls[b].setAttribute("cx",1024);
+            balls[b].setAttribute("cy",1450);
+            balls[b].setAttribute("vx",0);
+            balls[b].setAttribute("vy",0);
+          }
           //remove balls[b] from the balls array
           //balls.splice(b,1);
           //and put into holed_balls array
