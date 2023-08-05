@@ -48,30 +48,6 @@
      stroke-width: 1px;
      fill: #000;
    }
-   .hole1 {
-      cx: 128px;
-      cy: 137px;
-   }
-   .hole2 {
-      cx: 128px;
-      cy: 1911px;
-   }
-   .hole3 {
-      cx: 128px;
-      cy: 1024px;
-   }
-   .hole4 {
-      cx: 1920px;
-      cy: 137px;
-   }
-   .hole5 {
-      cx: 1920px;
-      cy: 1911px;
-   }
-   .hole6 {
-      cx: 1920px;
-      cy: 1024px;
-   }
 
    .balls {
      r: 30;
@@ -149,6 +125,16 @@
 </style>
 </head>
 <body>
+<audio id="collide_sound_1">
+  <source src="collide1.wav" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+<audio id="collide_sound_2">
+  <source src="collide2.wav" type="audio/wav">
+</audio>
+<audio id="collide_sound_3">
+  <source src="collide3.wav" type="audio/wav">
+</audio>
 <svg class="table_svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
   <g id="table_felt">
     <rect x=0 y=0 width=100% height=100% fill=#106510></rect>
@@ -160,12 +146,12 @@
     <rect class="rght_bdy  lr_bds boundaries"></rect>
   </g>
   <g id="holes">
-    <circle class="holes hole1"/>
-    <circle class="holes hole2"/>
-    <circle class="holes hole3"/>
-    <circle class="holes hole4"/>
-    <circle class="holes hole5"/>
-    <circle class="holes hole6"/>
+    <circle class="holes hole1" cx="128" cy="137" />
+    <circle class="holes hole2" cx="128" cy="1024"/>
+    <circle class="holes hole3" cx="128" cy="1911"/>
+    <circle class="holes hole4" cx="1920" cy="137" />
+    <circle class="holes hole5" cx="1920" cy="1024"/>
+    <circle class="holes hole6" cx="1920" cy="1911"/>
   </g>
   <g id="cfl_balls">
     <circle  cx=962 cy=532 class="ball_03 solids  balls object_balls"/>
@@ -193,6 +179,22 @@
   var last_mouse_up_coods = [-100,100];
   var last_down_on_white = false;
   var d = [0,0];
+  var click_sounds =
+    [ "collide1.wav",
+      "collide2.wav",
+      "collide3.wav",]
+
+  click_count_this_interval = 0;
+  collected_ms = 0;
+  ALLOWABLE_CLICKS = 1;
+
+  function play_collide_sound() {
+    if ( click_count_this_interval < ALLOWABLE_CLICKS ) {
+       a = click_sounds[Date.now() % 3]
+       new Audio(a).play()
+       click_count_this_interval++;
+    }
+  }
 
   function bind_to_clock_tick(ticked_action, millisecond_step) {
     function tick() {
@@ -220,11 +222,18 @@
     return balls;
   }
 
+  function get_hole_array() {
+    // [...<html-collection> ] casts it to array
+    holes = [...document.getElementsByClassName("holes")];
+    return holes;
+  }
+
   function set_balls_at_rest() {
     balls = get_ball_array();
     for ( let i = 0; i < balls.length; i++ )
     {
       ball = balls[i];
+      if ( ball==undefined ){ continue; }
       ball.vx = 0
       ball.vy = 0
       ball.setAttribute("vx",0)
@@ -234,14 +243,43 @@
   set_balls_at_rest();
 
   function move_all_balls(ms_step) {
+    // anyone going down a hole?
+    holes = get_hole_array();
+    balls = get_ball_array();
+    for ( let h = 0; h < holes.length; h++ ) {
+      for ( let b = 0; b < balls.length; b++ ) {
+        if ( balls[b] == undefined ) {
+          continue;
+        }
+        bx = 1*balls[b].getAttribute("cx");
+        by = 1*balls[b].getAttribute("cy");
+        hx = 1*holes[h].getAttribute("cx");
+        hy = 1*holes[h].getAttribute("cy");
+
+        dx = bx - hx
+        dy = by - hy
+        distance = Math.sqrt( dx*dx + dy*dy )
+        if ( distance < 65 ) {
+          balls[b].remove()
+        }
+      }
+    }
+
     //NO SPEEDS LEFT? kill next tick,
     //hence physics loop
+    //click_count_this_interval = 0;
+    collected_ms += ms_step;
+    if ( collected_ms > 250 ) {
+      collected_ms -= 250;
+      click_count_this_interval -= 1;
+    }
     var total_v = 0;
-    balls = get_ball_array();
     for ( let i=0; i<balls.length; i++)
     {
-      total_v += Math.abs(balls[i].getAttribute("vx"));
-      total_v += Math.abs(balls[i].getAttribute("vy"));
+      if ( balls[i]!= undefined ) {
+        total_v += Math.abs(balls[i].getAttribute("vx"));
+        total_v += Math.abs(balls[i].getAttribute("vy"));
+      }
     }
     if ( Math.abs(total_v) < 96 ){
         cancel_next_tick = true;
@@ -252,12 +290,14 @@
     //DAMPEN all, felt-table friction or so
     for ( let i = 0; i < balls.length; i++ ){
       b = balls[i]
-      vx = b.getAttribute("vx")
-      vy = b.getAttribute("vy")
-      vx = vx*(.9991)
-      vy = vy*(.9991)
-      b.setAttribute("vx", vx)
-      b.setAttribute("vy", vy)
+      if ( balls[i]!= undefined ) {
+        vx = b.getAttribute("vx")
+        vy = b.getAttribute("vy")
+        vx = vx*(.999)
+        vy = vy*(.999)
+        b.setAttribute("vx", vx)
+        b.setAttribute("vy", vy)
+      }
     }
 
     //preplan moving all balls according to their v's
@@ -265,20 +305,22 @@
     //update v's accordingly
     for ( let i = 0; i < balls.length; i++ ){
       b = balls[i]
-      cx = parseInt(b.getAttribute("cx"))
-      cy = parseInt(b.getAttribute("cy"))
-      vx = b.getAttribute("vx")
-      vy = b.getAttribute("vy")
-      r  = 32 //parseInt(b.getAttribute("r"))
-      if ( ( cx - r <= 132 ) || ( cx + r >= 1912 ) ) {
-        vx = -.95*vx
-        b.setAttribute("vx",vx)
-        b.setAttribute("cx",Math.min( Math.max(168,b.getAttribute("cx")), 1883 ) )
-      }
-      if ( ( cy - r <= 137 ) || ( cy + r >= 1916 ) ) {
-        vy = -.95*vy
-        b.setAttribute("vy",vy)
-        b.setAttribute("cy",Math.min( Math.max(170,b.getAttribute("cy")), 1883 ) )
+      if ( b != undefined ) {
+        cx = parseInt(b.getAttribute("cx"))
+        cy = parseInt(b.getAttribute("cy"))
+        vx = b.getAttribute("vx")
+        vy = b.getAttribute("vy")
+        r  = 32 //parseInt(b.getAttribute("r"))
+        if ( ( cx - r <= 132 ) || ( cx + r >= 1912 ) ) {
+          vx = -.95*vx
+          b.setAttribute("vx",vx)
+          b.setAttribute("cx",Math.min( Math.max(168,b.getAttribute("cx")), 1883 ) )
+        }
+        if ( ( cy - r <= 137 ) || ( cy + r >= 1916 ) ) {
+          vy = -.95*vy
+          b.setAttribute("vy",vy)
+          b.setAttribute("cy",Math.min( Math.max(170,b.getAttribute("cy")), 1883 ) )
+        }
       }
     }
     //collide them with other balls
@@ -287,12 +329,14 @@
     for ( let i = 0; i < balls.length; i++ ) {
       for ( let j = i + 1; j < balls.length; j++ ) {
         b1 = balls[i];
+        if (b1==undefined) { continue; }
         b1cx = 1*b1.getAttribute("cx")
         b1cy = 1*b1.getAttribute("cy")
         b1vx = 1*b1.getAttribute("vx")
         b1vy = 1*b1.getAttribute("vy")
 
         b2 = balls[j];
+        if (b2==undefined) { continue; }
         b2cx = 1*b2.getAttribute("cx")
         b2cy = 1*b2.getAttribute("cy")
         b2vx = 1*b2.getAttribute("vx")
@@ -304,6 +348,7 @@
 
         coll_distance = 60
 
+        // if colliding, calc collision
         if ( distance <= coll_distance ) {
           collision_pairs = collision_pairs.concat([[i,j,distance],])
 
@@ -314,24 +359,33 @@
           // https://en.wikipedia.org/wiki/Elastic_collision
           b1_vx_new = b1vx - 1/(distance*distance)*dx*scp
           b1_vy_new = b1vy - 1/(distance*distance)*dy*scp
+          b1_vx_new = .9991 * b1_vx_new
+          b1_vy_new = .9991 * b1_vy_new
 
           b2_vx_new = b2vx + 1/(distance*distance)*dx*scp
           b2_vy_new = b2vy + 1/(distance*distance)*dy*scp
+          b2_vx_new = .9991 * b2_vx_new
+          b2_vy_new = .9991 * b2_vy_new
 
           b1.setAttribute("vx",b1_vx_new);
           b1.setAttribute("vy",b1_vy_new);
           b2.setAttribute("vx",b2_vx_new);
           b2.setAttribute("vy",b2_vy_new);
+
+          play_collide_sound();
         }
       }
     }
 
     // move the sprites
     for ( let i = 0; i < balls.length; i++ ){
+      b = balls[i];
+      if ( b!= undefined) {
       balls[i].setAttribute("cx",
         1*balls[i].getAttribute("cx")+(ms_step/1000)*balls[i].getAttribute("vx"))
       balls[i].setAttribute("cy",
         1*balls[i].getAttribute("cy")+(ms_step/1000)*balls[i].getAttribute("vy"))
+      }
     }
 
     cancel_next_tick = false;
@@ -369,11 +423,13 @@
 
   function set_white_ball_velocity() {
     player_ball = get_player_ball();
-    old_px = parseInt(player_ball.getAttribute("cx"))
-    old_py = parseInt(player_ball.getAttribute("cy"))
-    player_ball.setAttribute("vx",3*d[0]);
-    player_ball.setAttribute("vy",3*d[1]);
-    bind_to_clock_tick(move_all_balls,5);
+    if ( player_ball != undefined ) {
+      old_px = parseInt(player_ball.getAttribute("cx"))
+      old_py = parseInt(player_ball.getAttribute("cy"))
+      player_ball.setAttribute("vx",3*d[0]);
+      player_ball.setAttribute("vy",3*d[1]);
+      bind_to_clock_tick(move_all_balls,5);
+    }
   }
 
   player_ball.addEventListener("mousedown",white_mousedown);
