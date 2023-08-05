@@ -168,15 +168,15 @@
     <circle class="holes hole6"/>
   </g>
   <g id="cfl_balls">
-    <circle cx=1086 cy=532 class="ball_01 solids  balls object_balls"/>
-    <circle  cx=900 cy=424 class="ball_02 solids  balls object_balls"/>
     <circle  cx=962 cy=532 class="ball_03 solids  balls object_balls"/>
+    <circle cx=1086 cy=532 class="ball_01 solids  balls object_balls"/>
     <circle cx=1024 cy=640 class="ball_04 solids  balls object_balls"/>
+    <circle  cx=900 cy=424 class="ball_02 solids  balls object_balls"/>
+    <circle  cx=962 cy=424 class="ball_09 striped balls object_balls"/>
+    <circle cx=1024 cy=424 class="ball_07 solids  balls object_balls"/>
     <circle cx=1086 cy=424 class="ball_05 solids  balls object_balls"/>
     <circle  cx=931 cy=478 class="ball_06 solids  balls object_balls"/>
-    <circle cx=1024 cy=424 class="ball_07 solids  balls object_balls"/>
     <circle cx=1024 cy=532 class="ball_08 ball08  balls object_balls"/>
-    <circle  cx=962 cy=424 class="ball_09 striped balls object_balls"/>
     <circle  cx=993 cy=586 class="ball_10 striped balls object_balls"/>
     <circle  cx=993 cy=478 class="ball_11 striped balls object_balls"/>
     <circle cx=1148 cy=424 class="ball_12 striped balls object_balls"/>
@@ -254,8 +254,8 @@
       b = balls[i]
       vx = b.getAttribute("vx")
       vy = b.getAttribute("vy")
-      vx = vx*(.9994)
-      vy = vy*(.9994)
+      vx = vx*(.9991)
+      vy = vy*(.9991)
       b.setAttribute("vx", vx)
       b.setAttribute("vy", vy)
     }
@@ -273,39 +273,55 @@
       if ( ( cx - r <= 132 ) || ( cx + r >= 1912 ) ) {
         vx = -.95*vx
         b.setAttribute("vx",vx)
-        b.setAttribute("cx",Math.min( Math.max(165,b.getAttribute("cx")), 1886 ) )
+        b.setAttribute("cx",Math.min( Math.max(168,b.getAttribute("cx")), 1883 ) )
       }
       if ( ( cy - r <= 137 ) || ( cy + r >= 1916 ) ) {
         vy = -.95*vy
         b.setAttribute("vy",vy)
-        b.setAttribute("cy",Math.min( Math.max(165,b.getAttribute("cy")), 1883 ) )
+        b.setAttribute("cy",Math.min( Math.max(170,b.getAttribute("cy")), 1883 ) )
       }
     }
     //collide them with other balls
     //update v's accordingly
+    collision_pairs = [ ];
     for ( let i = 0; i < balls.length; i++ ) {
       for ( let j = i + 1; j < balls.length; j++ ) {
         b1 = balls[i];
-        b1.cx = 1*b1.getAttribute("cx")
-        b1.cy = 1*b1.getAttribute("cy")
-        b1.vx = 1*b1.getAttribute("vx")
-        b1.vy = 1*b1.getAttribute("vy")
+        b1cx = 1*b1.getAttribute("cx")
+        b1cy = 1*b1.getAttribute("cy")
+        b1vx = 1*b1.getAttribute("vx")
+        b1vy = 1*b1.getAttribute("vy")
 
         b2 = balls[j];
-        b2.cx = 1*b2.getAttribute("cx")
-        b2.cy = 1*b2.getAttribute("cy")
-        b2.vx = 1*b2.getAttribute("vx")
-        b2.vy = 1*b2.getAttribute("vy")
+        b2cx = 1*b2.getAttribute("cx")
+        b2cy = 1*b2.getAttribute("cy")
+        b2vx = 1*b2.getAttribute("vx")
+        b2vy = 1*b2.getAttribute("vy")
 
-        dx = b1.cx - b2.cx
-        dy = b1.cy - b2.cy
+        dx = b1cx - b2cx
+        dy = b1cy - b2cy
         distance = Math.floor(Math.sqrt(dx*dx+dy*dy));
 
-        coll_distance = 2*32
+        coll_distance = 60
 
-        if ( distance <= coll_distance + 4 ) {
-          console.log(b1,b2);
-          console.log('in collision')
+        if ( distance <= coll_distance ) {
+          collision_pairs = collision_pairs.concat([[i,j,distance],])
+
+          // scp = < v1-v2 | x1-x2 >
+          scp = dx*(b1vx-b2vx)+dy*(b1vy-b2vy)
+
+          // 2d collision of circles
+          // https://en.wikipedia.org/wiki/Elastic_collision
+          b1_vx_new = b1vx - 1/(distance*distance)*dx*scp
+          b1_vy_new = b1vy - 1/(distance*distance)*dy*scp
+
+          b2_vx_new = b2vx + 1/(distance*distance)*dx*scp
+          b2_vy_new = b2vy + 1/(distance*distance)*dy*scp
+
+          b1.setAttribute("vx",b1_vx_new);
+          b1.setAttribute("vy",b1_vy_new);
+          b2.setAttribute("vx",b2_vx_new);
+          b2.setAttribute("vy",b2_vy_new);
         }
       }
     }
@@ -346,7 +362,6 @@
       py = parseInt(player_ball.getAttribute("cy"));
       d = [last_mouse_up_coods[0]-px,
            last_mouse_up_coods[1]-py];
-      nd = Math.sqrt(d[0]*d[0]+d[1]*d[1])
       set_white_ball_velocity();
       last_down_on_white = false;
     }
@@ -356,8 +371,8 @@
     player_ball = get_player_ball();
     old_px = parseInt(player_ball.getAttribute("cx"))
     old_py = parseInt(player_ball.getAttribute("cy"))
-    player_ball.setAttribute("vx",d[0]);
-    player_ball.setAttribute("vy",d[1]);
+    player_ball.setAttribute("vx",3*d[0]);
+    player_ball.setAttribute("vy",3*d[1]);
     bind_to_clock_tick(move_all_balls,5);
   }
 
