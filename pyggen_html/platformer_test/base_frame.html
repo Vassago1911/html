@@ -12,10 +12,42 @@
   <g class="svg_frame" clip-path="url(#cut_to_view)">
     <rect x="0" y="0" width="2048" height="2048" fill="#303"/>
     <rect class="floor" x="-10240" y="1920" width="20480" height="128" fill="#330"/>
-  </g>
+    <g class="protagonist" id="protagonist">
+      <rect x="1024" y="1888" width="20" height="32" fill="#f00"/>
+    </g>
+  </g>  
 </svg>
 </body>
 <script type="text/javascript">
+protagonist = document.getElementById("protagonist")
+
+//wasd, arrows, numpad 2468
+ups = [ 87, 38, 104, 32 ];
+downs = [ 83, 40, 98 ];
+lefts = [ 65, 37, 100 ];
+rights = [ 68, 39, 102 ];
+
+document.addEventListener("keydown",
+(evt)=>
+{
+  if 
+  (ups.indexOf(evt.keyCode) > -1 ) {
+    console.log('up');
+  } else if 
+  ( downs.indexOf(evt.keyCode) > -1 ) {
+    console.log("down");
+  } else if 
+  ( lefts.indexOf(evt.keyCode) > -1 ) {
+    console.log("left");
+  } else if 
+  ( rights.indexOf(evt.keyCode) > -1 ) {
+    console.log("right");
+  } else {
+    //console.log(evt.keyCode);
+  }
+}
+)
+
 </script>
 <style type="text/css">
    html {
@@ -26,7 +58,7 @@
    }
    svg {
      display: block;
-     border: 1px solid #ccc;
+     border: 0px solid #ccc;
      position: absolute;
      top: 5%;
      left: 5%;
