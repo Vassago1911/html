@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="95%" height="90%" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
+  <defs>
+    <clipPath id="cut_to_view">
+      <rect id="view_frame" x="0" y="0" width="2048" height="2048"/>
+    </clipPath>
+  </defs>
+  <g class="svg_frame" clip-path="url(#cut_to_view)">
+    <rect x="0" y="0" width="256" height="2048" fill="#408"/>
+    <rect x="512" y="0" width="256" height="2048" fill="#408"/>
+    <rect x="1024" y="0" width="256" height="2048" fill="#408"/>
+    <rect x="1536" y="0" width="256" height="2048" fill="#408"/>
+    <rect class="floor" x="-10240" y="1920" width="20480" height="128" fill="#330"/>    
+    <g class="players player1 p1" id="p1" >
+      <rect id="p1_rect" x="512" y="1888" width="20" height="32" fill="#f00"/>
+    </g>
+    <g class="players player2 p2" id="p2" >
+      <rect id="p2_rect" x="1536" y="1888" width="20" height="32" fill="#079"/>
+    </g>
+  </g>  
+</svg>
+</body>
+<script type="text/javascript">
+player1_rect = document.getElementById("p1")
+player2_rect = document.getElementById("p2")
+
+function bind_to_clock_tick(ticked_action, millisecond_step) {
+    function tick() {
+      // ticked_action -> bool (weitermachen oder nicht?)
+      var cancel_tick = ticked_action(millisecond_step);
+      var now = Date.now();
+      if ( !cancel_tick ) {
+        //if not cancelled, schedule next tick
+        setTimeout(tick, millisecond_step - (now%millisecond_step));
+      }
+    }
+    tick()
+  }
+
+bind_to_clock_tick(scroll_view,5);
+
+</script>
+<style type="text/css">
+   html {
+       background-color: #000;
+   }
+   body {
+       margin: 0;
+   }
+   svg {
+     display: block;
+     border: 0px solid #ccc;
+     position: absolute;
+     top: 5%;
+     left: 5%;
+     width: 90%;
+     height: 90%;
+     background: #000;
+   }
+</style>
+</html>
