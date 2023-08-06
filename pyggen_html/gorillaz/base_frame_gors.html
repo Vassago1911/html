@@ -1,8 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html class="has-navbar-fixed-bottom">
 <head>
 </head>
 <body>
+<nav class="navbar is-dark is-fixed-bottom">
+<div class="navbar-start">
+    <p class="navbar-item mono">
+        MAIN MENU
+    </p>
+    <ul class="navbar-item mono">
+    <li class="navbar-item mono">
+        <a> Reset Game </a>
+    </li>
+    <li class="navbar-item mono">
+        <a> Reset Game </a>
+    </li>
+    <li class="navbar-item mono">
+        <a> Reset Game </a>
+    </li>
+    </ul>
+</div>
+<div class="navbar-end">
+    <ul class="navbar-item mono">
+        <li><a>Settings</a></li>        
+    </ul>
+    <ul class="navbar-item mono">
+        <li><a>Quit</a></li>
+    </ul>
+</div>    
+</nav>
+<nav class="navbar is-black">
+    <div class="navbar-start">
+        <p class="navbar-item mono">
+            MAIN MENU
+        </p>
+        <ul class="navbar-item mono">
+        <li class="navbar-item mono">
+            <a> Reset Game </a>
+        </li>
+        <li class="navbar-item mono">
+            <a> Reset Game </a>
+        </li>
+        <li class="navbar-item mono">
+            <a> Reset Game </a>
+        </li>
+        </ul>
+    </div>
+    <div class="navbar-end">
+        <ul class="navbar-item mono">
+            <li><a>Settings</a></li>        
+        </ul>
+        <ul class="navbar-item mono">
+            <li><a>Quit</a></li>
+        </ul>
+    </div>    
+    </nav>
 <svg xmlns="http://www.w3.org/2000/svg" width="95%" height="90%" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
   <defs>
     <clipPath id="cut_to_view">
@@ -27,6 +79,29 @@
 <script type="text/javascript">
 player1_rect = document.getElementById("p1")
 player2_rect = document.getElementById("p2")
+svg = document.getElementsByTagName("svg")[0]
+pt = svg.createSVGPoint();  // Created once for document
+function mouse_up_svg_coods(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    last_mouse_up_coods = [cursorpt.x,cursorpt.y];
+}
+function mouse_down_svg_coods(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    last_mouse_down_coods = [cursorpt.x,cursorpt.y];
+}
+
+svg.addEventListener("mouseup",mouse_up_svg_coods)
+svg.addEventListener("mousedown",mouse_down_svg_coods)
 
 function bind_to_clock_tick(ticked_action, millisecond_step) {
     function tick() {
@@ -41,10 +116,14 @@ function bind_to_clock_tick(ticked_action, millisecond_step) {
     tick()
   }
 
-bind_to_clock_tick(scroll_view,5);
+//bind_to_clock_tick(scroll_view,5);
 
 </script>
+<link rel="stylesheet" type="text/css" href="./bulma.css" />
 <style type="text/css">
+   html,body {
+    font: monospace;
+   }
    html {
        background-color: #000;
    }
@@ -59,7 +138,21 @@ bind_to_clock_tick(scroll_view,5);
      left: 5%;
      width: 90%;
      height: 90%;
-     background: #000;
+     background: #000;     
+   }
+   .navbar {
+    font: monospace;
+   }
+   .mono {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: max(2vh,2vw);
+    color: #ccc;
+   }
+   a {
+    color: #392;
+   }
+   a:hover {
+    color: #906;
    }
 </style>
 </html>
