@@ -200,7 +200,7 @@
     ]
     new_balls = [];
     for ( let i = 0; i < ball_descriptions.length; i++ ) {
-      new_balls = new_balls.concat([])
+      new_balls = new_balls.concat([])///////
     }
   }
 
@@ -352,8 +352,8 @@
       if ( balls[i]!= undefined ) {
         vx = b.getAttribute("vx")
         vy = b.getAttribute("vy")
-        vx = vx*(.999)
-        vy = vy*(.999)
+        vx = vx*(.997)
+        vy = vy*(.997)
         b.setAttribute("vx", vx)
         b.setAttribute("vy", vy)
       }

@@ -6,14 +6,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="95%" height="90%" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
   <defs>
     <clipPath id="cut_to_view">
-      <rect x="0" y="0" width="2048" height="2048"/>
+      <rect id="view_frame" x="0" y="0" width="2048" height="2048"/>
     </clipPath>
   </defs>
   <g class="svg_frame" clip-path="url(#cut_to_view)">
-    <rect x="0" y="0" width="2048" height="2048" fill="#303"/>
+    <rect x="0" y="0" width="256" height="2048" fill="#408"/>
+    <rect x="512" y="0" width="256" height="2048" fill="#408"/>
+    <rect x="1024" y="0" width="256" height="2048" fill="#408"/>
+    <rect x="1536" y="0" width="256" height="2048" fill="#408"/>
     <rect class="floor" x="-10240" y="1920" width="20480" height="128" fill="#330"/>
-    <g class="protagonist" id="protagonist">
-      <rect x="1024" y="1888" width="20" height="32" fill="#f00"/>
+    <rect class="floor" x="-1024" y="1920" width="1024" height="128" fill="none" />
+    <g class="protagonist" id="protagonist" >
+      <rect id="protagonist_rect" x="1024" y="1888" width="20" height="32" fill="#f00"/>
     </g>
   </g>  
 </svg>
@@ -27,26 +31,102 @@ downs = [ 83, 40, 98 ];
 lefts = [ 65, 37, 100 ];
 rights = [ 68, 39, 102 ];
 
+player_state = 
+{
+  "going_left": false,
+  "going_right": false
+};
+
+function bind_to_clock_tick(ticked_action, millisecond_step) {
+    function tick() {
+      // ticked_action -> bool (weitermachen oder nicht?)
+      var cancel_tick = ticked_action(millisecond_step);
+      var now = Date.now();
+      if ( !cancel_tick ) {
+        //if not cancelled, schedule next tick
+        setTimeout(tick, millisecond_step - (now%millisecond_step));
+      }
+    }
+    tick()
+  }
+
+function scroll_view(ms_step) {
+  scroll_speed = 10;
+  svg = document.getElementsByTagName("svg")[0];
+  view_frame = document.getElementById("view_frame");  
+  x = 1*view_frame.getAttribute('x');
+  if ( player_state.going_left ) {
+    x -= 1*scroll_speed;
+  } else if (player_state.going_right) {
+    x += 1*scroll_speed;
+  }
+  view_frame.setAttribute("x",x);
+  svg.setAttribute("viewBox",`${x} 0 2048 2048`);
+  protagonist_rect = document.getElementById("protagonist_rect");
+  x = 1*protagonist_rect.getAttribute('x');
+  if ( player_state.going_left ) {
+    x -= 1*scroll_speed;
+  } else if (player_state.going_right) {
+    x += 1*scroll_speed;
+  }
+  protagonist_rect.setAttribute("x",x);
+  return false;
+}
+
+bind_to_clock_tick(scroll_view,5);
+
+//document.addEventListener("load",)
+
 document.addEventListener("keydown",
 (evt)=>
 {
   if 
   (ups.indexOf(evt.keyCode) > -1 ) {
-    console.log('up');
+    //console.log('up');
   } else if 
   ( downs.indexOf(evt.keyCode) > -1 ) {
-    console.log("down");
+    //console.log("down");
   } else if 
   ( lefts.indexOf(evt.keyCode) > -1 ) {
-    console.log("left");
+    //console.log("left");
+    player_state.going_left = true;
+    player_state.going_right = false;
   } else if 
   ( rights.indexOf(evt.keyCode) > -1 ) {
-    console.log("right");
+    //console.log("right");    
+    player_state.going_left = false;
+    player_state.going_right = true;
   } else {
     //console.log(evt.keyCode);
   }
 }
 )
+
+document.addEventListener("keyup",
+(evt)=>
+{
+  if 
+  (ups.indexOf(evt.keyCode) > -1 ) {
+    //console.log('up');
+  } else if 
+  ( downs.indexOf(evt.keyCode) > -1 ) {
+    //console.log("down");
+  } else if 
+  ( lefts.indexOf(evt.keyCode) > -1 ) {
+    //console.log("left");    
+    player_state.going_left = false;
+    player_state.going_right = false;
+  } else if 
+  ( rights.indexOf(evt.keyCode) > -1 ) {
+    //console.log("right");
+    player_state.going_left = false;
+    player_state.going_right = false;    
+  } else {
+    //console.log(evt.keyCode);
+  }
+}
+)
+
 
 </script>
 <style type="text/css">
