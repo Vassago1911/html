@@ -10,7 +10,7 @@
     </p>
     <ul class="navbar-item mono">
     <li class="navbar-item mono">
-        <a> Reset Game </a>
+        <a onclick="generate_gorilla_skyline()"> Reset Game </a>
     </li>
     <li class="navbar-item mono" style="visibility:hidden;">
         <a> Reset Game </a>
@@ -61,26 +61,25 @@
       <rect id="view_frame" x="0" y="0" width="2048" height="2048"/>
     </clipPath>
   </defs>
-  <g class="svg_frame" clip-path="url(#cut_to_view)">
-    <rect x="0" y="0" width="256" height="2048"    fill="#102"/>
-    <rect x="512" y="0" width="256" height="2048"  fill="#102"/>
-    <rect x="1024" y="0" width="256" height="2048" fill="#102"/>
-    <rect x="1536" y="0" width="256" height="2048" fill="#102"/>
-    <rect x="256" y="0" width="256" height="2048"  fill="#121"/>
-    <rect x="768" y="0" width="256" height="2048"  fill="#121"/>
-    <rect x="1280" y="0" width="256" height="2048" fill="#121"/>
-    <rect x="1792" y="0" width="256" height="2048" fill="#121"/>    
-    <rect class="floor" x="-10240" y="1920" width="20480" height="128" fill="#330"/>    
-    <g class="players player1 p1" id="p1" >
-      <rect id="p1_rect" x="512" y="1888" width="20" height="32" fill="#f00"/>
-    </g>
-    <g class="players player2 p2" id="p2" >
-      <rect id="p2_rect" x="1536" y="1888" width="20" height="32" fill="#079"/>
-    </g>
+  <g class="svg_frame" clip-path="url(#cut_to_view)"> 
+    <circle class="sun_moon" cx="1024" cy="128" r="256"
+            stroke="#333" stroke-width="16" stroke-opacity=".5" ></circle>
   </g>  
 </svg>
 </body>
 <script type="text/javascript">
+function get_all_scrapers(){
+    scrapers = [...document.getElementsByClassName("gen_re")];
+    scrapers.sort(function(s1,s2){
+        s1_x = parseInt(s1.getAttribute("x"));
+        s2_x = parseInt(s2.getAttribute("x"));
+        if ( s1_x < s2_x ) return -1;
+        if ( s1_x > s2_x ) return  1;
+        return 0;
+    })
+    return scrapers;
+}    
+
 player1_rect = document.getElementById("p1")
 player2_rect = document.getElementById("p2")
 svg = document.getElementsByTagName("svg")[0]
@@ -129,6 +128,13 @@ function random_rgb() {
                ',' + o(r()*s + offset ) + ')';
 }
 
+function random_rgb_light() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + 
+               ',' + o(r()*s + offset ) + ',.25)';
+}
+
 function spawn_skyscraper(l,r,h) {
     //svg = document.getElementsByTagName("svg")[0];
     svg_frame = document.getElementsByClassName("svg_frame")[0]
@@ -138,18 +144,26 @@ function spawn_skyscraper(l,r,h) {
     re.setAttribute("width",r-l);
     re.setAttribute("height",h);
     re.setAttribute("fill",random_rgb());
+    re.classList.add("gen_re");
     svg_frame.appendChild(re);
 }
 
 function generate_gorilla_skyline() {
+    //clear previous skyline
+    sun_moon = document.getElementsByClassName("sun_moon")[0];
+    sun_moon.setAttribute("fill",random_rgb_light());
+    current_scrapers = get_all_scrapers();
+    for ( let i = 0; i < current_scrapers.length; i++){
+        current_scrapers[i].remove();
+    }
     res_pts = [];
     l0 = -10;
     r0 = 0;
     while ( r0 < 2060 ) {
-        r0 = l0 + 40 + Math.floor(Math.random()*Math.random()*320);
+        r0 = l0 + 80 + Math.floor(Math.random()*Math.random()*340);
         height = 1024 + Math.floor( 480*2*(Math.random()-.5) )
         res_pts = res_pts.concat([[l0,r0,height]]);
-        l0 = r0 + 2 + Math.floor(Math.random()*5);        
+        l0 = r0;
     }
     //return res_pts   
     for ( let i=0; i<res_pts.length; i++){
@@ -159,7 +173,49 @@ function generate_gorilla_skyline() {
         h = params[2];
         spawn_skyscraper(l,r,h);
     } 
+    place_players();
 }
+
+function spawn_player(x,y){
+    svg_frame = document.getElementsByClassName("svg_frame")[0]
+    c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+    c.setAttribute("cx",x);
+    c.setAttribute("cy",y-32);
+    c.setAttribute("r",16);
+    c.setAttribute("fill","#706");
+    c.classList.add("players");
+    svg_frame.appendChild(c);
+}
+
+function place_players(){   
+    players = [...document.getElementsByClassName("players")];
+    for (let i = 0; i<players.length; i++){
+        players[i].remove();
+    }
+    function find_scraper_ix_for_x(x){
+        scrapers = get_all_scrapers();
+        for ( let i = 0; i<scrapers.length; i++){
+            scraper = scrapers[i]
+            l = 1*scraper.getAttribute("x");
+            r = l+1*scraper.getAttribute("width");
+            if ( ( l<x ) && (r>=x) ) {
+                return i;
+            }
+        }
+    }
+    scrapers = get_all_scrapers();
+    p1_x = 256 + Math.floor(256*Math.random());
+    p2_x = 1920 - Math.floor(256*Math.random());
+    p1_ix = find_scraper_ix_for_x(p1_x);
+    p2_ix = find_scraper_ix_for_x(p2_x);
+    p1_x = 1*scrapers[p1_ix].getAttribute("x") + scrapers[p1_ix].getAttribute("width")/2;
+    p2_x = 1*scrapers[p2_ix].getAttribute("x") + scrapers[p2_ix].getAttribute("width")/2;
+    p1_y = 1*scrapers[p1_ix].getAttribute("y") + 16;
+    p2_y = 1*scrapers[p2_ix].getAttribute("y") + 16;
+    spawn_player(p1_x,p1_y);
+    spawn_player(p2_x,p2_y);
+}
+generate_gorilla_skyline();
 </script>
 <link rel="stylesheet" type="text/css" href="./bulma.css" />
 <style type="text/css">
