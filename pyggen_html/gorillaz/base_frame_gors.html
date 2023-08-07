@@ -68,6 +68,7 @@
 </svg>
 </body>
 <script type="text/javascript">
+var math_natural_sign = -1;
 function get_all_scrapers(){
     scrapers = [...document.getElementsByClassName("gen_re")];
     scrapers.sort(function(s1,s2){
@@ -85,6 +86,7 @@ function get_all_players(){
 }
 
 function bind_to_clock_tick(ticked_action, millisecond_step) {
+    // ticked_action(millisecond_step) -> continue ticks?
     function tick() {
       // ticked_action -> bool (weitermachen oder nicht?)
       var cancel_tick = ticked_action(millisecond_step);
@@ -217,9 +219,9 @@ function get_overlay_click_coods(evt) {
     my_cx = 1*this.getAttribute("cx");
     my_cy = 1*this.getAttribute("cy");
 
-    console.log( last_mouse_up_coods )
-    console.log( last_mouse_up_coods[0] - my_cx );
-    console.log( last_mouse_up_coods[1] - my_cy );
+    //console.log( last_mouse_up_coods )
+    //console.log( last_mouse_up_coods[0] - my_cx );
+    //console.log( last_mouse_up_coods[1] - my_cy );
 
     x = my_cx;
     y = my_cy;
@@ -246,20 +248,51 @@ function createbullet(x,y,dx,dy) {
     svg.appendChild(c);
 }
 
+function move_bullet(dt_ms) {
+    c = 0.02;
+//    cancel_following_tick = false;    
+    bullet = document.getElementsByClassName("bullet")[0]
+    if ( bullet.getAttribute("vx") == undefined ) {
+        bullet.setAttribute("vx",dx)
+    }
+    if ( bullet.getAttribute("vy") == undefined ) {
+        bullet.setAttribute("vy",dy)
+    }
+    cx = 1*bullet.getAttribute("cx")+c*dt_ms*bullet.getAttribute("vx")/50
+    cy = 1*bullet.getAttribute("cy")+c*dt_ms*bullet.getAttribute("vy")/50-math_natural_sign
+    vx = 1*bullet.getAttribute("vx")+c*dt_ms*bullet.getAttribute("vx")/625
+    vy = 1*bullet.getAttribute("vy")+c*dt_ms*bullet.getAttribute("vy")/625-math_natural_sign
+    bullet.setAttribute("cx",cx)
+    bullet.setAttribute("cy",cy)
+    bullet.setAttribute("vx",vx)
+    bullet.setAttribute("vy",vy)
+    if ( ( cy < 0 ) || ( cx < 0 ) || ( cx > 2048 ) ) {
+        bullet.remove()
+    }    
+    if ( ( cx >= 2048 ) && ( cx < 0 ) && ( cx > 2048 ) ) {
+        setTimeout(move_bullet,250,dt_ms);
+    }
+}
+
 function shoot(x,y,dx,dy) {
-    createbullet(x+dx,y+dy,dx,dy);
+    createbullet(x+dx,y+dy,dx,dy);  
+    move_bullet(250);
+    //bind_to_clock_tick(move_bullet,5);
+    //curve = generate_bullet_curve(x,y,dx/512,dy/512);
     // movebullet(x,y,dx,dy);
     // destroybullet(x,y,dx,dy);
     // explodeatcollision(x,y,dx,dy); // add black circle as banana portal
 }
 
 function switch_player_turn() {
+    wind_mu = 0 //( 2*Math.random()-1 ) / 1000
     if ( player_turn == 0 ) {
         player_turn = 1;        
     } else {
         player_turn = 0;
     }        
     setup_player_turn_ui();
+    console.log(wind_mu);
     return;        
 }
 
@@ -284,6 +317,57 @@ function generate_aim_line(x,y,dx,dy){
     svg.appendChild(aim_line);
 }
 
+function draw_bullet_curve(curve_x_y_dx_dy_array) {
+    curve_path = document.createElementNS( "http://www.w3.org/2000/svg", "path" );    
+    arr = curve_x_y_dx_dy_array;
+    console.log(arr);
+    x0 = arr[0].x
+    y0 = arr[0].y
+    curve_path.setAttribute("d",`M ${x0} ${y0} `)
+    cur_path = curve_path.getAttribute("d")
+    for ( let i = 0 ; i < arr.length ; i++ ){
+        xi = arr[i].x
+        yi = arr[i].y        
+        cur_path = cur_path + " L "+`${xi} ${yi}`
+    }
+    curve_path.setAttribute("d",cur_path)
+    curve_path.setAttribute("stroke-width",4)
+    if ( player_turn == 0 ) {
+        curve_path.setAttribute("stroke","#604")
+    } else {
+        curve_path.setAttribute("stroke","#064")
+    }
+    curve_path.classList.add(`bullet_curve_player${player_turn}`)
+    svg_frame = document.getElementsByClassName("svg_frame")[0]
+    svg.appendChild(curve_path);
+}
+
+function generate_bullet_curve(x,y,dx,dy){
+    function euler_next(x,y,dx,dy,step_size){
+        nv = Math.sqrt(dx*dx+dy*dy);
+        x_new = x + step_size*dx
+        y_new = y + step_size*dy
+        dx_new = dx + step_size*wind_mu*nv*dx
+        dy_new = dy + step_size*wind_mu*nv*dy - math_natural_sign*.1 //- step_size*.01 gravity-term
+        tmp = {"x":x_new,"y":y_new,"dx":dx_new,"dy":dy_new}
+        //console.log(tmp)
+        return tmp
+    }
+    console.log(wind_mu);
+    curve = [{"x":x,"y":y,"dx":dx,"dy": -dy},];
+    xt = x; yt = y; dxt = dx; dyt = dy;
+    while ( ( yt > 0 ) && ( xt > 0 ) && ( xt < 2048) ) {
+        tmp = euler_next(xt,yt,dxt,dyt,.0069)
+        curve = curve.concat([tmp,])
+        xt = tmp.x
+        yt = tmp.y
+        dxt = tmp.dx
+        dyt = tmp.dy
+    }
+    draw_bullet_curve(curve);
+    return curve;
+}
+
 function setup_player_turn_ui(){    
     old_overlay = document.getElementsByClassName("overlay")
     for ( let i = 0; i < old_overlay.length; i++ ){
@@ -305,8 +389,8 @@ function setup_player_turn_ui(){
 }
 
 generate_gorilla_skyline();
-var player_turn = 0;
-setup_player_turn_ui();
+var player_turn = 1;
+switch_player_turn();
 </script>
 <link rel="stylesheet" type="text/css" href="./bulma.css" />
 <style type="text/css">
