@@ -3,33 +3,33 @@
 <head>
 </head>
 <body>
-<nav class="navbar is-dark is-fixed-bottom">
+<nav class="navbar is-dark is-fixed-bottom has-shadow">
 <div class="navbar-start">
     <p class="navbar-item mono">
-        MAIN MENU
+        MY GORILLAZ
     </p>
     <ul class="navbar-item mono">
     <li class="navbar-item mono">
         <a> Reset Game </a>
     </li>
-    <li class="navbar-item mono">
+    <li class="navbar-item mono" style="visibility:hidden;">
         <a> Reset Game </a>
     </li>
-    <li class="navbar-item mono">
+    <li class="navbar-item mono" style="visibility:hidden;">
         <a> Reset Game </a>
     </li>
     </ul>
 </div>
 <div class="navbar-end">
     <ul class="navbar-item mono">
-        <li><a>Settings</a></li>        
+        <li><a class="right_nav_item">Settings</a></li>        
     </ul>
     <ul class="navbar-item mono">
-        <li><a>Quit</a></li>
+        <li><a class="right_nav_item">Quit</a></li>
     </ul>
 </div>    
 </nav>
-<nav class="navbar is-black">
+<nav class="navbar is-black" style="visibility:hidden;">
     <div class="navbar-start">
         <p class="navbar-item mono">
             MAIN MENU
@@ -38,10 +38,10 @@
         <li class="navbar-item mono">
             <a> Reset Game </a>
         </li>
-        <li class="navbar-item mono">
+        <li class="navbar-item mono" >
             <a> Reset Game </a>
         </li>
-        <li class="navbar-item mono">
+        <li class="navbar-item mono" >
             <a> Reset Game </a>
         </li>
         </ul>
@@ -62,10 +62,14 @@
     </clipPath>
   </defs>
   <g class="svg_frame" clip-path="url(#cut_to_view)">
-    <rect x="0" y="0" width="256" height="2048" fill="#408"/>
-    <rect x="512" y="0" width="256" height="2048" fill="#408"/>
-    <rect x="1024" y="0" width="256" height="2048" fill="#408"/>
-    <rect x="1536" y="0" width="256" height="2048" fill="#408"/>
+    <rect x="0" y="0" width="256" height="2048"    fill="#102"/>
+    <rect x="512" y="0" width="256" height="2048"  fill="#102"/>
+    <rect x="1024" y="0" width="256" height="2048" fill="#102"/>
+    <rect x="1536" y="0" width="256" height="2048" fill="#102"/>
+    <rect x="256" y="0" width="256" height="2048"  fill="#121"/>
+    <rect x="768" y="0" width="256" height="2048"  fill="#121"/>
+    <rect x="1280" y="0" width="256" height="2048" fill="#121"/>
+    <rect x="1792" y="0" width="256" height="2048" fill="#121"/>    
     <rect class="floor" x="-10240" y="1920" width="20480" height="128" fill="#330"/>    
     <g class="players player1 p1" id="p1" >
       <rect id="p1_rect" x="512" y="1888" width="20" height="32" fill="#f00"/>
@@ -118,6 +122,44 @@ function bind_to_clock_tick(ticked_action, millisecond_step) {
 
 //bind_to_clock_tick(scroll_view,5);
 
+function random_rgb() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + 
+               ',' + o(r()*s + offset ) + ')';
+}
+
+function spawn_skyscraper(l,r,h) {
+    //svg = document.getElementsByTagName("svg")[0];
+    svg_frame = document.getElementsByClassName("svg_frame")[0]
+    re = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+    re.setAttribute("x",l);
+    re.setAttribute("y",2048-h);
+    re.setAttribute("width",r-l);
+    re.setAttribute("height",h);
+    re.setAttribute("fill",random_rgb());
+    svg_frame.appendChild(re);
+}
+
+function generate_gorilla_skyline() {
+    res_pts = [];
+    l0 = -10;
+    r0 = 0;
+    while ( r0 < 2060 ) {
+        r0 = l0 + 40 + Math.floor(Math.random()*Math.random()*320);
+        height = 1024 + Math.floor( 480*2*(Math.random()-.5) )
+        res_pts = res_pts.concat([[l0,r0,height]]);
+        l0 = r0 + 2 + Math.floor(Math.random()*5);        
+    }
+    //return res_pts   
+    for ( let i=0; i<res_pts.length; i++){
+        params = res_pts[i];
+        l = params[0];
+        r = params[1];
+        h = params[2];
+        spawn_skyscraper(l,r,h);
+    } 
+}
 </script>
 <link rel="stylesheet" type="text/css" href="./bulma.css" />
 <style type="text/css">
@@ -141,18 +183,27 @@ function bind_to_clock_tick(ticked_action, millisecond_step) {
      background: #000;     
    }
    .navbar {
-    font: monospace;
+    font: monospace;    
    }
    .mono {
     font-family: 'Courier New', Courier, monospace;
-    font-size: max(2vh,2vw);
+    font-size: max(1vh,1vw);
     color: #ccc;
    }
    a {
-    color: #392;
+    color: rgb(16, 123, 113);
    }
    a:hover {
     color: #906;
+   }
+   .navbar-end {
+    color: #161;
+   }
+   .navbar.is-dark {
+     background-color: #222;
+   }
+   .right_nav_item {
+    color: rgb(84,74,73);
    }
 </style>
 </html>
