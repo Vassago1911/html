@@ -78,33 +78,11 @@ function get_all_scrapers(){
         return 0;
     })
     return scrapers;
-}    
-
-player1_rect = document.getElementById("p1")
-player2_rect = document.getElementById("p2")
-svg = document.getElementsByTagName("svg")[0]
-pt = svg.createSVGPoint();  // Created once for document
-function mouse_up_svg_coods(evt) {
-    pt.x = evt.clientX;
-    pt.y = evt.clientY;
-    // The cursor point, translated into svg coordinates
-    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
-    cursorpt.x = parseInt(cursorpt.x);
-    cursorpt.y = parseInt(cursorpt.y);
-    last_mouse_up_coods = [cursorpt.x,cursorpt.y];
-}
-function mouse_down_svg_coods(evt) {
-    pt.x = evt.clientX;
-    pt.y = evt.clientY;
-    // The cursor point, translated into svg coordinates
-    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
-    cursorpt.x = parseInt(cursorpt.x);
-    cursorpt.y = parseInt(cursorpt.y);
-    last_mouse_down_coods = [cursorpt.x,cursorpt.y];
 }
 
-svg.addEventListener("mouseup",mouse_up_svg_coods)
-svg.addEventListener("mousedown",mouse_down_svg_coods)
+function get_all_players(){
+    return [...document.getElementsByClassName("players")];
+}
 
 function bind_to_clock_tick(ticked_action, millisecond_step) {
     function tick() {
@@ -145,7 +123,7 @@ function spawn_skyscraper(l,r,h) {
     re.setAttribute("height",h);
     re.setAttribute("fill",random_rgb());
     re.setAttribute("stroke-width",8);
-    re.setAttribute("stroke","#000")
+    re.setAttribute("stroke","#111")
     re.classList.add("gen_re");
     svg_frame.appendChild(re);
 }
@@ -184,7 +162,7 @@ function spawn_player(x,y){
     c.setAttribute("cx",x);
     c.setAttribute("cy",y-32);
     c.setAttribute("r",16);
-    players = [...document.getElementsByClassName("players")];
+    players = get_all_players();
     if (players.length > 0) {
         c.setAttribute("fill","#376");
     } else {
@@ -195,7 +173,7 @@ function spawn_player(x,y){
 }
 
 function place_players(){   
-    players = [...document.getElementsByClassName("players")];
+    players = get_all_players();
     for (let i = 0; i<players.length; i++){
         players[i].remove();
     }
@@ -224,7 +202,111 @@ function place_players(){
     spawn_player(p1_x,p1_y);
     spawn_player(p2_x,p2_y);
 }
+
+svg = document.getElementsByTagName("svg")[0]
+pt = svg.createSVGPoint();  // Created once for document
+function get_overlay_click_coods(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    last_mouse_up_coods = [cursorpt.x,cursorpt.y];
+
+    my_cx = 1*this.getAttribute("cx");
+    my_cy = 1*this.getAttribute("cy");
+
+    console.log( last_mouse_up_coods )
+    console.log( last_mouse_up_coods[0] - my_cx );
+    console.log( last_mouse_up_coods[1] - my_cy );
+
+    x = my_cx;
+    y = my_cy;
+    dx = last_mouse_up_coods[0] - my_cx;
+    dy = last_mouse_up_coods[1] - my_cy;
+
+    generate_aim_line(x,y,dx,dy);
+    shoot(x,y,dx,dy);
+    switch_player_turn();
+}
+
+function createbullet(x,y,dx,dy) {
+    bullets = document.getElementsByClassName("bullet")
+    for ( let i = 0; i < bullets.length; i++ ) {
+        bullets[i].remove();
+    }
+    c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+    c.setAttribute("cx",x);
+    c.setAttribute("cy",y);
+    c.setAttribute("r",8);
+    c.setAttribute("fill","#fff");
+    c.classList.add("bullet");
+    svg_frame = document.getElementsByClassName("svg_frame")[0]
+    svg.appendChild(c);
+}
+
+function shoot(x,y,dx,dy) {
+    createbullet(x+dx,y+dy,dx,dy);
+    // movebullet(x,y,dx,dy);
+    // destroybullet(x,y,dx,dy);
+    // explodeatcollision(x,y,dx,dy); // add black circle as banana portal
+}
+
+function switch_player_turn() {
+    if ( player_turn == 0 ) {
+        player_turn = 1;        
+    } else {
+        player_turn = 0;
+    }        
+    setup_player_turn_ui();
+    return;        
+}
+
+function generate_aim_line(x,y,dx,dy){
+    former_aim_lines = document.getElementsByClassName(`aim_line_player${player_turn}`);
+    for ( let i = 0; i < former_aim_lines.length ; i++ ) {
+        former_aim_lines[i].remove()
+    }
+    aim_line = document.createElementNS( "http://www.w3.org/2000/svg", "line" );
+    aim_line.setAttribute("x1",x + Math.sign(dx)*20)
+    aim_line.setAttribute("y1",y - 8)
+    aim_line.setAttribute("x2",x + dx)
+    aim_line.setAttribute("y2",y + dy)
+    aim_line.setAttribute("stroke-width",4)
+    if ( player_turn == 0 ) {
+        aim_line.setAttribute("stroke","#604")
+    } else {
+        aim_line.setAttribute("stroke","#064")
+    }
+    aim_line.classList.add(`aim_line_player${player_turn}`)
+    svg_frame = document.getElementsByClassName("svg_frame")[0]
+    svg.appendChild(aim_line);
+}
+
+function setup_player_turn_ui(){    
+    old_overlay = document.getElementsByClassName("overlay")
+    for ( let i = 0; i < old_overlay.length; i++ ){
+        old_overlay[i].remove();
+    }
+    overlay = document.createElementNS( "http://www.w3.org/2000/svg", "circle" );
+    players = get_all_players();
+    active_player = players[player_turn];
+    overlay.setAttribute("cx",active_player.getAttribute("cx"));
+    overlay.setAttribute("cy",active_player.getAttribute("cy"));
+    overlay.setAttribute("r",256);
+    overlay.setAttribute("fill","rgba(96,96,64,0)");
+    overlay.setAttribute("stroke-width",4);
+    overlay.setAttribute("stroke","rgba(96,96,128,.2)");
+    overlay.classList.add("overlay")
+    overlay.addEventListener("click",get_overlay_click_coods);
+    svg_frame = document.getElementsByClassName("svg_frame")[0]
+    svg.appendChild(overlay);
+}
+
 generate_gorilla_skyline();
+var player_turn = 0;
+setup_player_turn_ui();
 </script>
 <link rel="stylesheet" type="text/css" href="./bulma.css" />
 <style type="text/css">
