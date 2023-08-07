@@ -144,6 +144,8 @@ function spawn_skyscraper(l,r,h) {
     re.setAttribute("width",r-l);
     re.setAttribute("height",h);
     re.setAttribute("fill",random_rgb());
+    re.setAttribute("stroke-width",8);
+    re.setAttribute("stroke","#000")
     re.classList.add("gen_re");
     svg_frame.appendChild(re);
 }
@@ -160,7 +162,7 @@ function generate_gorilla_skyline() {
     l0 = -10;
     r0 = 0;
     while ( r0 < 2060 ) {
-        r0 = l0 + 80 + Math.floor(Math.random()*Math.random()*340);
+        r0 = l0 + 120 + Math.floor(Math.random()*280);
         height = 1024 + Math.floor( 480*2*(Math.random()-.5) )
         res_pts = res_pts.concat([[l0,r0,height]]);
         l0 = r0;
@@ -182,7 +184,12 @@ function spawn_player(x,y){
     c.setAttribute("cx",x);
     c.setAttribute("cy",y-32);
     c.setAttribute("r",16);
-    c.setAttribute("fill","#706");
+    players = [...document.getElementsByClassName("players")];
+    if (players.length > 0) {
+        c.setAttribute("fill","#376");
+    } else {
+        c.setAttribute("fill","#60a");
+    }        
     c.classList.add("players");
     svg_frame.appendChild(c);
 }
@@ -210,6 +217,8 @@ function place_players(){
     p2_ix = find_scraper_ix_for_x(p2_x);
     p1_x = 1*scrapers[p1_ix].getAttribute("x") + scrapers[p1_ix].getAttribute("width")/2;
     p2_x = 1*scrapers[p2_ix].getAttribute("x") + scrapers[p2_ix].getAttribute("width")/2;
+    p1_x = Math.max(64,p1_x);
+    p2_x = Math.min(2000,p2_x);
     p1_y = 1*scrapers[p1_ix].getAttribute("y") + 16;
     p2_y = 1*scrapers[p2_ix].getAttribute("y") + 16;
     spawn_player(p1_x,p1_y);
