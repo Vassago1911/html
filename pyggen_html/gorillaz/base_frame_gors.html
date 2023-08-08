@@ -228,9 +228,9 @@ function get_overlay_click_coods(evt) {
     dx = last_mouse_up_coods[0] - my_cx;
     dy = last_mouse_up_coods[1] - my_cy;
 
-    scale_factor = 4
+    scale_factor = 4.5
 
-    generate_aim_line(x,y,dx,dy);
+    //generate_aim_line(x,y,dx,dy);
     shoot(x,y,scale_factor*dx,scale_factor*dy);
     switch_player_turn();
 }
@@ -275,7 +275,7 @@ function move_bullet(dt_ms) {
     }
     if ( ( cy >= 2048 ) || ( cx < 0 ) || ( cx > 2048 ) ) {
         bullet.remove()
-        console.log("bullet left playing field");
+        //console.log("bullet left playing field");
         return;
     }    
     if ( ( cy <= 2048 ) && ( cx >= 0 ) && ( cx <= 2048 ) ) {
@@ -290,14 +290,14 @@ function shoot(x,y,dx,dy) {
 }
 
 function switch_player_turn() {
-    wind_mu = 0 //( 2*Math.random()-1 ) / 1000
+    //wind_mu = parseInt(Math.floor(20*( 2*Math.random()-1 )))
     if ( player_turn == 0 ) {
         player_turn = 1;        
     } else {
         player_turn = 0;
     }        
     setup_player_turn_ui();
-    console.log(wind_mu);
+    //console.log(wind_mu);
     return;        
 }
 
