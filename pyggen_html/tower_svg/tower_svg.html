@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
+    <title>colourful towers</title>
 </head>
 <style type="text/css">
     html,body {
@@ -23,7 +23,7 @@
         left: 5%;
         width: 90%;
         height: 90%;
-        background: #000;
+        background: #051505;
     }
 </style>
 <body>
@@ -110,8 +110,21 @@
                 0 0 1 0 0
                 0 0 0 1 0" />
 </filter>
+<g id='base_hex'>
+    <polygon points="2,0 1,2 -1,2 -2,0 -1,-2 1,-2" fill="#333" transform="scale(1 .75) scale(128) translate(4.1, 9.5) "></polygon>
+</g>
+<g id='base_tower_light'>
+    <polygon points="549,222
+                     539,242
+                     519,242
+                     509,222
+                     519,202
+                     539,202" fill="#666"></polygon>
+</g>
 <g id='tower'>
+    <use xlink:href="#base_hex"></use>
     <image href='res_images/tower_diamond_spin/tower.png' />
+    <use xlink:href="#base_tower_light" ></use>
 </g>
 <g id='jewel0'>
     <image href='res_images/tower_diamond_spin/0001.png' />
@@ -282,54 +295,61 @@
 <use xlink:href="#jewel23"></use>
 </g>
 </defs>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=-56 y=0 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=90 y=0 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=236 y=0 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=382 y=0 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=528 y=0 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=674 y=0 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=18 y=128 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=164 y=128 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=310 y=128 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=456 y=128 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=602 y=128 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=748 y=128 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=-56 y=256 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=90 y=256 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=236 y=256 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=382 y=256 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=528 y=256 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=674 y=256 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=18 y=384 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=164 y=384 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=310 y=384 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=456 y=384 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=602 y=384 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=748 y=384 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=-56 y=512 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=90 y=512 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=236 y=512 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=382 y=512 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=528 y=512 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=674 y=512 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=18 y=640 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=164 y=640 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=310 y=640 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=456 y=640 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=602 y=640 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=748 y=640 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=-56 y=768 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=90 y=768 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=236 y=768 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=382 y=768 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=528 y=768 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=674 y=768 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=18 y=896 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=164 y=896 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=310 y=896 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=456 y=896 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=602 y=896 ></use>
-<use xlink:href="#tower_jewel23" class="tower_jewel" x=748 y=896 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=-50 y=0></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=142 y=0 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=334 y=0 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=526 y=0 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=718 y=0 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=910 y=0 ></use>
+
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=+46 y=48 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=238 y=48 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=430 y=48 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=622 y=48 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=814 y=48 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=1006 y=48 ></use>
+
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=-50 y=96 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=142 y=96 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=334 y=96 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=526 y=96 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=718 y=96 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=910 y=96 ></use>
+
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=+46 y=144 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=238 y=144 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=430 y=144 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=622 y=144 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=814 y=144 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=1006 y=144 ></use>
+
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=-50 y=192 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=142 y=192 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=334 y=192 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=526 y=192 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=718 y=192 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=910 y=192 ></use>
+
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=+46 y=240 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=238 y=240 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=430 y=240 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=622 y=240 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=814 y=240 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=1006 y=240 ></use>
+
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=-50 y=288 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=142 y=288 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=334 y=288 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=526 y=288 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=718 y=288 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=910 y=288 ></use>
+
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=+46 y=336 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=238 y=336 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=430 y=336 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=622 y=336 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=814 y=336 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" filter="url(#color_me_default)" x=1006 y=336 ></use>
 </svg>
 </body>
 <script type="text/javascript">
@@ -347,6 +367,20 @@ function bind_to_clock_tick(ticked_action, millisecond_step) {
       }
     }
     tick()
+}
+
+function eliminate_towers() {
+    original_towers_length = towers.length;
+    for ( let i = 0; i < original_towers_length; i++) {
+        trs = document.getElementsByClassName('tower_jewel');
+        for ( let j = 0; j < trs.length; j++ ){
+            if (Math.random() > .95)
+            {
+                trs[j].remove();
+                break;
+            }
+        }
+    }
 }
 
 function set_colours() {
@@ -374,11 +408,13 @@ function set_colours() {
         } else if ( colour_coin > 25 ) {
             t.setAttribute('filter',"url(#color_me_teal)")
             continue
-        } else if ( colour_coin > 20 ) {
+        } else {
             t.setAttribute('filter',"url(#color_me_purple)")
             continue
         }
     }
+
+    //eliminate_towers();
 }
 
 function turn_jewels(dt) {
