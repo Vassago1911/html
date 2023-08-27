@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+</head>
+<style type="text/css">
+    html,body {
+        font: monospace;
+    }
+    html {
+        background-color: #000;
+    }
+    body {
+        margin: 0;
+    }
+    svg {
+        display: block;
+        border: 1px solid #ccc;
+        position: absolute;
+        top: 5%;
+        left: 5%;
+        width: 90%;
+        height: 90%;
+        background: #000;
+    }
+</style>
+<body>
+<svg viewport="0 0 2048 2048">
+<defs>
+<filter id='color_me_blue'>
+    <feColorMatrix
+        in="SourceGraphic"
+        type="matrix"
+        values=".2 0 0 0    0
+                0 .2 0  0 0
+                .35 .35 .25 0 0
+                0 0 0 1    0" />
+</filter>
+<filter id='color_me_red'>
+    <feColorMatrix
+        in="SourceGraphic"
+        type="matrix"
+        values=".25 .35 .35 0    0
+                0 .2 0  0 0
+                0 0 .2  0 0
+                0 0 0 1    0" />
+</filter>
+<filter id='color_me_green'>
+    <feColorMatrix
+        in="SourceGraphic"
+        type="matrix"
+        values=".1 0 0 0    0
+                .35 .3 .35  0 0
+                0 0 .1 0 0
+                0 0 0 1    0" />
+</filter>
+<filter id='color_me_purple'>
+    <feColorMatrix
+        in="SourceGraphic"
+        type="matrix"
+        values=".35 .25 .25 0    0
+                0 .1 0  0 0
+                .25 .25 .45  0 0
+                0 0 0 1    0" />
+</filter>
+<filter id='color_me_orange'>
+   <feColorMatrix
+        in="SourceGraphic"
+        type="matrix"
+        values="0 .5 .5 0    0
+                .1 .25 .1  0 0
+                0 0 .1 0 0
+                0 0 0 1    0" />
+</filter>
+<filter id='color_me_yellow'>
+    <feColorMatrix
+        in="SourceGraphic"
+        type="matrix"
+        values=".35 .25 .25 0    0
+                .25 .45 .25  0 0
+                0 0 .1 0 0
+                0 0 0 1    0" />
+</filter>
+<filter id='color_me_pink'>
+    <feColorMatrix
+        in="SourceGraphic"
+        type="matrix"
+        values=".2 .5 .6 0    0
+                 0 .1  0  0 0
+                .2 .2 .2 0 0
+                0 0 0 1    0" />
+</filter>
+<filter id='color_me_teal'>
+    <feColorMatrix
+        in="SourceGraphic"
+        type="matrix"
+        values=".1 0 0 0    0
+                .2 .2 .2  0 0
+                .2 .2 .4 0 0
+                0 0 0 1    0" />
+</filter>
+<filter id='color_me_default'>
+    <feColorMatrix
+        in="SourceGraphic"
+        type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 1 0" />
+</filter>
+<g id='tower'>
+    <image href='res_images/tower_diamond_spin/tower.png' />
+</g>
+<g id='jewel0'>
+    <image href='res_images/tower_diamond_spin/0001.png' />
+</g>
+<g id='jewel1'>
+    <image href='res_images/tower_diamond_spin/0002.png' />
+</g>
+<g id='jewel2'>
+    <image href='res_images/tower_diamond_spin/0003.png' />
+</g>
+<g id='jewel3'>
+    <image href='res_images/tower_diamond_spin/0004.png' />
+</g>
+<g id='jewel4'>
+    <image href='res_images/tower_diamond_spin/0005.png' />
+</g>
+<g id='jewel5'>
+    <image href='res_images/tower_diamond_spin/0006.png' />
+</g>
+<g id='jewel6'>
+    <image href='res_images/tower_diamond_spin/0007.png' />
+</g>
+<g id='jewel7'>
+    <image href='res_images/tower_diamond_spin/0008.png' />
+</g>
+<g id='jewel8'>
+    <image href='res_images/tower_diamond_spin/0009.png' />
+</g>
+<g id='jewel9'>
+    <image href='res_images/tower_diamond_spin/0010.png' />
+</g>
+<g id='jewel10'>
+    <image href='res_images/tower_diamond_spin/0011.png' />
+</g>
+<g id='jewel11'>
+    <image href='res_images/tower_diamond_spin/0012.png' />
+</g>
+<g id='jewel12'>
+    <image href='res_images/tower_diamond_spin/0013.png' />
+</g>
+<g id='jewel13'>
+    <image href='res_images/tower_diamond_spin/0014.png' />
+</g>
+<g id='jewel14'>
+    <image href='res_images/tower_diamond_spin/0015.png' />
+</g>
+<g id='jewel15'>
+    <image href='res_images/tower_diamond_spin/0016.png' />
+</g>
+<g id='jewel16'>
+    <image href='res_images/tower_diamond_spin/0017.png' />
+</g>
+<g id='jewel17'>
+    <image href='res_images/tower_diamond_spin/0018.png' />
+</g>
+<g id='jewel18'>
+    <image href='res_images/tower_diamond_spin/0019.png' />
+</g>
+<g id='jewel19'>
+    <image href='res_images/tower_diamond_spin/0020.png' />
+</g>
+<g id='jewel20'>
+    <image href='res_images/tower_diamond_spin/0021.png' />
+</g>
+<g id='jewel21'>
+    <image href='res_images/tower_diamond_spin/0022.png' />
+</g>
+<g id='jewel22'>
+    <image href='res_images/tower_diamond_spin/0023.png' />
+</g>
+<g id='jewel23'>
+    <image href='res_images/tower_diamond_spin/0024.png' />
+</g>
+<g id='tower_jewel0' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel0"></use>
+</g>
+<g id='tower_jewel1' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel1"></use>
+</g>
+<g id='tower_jewel2' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel2"></use>
+</g>
+<g id='tower_jewel3' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel3"></use>
+</g>
+<g id='tower_jewel4' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel4"></use>
+</g>
+<g id='tower_jewel5' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel5"></use>
+</g>
+<g id='tower_jewel6' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel6"></use>
+</g>
+<g id='tower_jewel7' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel7"></use>
+</g>
+<g id='tower_jewel8' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel8"></use>
+</g>
+<g id='tower_jewel9' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel9"></use>
+</g>
+<g id='tower_jewel10' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel10"></use>
+</g>
+<g id='tower_jewel11' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel11"></use>
+</g>
+<g id='tower_jewel12' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel12"></use>
+</g>
+<g id='tower_jewel13' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel13"></use>
+</g>
+<g id='tower_jewel14' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel14"></use>
+</g>
+<g id='tower_jewel15' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel15"></use>
+</g>
+<g id='tower_jewel16' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel16"></use>
+</g>
+<g id='tower_jewel17' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel17"></use>
+</g>
+<g id='tower_jewel18' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel18"></use>
+</g>
+<g id='tower_jewel19' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel19"></use>
+</g>
+<g id='tower_jewel20' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel20"></use>
+</g>
+<g id='tower_jewel21' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel21"></use>
+</g>
+<g id='tower_jewel22' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel22"></use>
+</g>
+<g id='tower_jewel23' transform='scale(.25)'>
+<use xlink:href="#tower"></use>
+<use xlink:href="#jewel23"></use>
+</g>
+</defs>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=-56 y=0 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=90 y=0 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=236 y=0 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=382 y=0 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=528 y=0 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=674 y=0 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=18 y=128 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=164 y=128 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=310 y=128 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=456 y=128 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=602 y=128 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=748 y=128 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=-56 y=256 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=90 y=256 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=236 y=256 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=382 y=256 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=528 y=256 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=674 y=256 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=18 y=384 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=164 y=384 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=310 y=384 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=456 y=384 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=602 y=384 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=748 y=384 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=-56 y=512 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=90 y=512 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=236 y=512 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=382 y=512 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=528 y=512 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=674 y=512 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=18 y=640 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=164 y=640 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=310 y=640 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=456 y=640 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=602 y=640 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=748 y=640 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=-56 y=768 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=90 y=768 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=236 y=768 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=382 y=768 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=528 y=768 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=674 y=768 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=18 y=896 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=164 y=896 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=310 y=896 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=456 y=896 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=602 y=896 ></use>
+<use xlink:href="#tower_jewel23" class="tower_jewel" x=748 y=896 ></use>
+</svg>
+</body>
+<script type="text/javascript">
+towers = document.getElementsByClassName('tower_jewel');
+jewel_state = 0;
+
+function bind_to_clock_tick(ticked_action, millisecond_step) {
+    function tick() {
+      // ticked_action -> bool (weitermachen oder nicht?)
+      var cancel_tick = ticked_action(millisecond_step);
+      var now = Date.now();
+      if ( !cancel_tick ) {
+        //if not cancelled, schedule next tick
+        setTimeout(tick, millisecond_step - (now%millisecond_step));
+      }
+    }
+    tick()
+}
+
+function set_colours() {
+    for (let i = 0; i < towers.length; i++ ) {
+        t = towers[i];
+        colour_coin = parseInt(Math.random() * 141) % 141
+        if ( colour_coin > 120 ) {
+            t.setAttribute('filter',"url(#color_me_red)")
+            continue
+        } else if ( colour_coin > 105 ) {
+            t.setAttribute('filter',"url(#color_me_pink)")
+            continue
+        } else if ( colour_coin > 100 ) {
+            t.setAttribute('filter',"url(#color_me_orange)")
+            continue
+        } else if ( colour_coin > 80 ) {
+            t.setAttribute('filter',"url(#color_me_yellow)")
+            continue
+        } else if ( colour_coin > 60 ) {
+            t.setAttribute('filter',"url(#color_me_green)")
+            continue
+        } else if ( colour_coin > 40 ) {
+            t.setAttribute('filter',"url(#color_me_blue)")
+            continue
+        } else if ( colour_coin > 25 ) {
+            t.setAttribute('filter',"url(#color_me_teal)")
+            continue
+        } else if ( colour_coin > 20 ) {
+            t.setAttribute('filter',"url(#color_me_purple)")
+            continue
+        }
+    }
+}
+
+function turn_jewels(dt) {
+    jewel_state = jewel_state + 1;
+    jewel_state = jewel_state % 24;
+    for (let i = 0; i < towers.length; i++ ) {
+        t = towers[i];
+        t.setAttribute('xlink:href','#tower_jewel'+ (( jewel_state + i ) % 24 ) );
+    }
+}
+
+set_colours();
+bind_to_clock_tick(turn_jewels,64);
+
+</script>
+</html>

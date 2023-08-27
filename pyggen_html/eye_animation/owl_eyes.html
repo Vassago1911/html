@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+</head>
+<style type="text/css">
+    html,body {
+        font: monospace;
+    }
+    html {
+        background-color: #000;
+    }
+    body {
+        margin: 0;
+    }
+    svg {
+        display: block;
+        border: 1px solid #ccc;
+        position: absolute;
+        top: 5%;
+        left: 5%;
+        width: 90%;
+        height: 90%;
+        background: #000;     
+    }
+</style> 
+<body>
+<svg viewport="0 0 2048 2048">
+<rect x="0" y="0" width="2048" height="2048" fill="#000"></rect>  
+<path 
+d="
+M 150 75
+a 75 75 0 1 0 -150 0
+a 75 75 0 1 0  150 0
+"
+fill="#888"
+/>
+</svg>
+</body>
+<script type="text/javascript">
+function bind_to_clock_tick(ticked_action, millisecond_step) {
+    // ticked_action(millisecond_step) -> continue ticks?
+    function tick() {
+      // ticked_action -> bool (weitermachen oder nicht?)
+      var cancel_tick = ticked_action(millisecond_step);
+      var now = Date.now();
+      if ( !cancel_tick ) {
+        //if not cancelled, schedule next tick
+        setTimeout(tick, millisecond_step - (now%millisecond_step));
+      }
+    }
+    tick()
+}
+function gen_eye() { 
+
+}
+
+
+</script>   
+</html>
