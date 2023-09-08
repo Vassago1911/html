@@ -3,35 +3,26 @@
 <head>
 </head>
 <body>
-<nav class="navbar is-dark is-fixed-bottom has-shadow">
-<div class="navbar-start">
-    <p class="navbar-item mono">
-        MY GORILLAZ
-    </p>
-    <ul class="navbar-item mono">
-    <li class="navbar-item mono">
-        <a onclick="generate_gorilla_skyline()"> Reset Game </a>
-    </li>
-    </ul>
-</div>
-<div class="navbar-item mono label">
-    Player 1 Turn .. oder so
-</div>
-<div class="navbar-end" display='none'>
-    <ul class="navbar-item mono">
-        <li><a class="right_nav_item">Settings</a></li>
-    </ul>
-    <ul class="navbar-item mono">
-        <li><a class="right_nav_item">Quit</a></li>
-    </ul>
-</div>
-</nav>
 <svg xmlns="http://www.w3.org/2000/svg" width="95%" height="90%" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+    <defs>
+        <mask id="image-mask">
+            <circle id="outer" cx="1024" cy="1024" r="1024" fill="white"/>
+            <circle id="inner" cx="1024" cy="1024" r="256" fill="black"/>
+        </mask>
+    </defs>
+    <image width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xlink:href="https://images.unsplash.com/photo-1472195870936-d88b0d4c1b41?ixlib=rb-0.3.5&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjE0NTg5fQ%3D%3D&s=f1abbd4d59a9b448813cb48769806ada" mask="url(#image-mask)"></image>
+</svg>
   <defs>
     <clipPath id="cut_to_view">
       <rect id="view_frame" x="0" y="0" width="2048" height="2048"/>
     </clipPath>
   </defs>
+  <mask id="collision_mask">
+      <!-- unbroken -->
+      <rect x="0" y="0" width="2048" height="2048" fill="white">
+      <!-- break, first with sky, then with bullets -->
+  </mask>
   <g class="svg_frame" clip-path="url(#cut_to_view)">
     <circle class="sun_moon" cx="1024" cy="128" r="256"
             stroke="#333" stroke-width="16" stroke-opacity=".5" ></circle>
@@ -99,7 +90,7 @@ function random_rgb_light() {
     var o = Math.round, r = Math.random, s = 32 ; offset=32;
     return 'rgba(' + o(r()*s + offset ) +
                ',' + o(r()*s + offset ) + 
-               ',' + o(r()*s + offset ) + ',.25)';
+               ',' + o(r()*s + offset ) + ',.95)';
 }
 
 function spawn_skyscraper(l,r,h) {
@@ -184,8 +175,13 @@ function place_players(){
         }
     }
     scrapers = get_all_scrapers();
-    p1_x = 256 + Math.floor(256*Math.random());
-    p2_x = 1920 - Math.floor(256*Math.random());
+    if ( Math.random() > .5 ) {
+        p1_x = 256 + Math.floor(256*Math.random());
+        p2_x = 1920 - Math.floor(256*Math.random());
+    } else {
+        p2_x = 256 + Math.floor(256*Math.random());
+        p1_x = 1920 - Math.floor(256*Math.random());
+    }
     p1_ix = find_scraper_ix_for_x(p1_x);
     p2_ix = find_scraper_ix_for_x(p2_x);
     p1_x = 1*scrapers[p1_ix].getAttribute("x") + scrapers[p1_ix].getAttribute("width")/2;
@@ -223,7 +219,7 @@ function get_overlay_click_coods(evt) {
     dx = last_mouse_up_coods[0] - my_cx;
     dy = last_mouse_up_coods[1] - my_cy;
 
-    scale_factor = 4.5
+    scale_factor = 10
 
     //generate_aim_line(x,y,dx,dy);
     if ( bullet_in_field == 0 ) {
@@ -363,6 +359,7 @@ function display_win_screen() {
 
     t = document.getElementById("win_modal")
     t.setAttribute("fill","#999")
+    //TODO: fix: wrong if player hit self
     t.innerHTML = `Winner: Player ${player_turn+1}`;
     t = document.getElementById("modal_window")
     t.setAttribute("display","block");
@@ -426,11 +423,9 @@ function setup_player_turn_ui(){
     overlay = document.createElementNS( "http://www.w3.org/2000/svg", "circle" );
     players = get_all_players();
     active_player = players[player_turn];
-    l = get_navbar_label();
-    l.innerText = `Ready Player ${player_turn + 1}!`
     overlay.setAttribute("cx",active_player.getAttribute("cx"));
     overlay.setAttribute("cy",active_player.getAttribute("cy"));
-    overlay.setAttribute("r",256);
+    overlay.setAttribute("r",160);
     overlay.setAttribute("fill","rgba(96,96,64,0)");
     overlay.setAttribute("stroke-width",4);
     overlay.setAttribute("stroke","rgba(96,96,128,.2)");
@@ -445,11 +440,7 @@ var bullet_in_field = 0;
 generate_gorilla_skyline();
 </script>
 
-<link rel="stylesheet" type="text/css" href="./bulma.css" />
 <style type="text/css">
-   html,body {
-    font: monospace;
-   }
    html {
        background-color: #000;
    }
