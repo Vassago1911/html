@@ -12,59 +12,42 @@
     <li class="navbar-item mono">
         <a onclick="generate_gorilla_skyline()"> Reset Game </a>
     </li>
-    <li class="navbar-item mono" style="visibility:hidden;">
-        <a> Reset Game </a>
-    </li>
-    <li class="navbar-item mono" style="visibility:hidden;">
-        <a> Reset Game </a>
-    </li>
     </ul>
 </div>
-<div class="navbar-end">
+<div class="navbar-item mono label">
+    Player 1 Turn .. oder so
+</div>
+<div class="navbar-end" display='none'>
     <ul class="navbar-item mono">
-        <li><a class="right_nav_item">Settings</a></li>        
+        <li><a class="right_nav_item">Settings</a></li>
     </ul>
     <ul class="navbar-item mono">
         <li><a class="right_nav_item">Quit</a></li>
     </ul>
-</div>    
+</div>
 </nav>
-<nav class="navbar is-black" style="visibility:hidden;">
-    <div class="navbar-start">
-        <p class="navbar-item mono">
-            MAIN MENU
-        </p>
-        <ul class="navbar-item mono">
-        <li class="navbar-item mono">
-            <a> Reset Game </a>
-        </li>
-        <li class="navbar-item mono" >
-            <a> Reset Game </a>
-        </li>
-        <li class="navbar-item mono" >
-            <a> Reset Game </a>
-        </li>
-        </ul>
-    </div>
-    <div class="navbar-end">
-        <ul class="navbar-item mono">
-            <li><a>Settings</a></li>        
-        </ul>
-        <ul class="navbar-item mono">
-            <li><a>Quit</a></li>
-        </ul>
-    </div>    
-    </nav>
 <svg xmlns="http://www.w3.org/2000/svg" width="95%" height="90%" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
   <defs>
     <clipPath id="cut_to_view">
       <rect id="view_frame" x="0" y="0" width="2048" height="2048"/>
     </clipPath>
   </defs>
-  <g class="svg_frame" clip-path="url(#cut_to_view)"> 
+  <g class="svg_frame" clip-path="url(#cut_to_view)">
     <circle class="sun_moon" cx="1024" cy="128" r="256"
             stroke="#333" stroke-width="16" stroke-opacity=".5" ></circle>
-  </g>  
+  </g>
+  <g id='modal_window' onclick="generate_gorilla_skyline(); hide_modal()" display="none">
+      <rect fill="#222" stroke-width="8" stroke="#6099"  x="768" y="896" rx="15" width="512" height="256"></rect>
+      <text
+       id="win_modal"
+        x="1024"
+        y="1024"
+        font-size="max(3vw,3vh)"
+        font-family="monospace"
+        fill="#aaa"
+        text-anchor="middle"
+        alignment-baseline="central">Christmas Time!</text>
+   </g>
 </svg>
 </body>
 <script type="text/javascript">
@@ -83,6 +66,10 @@ function get_all_scrapers(){
 
 function get_all_players(){
     return [...document.getElementsByClassName("players")];
+}
+
+function get_navbar_label(){
+    return [...document.getElementsByClassName("label")][0];
 }
 
 function bind_to_clock_tick(ticked_action, millisecond_step) {
@@ -138,6 +125,11 @@ function generate_gorilla_skyline() {
     for ( let i = 0; i < current_scrapers.length; i++){
         current_scrapers[i].remove();
     }
+    current_win_modals = document.getElementsByClassName("win_modal")
+    for ( let i = 0; i < current_win_modals.length; i++){
+        current_win_modals[i].remove();
+    }
+
     res_pts = [];
     l0 = -10;
     r0 = 0;
@@ -147,15 +139,16 @@ function generate_gorilla_skyline() {
         res_pts = res_pts.concat([[l0,r0,height]]);
         l0 = r0;
     }
-    //return res_pts   
+    //return res_pts
     for ( let i=0; i<res_pts.length; i++){
         params = res_pts[i];
         l = params[0];
         r = params[1];
         h = params[2];
         spawn_skyscraper(l,r,h);
-    } 
+    }
     place_players();
+    switch_player_turn();
 }
 
 function spawn_player(x,y){
@@ -169,12 +162,12 @@ function spawn_player(x,y){
         c.setAttribute("fill","#376");
     } else {
         c.setAttribute("fill","#60a");
-    }        
+    }
     c.classList.add("players");
     svg_frame.appendChild(c);
 }
 
-function place_players(){   
+function place_players(){
     players = get_all_players();
     for (let i = 0; i<players.length; i++){
         players[i].remove();
@@ -199,6 +192,8 @@ function place_players(){
     p2_x = 1*scrapers[p2_ix].getAttribute("x") + scrapers[p2_ix].getAttribute("width")/2;
     p1_x = Math.max(64,p1_x);
     p2_x = Math.min(2000,p2_x);
+    p1_ix = find_scraper_ix_for_x(p1_x);
+    p2_ix = find_scraper_ix_for_x(p2_x);
     p1_y = 1*scrapers[p1_ix].getAttribute("y") + 16;
     p2_y = 1*scrapers[p2_ix].getAttribute("y") + 16;
     spawn_player(p1_x,p1_y);
@@ -231,8 +226,10 @@ function get_overlay_click_coods(evt) {
     scale_factor = 4.5
 
     //generate_aim_line(x,y,dx,dy);
-    shoot(x,y,scale_factor*dx,scale_factor*dy);
-    switch_player_turn();
+    if ( bullet_in_field == 0 ) {
+        shoot(x,y,scale_factor*dx,scale_factor*dy);
+    }
+    //switch_player_turn();
 }
 
 function createbullet(x,y,dx,dy) {
@@ -244,27 +241,68 @@ function createbullet(x,y,dx,dy) {
     c.setAttribute("cx",x);
     c.setAttribute("cy",y);
     c.setAttribute("vx",dx);
-    c.setAttribute("vy",dy);
+    c.setAttribute("vy",dy-10);
     c.setAttribute("r",8);
     c.setAttribute("fill","#fff");
     c.classList.add("bullet");
     svg_frame = document.getElementsByClassName("svg_frame")[0]
     svg.appendChild(c);
+    bullet_in_field = 1;
 }
 
 function move_bullet(dt_ms) {
+    function collide_with_players(){
+        bullet = document.getElementsByClassName("bullet")[0]
+        players = get_all_players()
+        p1 = players[0]
+        p2 = players[1]
+        p1_x = parseInt(p1.getAttribute("cx"))
+        p1_y = parseInt(p1.getAttribute("cy"))
+        p2_x = parseInt(p2.getAttribute("cx"))
+        p2_y = parseInt(p2.getAttribute("cy"))
+        b_x =  parseInt(bullet.getAttribute("cx"))
+        b_y =  parseInt(bullet.getAttribute("cy"))
+        p1_r = parseInt(p1.getAttribute("r"))
+        p2_r = parseInt(p2.getAttribute("r"))
+        b_r  = parseInt(bullet.getAttribute("r"))
+        if (  Math.sqrt( (p1_x - b_x)**2 + (p1_y - b_y)**2 ) <= p1_r + b_r ) {
+            //collided with player1
+            p1.remove();
+            return true;
+        }
+        if (  Math.sqrt( (p2_x - b_x)**2 + (p2_y - b_y)**2 ) <= p2_r + b_r ) {
+            //collided with player2
+            p2.remove();
+            return true;
+        }
+        if ( bullet == undefined ) { return true; }
+        return false
+    }
+    function collide_with_buildings(){
+        bullet = document.getElementsByClassName("bullet")[0]
+        if ( bullet == undefined ) { return true; }
+        return false
+    }
+
     c = 0.04;
-//    cancel_following_tick = false;    
+    //    cancel_following_tick = false;
     bullet = document.getElementsByClassName("bullet")[0]
+
+    // no bullet left -> stop this tick loop
     if ( bullet == undefined ) { return; }
+
     cx = 1*bullet.getAttribute("cx")+c*dt_ms*bullet.getAttribute("vx")/50
     cy = 1*bullet.getAttribute("cy")+c*dt_ms*bullet.getAttribute("vy")/50
     vx = .9999*bullet.getAttribute("vx")
-    vy = bullet.getAttribute("vy")-math_natural_sign
+    vy = bullet.getAttribute("vy")-2*math_natural_sign
     bullet.setAttribute("cx",cx)
     bullet.setAttribute("cy",cy)
     bullet.setAttribute("vx",vx)
     bullet.setAttribute("vy",vy)
+
+    any_collision = collide_with_players() | collide_with_buildings();
+
+    //bullet going through the sky
     if ( ( cy <= 0) ) {
         //hide bullet
         bullet.setAttribute("r",0);
@@ -273,32 +311,89 @@ function move_bullet(dt_ms) {
         bullet.setAttribute("r",8);
         //console.log('bullet reshown');
     }
-    if ( ( cy >= 2048 ) || ( cx < 0 ) || ( cx > 2048 ) ) {
+    //bullet left field to left, right, lower boundaries, hit a player,
+    //or a building
+    if ( any_collision || ( cy >= 2048 ) || ( cx < 0 ) || ( cx > 2048 ) ) {
+        //console.log('any_collision branch')
         bullet.remove()
-        //console.log("bullet left playing field");
+        bullet_in_field = 0
+        players = get_all_players();
+        if ( players.length < 2 ) {
+            display_win_screen();
+            return;
+        }
+        switch_player_turn();
         return;
-    }    
-    if ( ( cy <= 2048 ) && ( cx >= 0 ) && ( cx <= 2048 ) ) {
+    }
+
+
+
+    //bullet still in field
+    if ( bullet_in_field && ( cy <= 2048 ) && ( cx >= 0 ) && ( cx <= 2048 ) ) {
         //console.log('calling next movement');
         setTimeout(move_bullet,5,5);
     }
 }
 
+function display_win_screen() {
+    remaining_player = document.getElementsByClassName("players")[0]
+    player_colour = remaining_player.getAttribute("fill")
+    //console.log("game won!")
+    r = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+    r_w = 512
+    r_h = 256
+    svg = document.getElementsByTagName("svg")[0]
+    vb = svg.getAttribute("viewBox").split(" ")
+
+    off_x = parseInt(vb[0]);
+    off_y = parseInt(vb[1]);
+    w = parseInt(vb[2]/2);
+    h = parseInt(vb[3]/2);
+
+    r.setAttribute("x",off_x+w-r_w/2);
+    r.setAttribute("y",off_y+h-r_h/2);
+    r.setAttribute('width',512);
+    r.setAttribute("height",256);
+    r.setAttribute("rx",15);
+    r.setAttribute("fill","#222");
+    r.setAttribute("stroke", player_colour);
+
+    r.classList.add("win_modal");
+    r.addEventListener("click",generate_gorilla_skyline);
+
+    t = document.getElementById("win_modal")
+    t.setAttribute("fill","#999")
+    t.innerHTML = `Winner: Player ${player_turn+1}`;
+    t = document.getElementById("modal_window")
+    t.setAttribute("display","block");
+
+    svg_frame = document.getElementsByClassName("svg_frame")[0]
+    //svg.appendChild(r);
+    //svg.appendChild(t);
+    //return;
+    //generate_gorilla_skyline();
+}
+
+function hide_modal() {
+    t = document.getElementById("modal_window")
+    t.setAttribute("display","none");
+}
+
 function shoot(x,y,dx,dy) {
-    createbullet(x,y-10,dx,dy);  
+    createbullet(x + 16*Math.sign(dx), y-16, dx, dy);
     move_bullet(5);
 }
 
 function switch_player_turn() {
     //wind_mu = parseInt(Math.floor(20*( 2*Math.random()-1 )))
     if ( player_turn == 0 ) {
-        player_turn = 1;        
+        player_turn = 1;
     } else {
         player_turn = 0;
-    }        
+    }
     setup_player_turn_ui();
     //console.log(wind_mu);
-    return;        
+    return;
 }
 
 function generate_aim_line(x,y,dx,dy){
@@ -323,7 +418,7 @@ function generate_aim_line(x,y,dx,dy){
 }
 
 
-function setup_player_turn_ui(){    
+function setup_player_turn_ui(){
     old_overlay = document.getElementsByClassName("overlay")
     for ( let i = 0; i < old_overlay.length; i++ ){
         old_overlay[i].remove();
@@ -331,6 +426,8 @@ function setup_player_turn_ui(){
     overlay = document.createElementNS( "http://www.w3.org/2000/svg", "circle" );
     players = get_all_players();
     active_player = players[player_turn];
+    l = get_navbar_label();
+    l.innerText = `Ready Player ${player_turn + 1}!`
     overlay.setAttribute("cx",active_player.getAttribute("cx"));
     overlay.setAttribute("cy",active_player.getAttribute("cy"));
     overlay.setAttribute("r",256);
@@ -343,10 +440,11 @@ function setup_player_turn_ui(){
     svg.appendChild(overlay);
 }
 
-generate_gorilla_skyline();
 var player_turn = 1;
-switch_player_turn();
+var bullet_in_field = 0;
+generate_gorilla_skyline();
 </script>
+
 <link rel="stylesheet" type="text/css" href="./bulma.css" />
 <style type="text/css">
    html,body {
@@ -366,10 +464,10 @@ switch_player_turn();
      left: 5%;
      width: 90%;
      height: 90%;
-     background: #000;     
+     background: #000;
    }
    .navbar {
-    font: monospace;    
+    font: monospace;
    }
    .mono {
     font-family: 'Courier New', Courier, monospace;
@@ -384,6 +482,7 @@ switch_player_turn();
    }
    .navbar-end {
     color: #161;
+    display: none;
    }
    .navbar.is-dark {
      background-color: #222;
@@ -391,5 +490,18 @@ switch_player_turn();
    .right_nav_item {
     color: rgb(84,74,73);
    }
+   .label {
+    font-size: max(1.25vh,1.25vw);
+    border: 2px solid;
+    border-color: #9066;
+   }
+   .win_modal {
+    stroke-width: 16;
+   }
+   .win_modal_text {
+    font-family: monospace;
+    font-size: max(1.25vh,1.25vw);
+   }
 </style>
+
 </html>
