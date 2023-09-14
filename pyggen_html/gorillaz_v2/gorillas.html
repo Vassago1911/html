@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+<svg class="frame" xmlns="http://www.w3.org/2000/svg" width="90vw" height="95vh" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
+    <svg class='layers' id="layer0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+</svg>
+</body>
+
+<script type="text/javascript">
+mouse =
+{
+    "click"     : { "x":0, "y":0 },
+    "mousemove" : { "x":0, "y":0 },
+    "mousedown" : { "x":0, "y":0 },
+    "mouseup"   : { "x":0, "y":0 }
+}
+
+svg = document.getElementsByClassName("frame")[0]
+svg.addEventListener("click",set_mouse_dict)
+svg.addEventListener("mousemove",set_mouse_dict)
+svg.addEventListener("mousedown",set_mouse_dict)
+svg.addEventListener("mouseup",set_mouse_dict)
+pt = svg.createSVGPoint();  // Created once for document
+
+function set_mouse_dict(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    mouse[evt.type] = {"x":cursorpt.x, "y":cursorpt.y};
+/*    if ( evt.type != 'mousemove' ) {
+        console.log( mouse );
+    }*/
+}
+
+function get_all_layers(){
+    return [...document.getElementsByClassName("layers")];
+}
+
+function random_rgb() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ')';
+}
+
+function random_rgb_light() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ',.95)';
+}
+
+function spawn_skyscraper(l,r,h) {
+    svg_frame = get_all_layers()[0]
+    re = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+    re.setAttribute("x",l);
+    re.setAttribute("y",2048-h);
+    re.setAttribute("width",r-l);
+    re.setAttribute("height",h);
+    re.setAttribute("fill",random_rgb());
+    re.setAttribute("stroke-width",8);
+    re.setAttribute("stroke","#111")
+    re.classList.add("gen_re");
+    re.addEventListener("click",get_element_click_coods);
+    svg_frame.appendChild(re);
+}
+</script>
+
+<style type="text/css">
+       html {
+           background-color: #000;
+       }
+       body {
+           margin: 0;
+       }
+       svg {
+         display: block;
+         border: 0px solid #ccc;
+         position: absolute;
+         top: 5%;
+         left: 5%;
+         width: 90%;
+         height: 90%;
+         background: #000;
+       }
+       .mono {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: max(1vh,1vw);
+        color: #ccc;
+       }
+</style>
+
+</html>

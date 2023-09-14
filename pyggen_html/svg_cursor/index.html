@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+<svg id="total_svg" class="frame" xmlns="http://www.w3.org/2000/svg" width="90vw" height="95vh" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
+    <rect x=0 y=0 width=2048 height=2048 fill="#000"/>
+    <svg class='layers' id="layer0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+</svg>
+</body>
+
+<script type="text/javascript">
+function get_all_layers(){
+    return [...document.getElementsByClassName("layers")];
+}
+
+function random_rgb() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ')';
+}
+
+function random_rgb_light() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ',.95)';
+}
+
+function move_cursor(x,y) {
+    cursors = document.getElementsByClassName("cursor")
+    if ( cursors.length == 0 ) {
+        c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+        c.setAttribute("cx",x)
+        c.setAttribute("cy",y)
+        c.setAttribute("r",16)
+        c.setAttribute("fill",random_rgb_light())
+        c.classList.add("cursor")
+        d = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+        d.setAttribute("cx",x)
+        d.setAttribute("cy",y)
+        d.setAttribute("r",10)
+        d.setAttribute("fill",random_rgb())
+        d.classList.add("cursor")
+        svg_frame = get_all_layers()[0]
+        svg_frame.appendChild(c)
+        svg_frame.appendChild(d)
+    }
+    cursor = document.getElementsByClassName("cursor")[0]
+    cursor.setAttribute("cx",x)
+    cursor.setAttribute("cy",y)
+    cursor = document.getElementsByClassName("cursor")[1]
+    cursor.setAttribute("cx",x)
+    cursor.setAttribute("cy",y)
+}
+
+function mouse_move(evt){
+    get_mouse_svg_coods(evt);
+    gen_move__line(evt);
+}
+
+function get_mouse_svg_coods(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    x = cursorpt.x;
+    y = cursorpt.y;
+    if ((x <= 0) || (x>=2048) || (y <= 0) || (y>=2031)) {
+        h.style.cursor = 'crosshair'
+        return
+    }
+    h.style.cursor = 'none'
+    last_mouse_svg_coods = [x,y];
+    //move_cursor(x,y)
+}
+function gen_move__line(evt){
+    cur_lines = document.getElementsByClassName('cur_line')
+    if (cur_lines.length == 0) {
+        l = document.createElementNS( "http://www.w3.org/2000/svg", "line" )
+        l.setAttribute("x1",click2[0])
+        l.setAttribute("y1",click2[1])
+        l.setAttribute("x2",click2[0])
+        l.setAttribute("y2",click2[1])
+        l.setAttribute("stroke",random_rgb())
+        l.setAttribute('stroke-width',4)
+        l.classList.add("cur_line")
+        svg.appendChild(l)
+    }
+    cur_lines = document.getElementsByClassName('cur_line')
+    l = cur_lines[0];
+    x = last_mouse_svg_coods[0]
+    y = last_mouse_svg_coods[1]
+    l.setAttribute("x2",x)
+    l.setAttribute("y2",y)
+}
+function gen_click_line(){
+    console.log(click1,click2)
+    l = document.createElementNS( "http://www.w3.org/2000/svg", "line" )
+    l.setAttribute("x1",click1[0])
+    l.setAttribute("y1",click1[1])
+    l.setAttribute("x2",click2[0])
+    l.setAttribute("y2",click2[1])
+    l.setAttribute("stroke",random_rgb())
+    l.setAttribute('stroke-width',4)
+    l.classList.add("cursor")
+    svg.appendChild(l)
+    cur_lines = document.getElementsByClassName('cur_line')
+    if (cur_lines.length > 0) {
+        cur_lines[0].remove()
+    }
+}
+function set_click_cd(evt){
+    click1 = click2;
+    click2 = last_mouse_svg_coods;
+    gen_click_line()
+}
+init=true;
+if (init) {
+    svg = document.getElementById("total_svg")
+    pt = svg.createSVGPoint();  // Created once for document
+    h = document.getElementsByTagName('html')[0]
+    last_mouse_svg_coods = [0,0];
+    last_click_svg_coods = [0,0];
+    click1 = [0,0];
+    click2 = [0,0];
+    click_pts = {};
+    click_arity = 0;
+    is_a_click = false;
+    svg.addEventListener('mousemove',mouse_move)
+    svg.addEventListener('click',set_click_cd)
+}
+
+</script>
+
+<style type="text/css">
+       html {
+           background-color: #000;
+           cursor: crosshair;
+       }
+       body {
+           margin: 0;
+       }
+       svg {
+         display: block;
+         border: 0px solid #ccc;
+         position: absolute;
+         top: 5%;
+         left: 5%;
+         width: 90%;
+         height: 90%;
+         background: #000;
+       }
+       .mono {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: max(1vh,1vw);
+        color: #ccc;
+       }
+</style>
+
+</html>

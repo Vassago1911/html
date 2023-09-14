@@ -4,6 +4,7 @@
 </head>
 <body>
 <svg xmlns="http://www.w3.org/2000/svg" width="95%" height="90%" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
+<!--
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
     <defs>
         <mask id="image-mask">
@@ -15,10 +16,10 @@
     width="100%"
     height="100%"
     preserveAspectRatio="xMidYMid slice"
-    xlink:href="https://images.unsplash.com/photo-1472195870936-d88b0d4c1b41?ixlib=rb-0.3.5&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjE0NTg5fQ%3D%3D&s=f1abbd4d59a9b448813cb48769806ada" 
+    xlink:href="https://images.unsplash.com/photo-1472195870936-d88b0d4c1b41?ixlib=rb-0.3.5&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjE0NTg5fQ%3D%3D&s=f1abbd4d59a9b448813cb48769806ada"
     mask="url(#image-mask)">
     </image>
-</svg>
+</svg> -->
   <defs>
     <clipPath id="cut_to_view">
       <rect id="view_frame" x="0" y="0" width="2048" height="2048"/>
@@ -29,7 +30,7 @@
       <rect x="0" y="0" width="2048" height="2048" fill="white">
       <!-- break, first with sky, then with bullets -->
   </mask>
-  <g class="svg_frame" clip-path="url(#cut_to_view)">
+  <g class="svg_frame" clip-path="url(#cut_to_view)" mask="url(#collision_mask)">
     <circle class="sun_moon" cx="1024" cy="128" r="256"
             stroke="#333" stroke-width="16" stroke-opacity=".5" ></circle>
   </g>
@@ -43,7 +44,7 @@
         font-family="monospace"
         fill="#aaa"
         text-anchor="middle"
-        alignment-baseline="central">Christmas Time!</text>
+        alignment-baseline="central">Someone Won!</text>
    </g>
 </svg>
 </body>
@@ -88,14 +89,14 @@ function bind_to_clock_tick(ticked_action, millisecond_step) {
 function random_rgb() {
     var o = Math.round, r = Math.random, s = 32 ; offset=32;
     return 'rgba(' + o(r()*s + offset ) +
-               ',' + o(r()*s + offset ) + 
+               ',' + o(r()*s + offset ) +
                ',' + o(r()*s + offset ) + ')';
 }
 
 function random_rgb_light() {
     var o = Math.round, r = Math.random, s = 32 ; offset=32;
     return 'rgba(' + o(r()*s + offset ) +
-               ',' + o(r()*s + offset ) + 
+               ',' + o(r()*s + offset ) +
                ',' + o(r()*s + offset ) + ',.95)';
 }
 
@@ -144,8 +145,35 @@ function generate_gorilla_skyline() {
         h = params[2];
         spawn_skyscraper(l,r,h);
     }
+    generate_collision_mask();
     place_players();
     switch_player_turn();
+}
+
+function generate_collision_mask() {
+    mask = document.getElementById('collision_mask')
+    cdn = mask.children
+    for (let i = 0; i < cdn.length; i++ ) {
+        cdn[i].remove();
+    }
+    r = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+    svg = document.getElementsByTagName("svg")[0]
+    vb = svg.getAttribute("viewBox").split(" ")
+
+    off_x = parseInt(vb[0]);
+    off_y = parseInt(vb[1]);
+    w = parseInt(vb[2]/2);
+    h = parseInt(vb[3]/2);
+
+    r.setAttribute("x",off_x);
+    r.setAttribute("y",off_y);
+    r.setAttribute('width',w*2);
+    r.setAttribute("height",h*2);
+    r.setAttribute("rx",256);
+    r.setAttribute("fill","#fff");
+
+    mask.appendChild(r);
+    //svg.appendChild(t);
 }
 
 function spawn_player(x,y){
@@ -282,6 +310,7 @@ function move_bullet(dt_ms) {
     }
     function collide_with_buildings(){
         bullet = document.getElementsByClassName("bullet")[0]
+        //collision_mask =
         if ( bullet == undefined ) { return true; }
         return false
     }
