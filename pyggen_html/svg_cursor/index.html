@@ -6,7 +6,7 @@
 
 <body>
 <svg id="total_svg" class="frame" xmlns="http://www.w3.org/2000/svg" width="90vw" height="95vh" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
-    <rect x=0 y=0 width=2048 height=2048 fill="#000"/>
+    <rect x=0 y=0 width=2048 height=2048 fill="#111"/>
     <svg class='layers' id="layer0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
     <svg class='layers' id="layer1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
     <svg class='layers' id="layer2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
@@ -17,6 +17,9 @@
 </body>
 
 <script type="text/javascript">
+
+var click_history = [];
+
 function get_all_layers(){
     return [...document.getElementsByClassName("layers")];
 }
@@ -38,21 +41,8 @@ function random_rgb_light() {
 function move_cursor(x,y) {
     cursors = document.getElementsByClassName("cursor")
     if ( cursors.length == 0 ) {
-        c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
-        c.setAttribute("cx",x)
-        c.setAttribute("cy",y)
-        c.setAttribute("r",16)
-        c.setAttribute("fill",random_rgb_light())
-        c.classList.add("cursor")
-        d = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
-        d.setAttribute("cx",x)
-        d.setAttribute("cy",y)
-        d.setAttribute("r",10)
-        d.setAttribute("fill",random_rgb())
-        d.classList.add("cursor")
-        svg_frame = get_all_layers()[0]
-        svg_frame.appendChild(c)
-        svg_frame.appendChild(d)
+        draw_classy_circle(x,y,16,'cursor')
+        draw_classy_circle(x,y,10,'cursor')
     }
     cursor = document.getElementsByClassName("cursor")[0]
     cursor.setAttribute("cx",x)
@@ -64,10 +54,10 @@ function move_cursor(x,y) {
 
 function mouse_move(evt){
     get_mouse_svg_coods(evt);
-    gen_move__line(evt);
+    change_cursor(evt);
 }
 
-function get_mouse_svg_coods(evt) {
+function svg_xy_from_evt(evt){
     pt.x = evt.clientX;
     pt.y = evt.clientY;
     // The cursor point, translated into svg coordinates
@@ -76,59 +66,153 @@ function get_mouse_svg_coods(evt) {
     cursorpt.y = parseInt(cursorpt.y);
     x = cursorpt.x;
     y = cursorpt.y;
+    return [x,y]
+}
+
+function get_mouse_svg_coods(evt) {
+    tmp = svg_xy_from_evt(evt)
+    x = tmp[0]; y = tmp[1];
+    last_mouse_svg_coods = [x,y];
+    move_cursor(x,y)
+    return [x,y];
+}
+
+function change_cursor(evt){
+    x = last_mouse_svg_coods[0]
+    y = last_mouse_svg_coods[1]
     if ((x <= 0) || (x>=2048) || (y <= 0) || (y>=2031)) {
         h.style.cursor = 'crosshair'
         return
     }
     h.style.cursor = 'none'
-    last_mouse_svg_coods = [x,y];
-    //move_cursor(x,y)
 }
-function gen_move__line(evt){
-    cur_lines = document.getElementsByClassName('cur_line')
-    if (cur_lines.length == 0) {
-        l = document.createElementNS( "http://www.w3.org/2000/svg", "line" )
-        l.setAttribute("x1",click2[0])
-        l.setAttribute("y1",click2[1])
-        l.setAttribute("x2",click2[0])
-        l.setAttribute("y2",click2[1])
-        l.setAttribute("stroke",random_rgb())
-        l.setAttribute('stroke-width',4)
-        l.classList.add("cur_line")
-        svg.appendChild(l)
+
+function mark_click_history(){
+    click_markers = document.getElementsByClassName("click_marker")
+    for ( let i = 0; i < click_markers.length; i++ ) {
+        click_markers[i].remove()
     }
-    cur_lines = document.getElementsByClassName('cur_line')
-    l = cur_lines[0];
-    x = last_mouse_svg_coods[0]
-    y = last_mouse_svg_coods[1]
-    l.setAttribute("x2",x)
-    l.setAttribute("y2",y)
+
+    for ( let i = 0; i < click_history.length; i++) {
+        draw_classy_circle(
+            click_history[i][0],
+            click_history[i][1],
+            16,
+            "click_marker")
+        draw_classy_circle(
+            click_history[i][0],
+            click_history[i][1],
+            10,
+            "click_marker")
+    }
+
+    d = {};
+    for (let i=0; i<click_history.length; i++ ) {
+        d[i] = {}
+        for (let j=0; j<click_history.length; j++) {
+            d[i][j] = parseInt(Math.sqrt( ( click_history[i][0] - click_history[j][0] )**2 + ( click_history[i][1] - click_history[j][1] )**2  ))
+        }
+    }
 }
-function gen_click_line(){
-    console.log(click1,click2)
+
+
+function segment_known(x,y,u,v) {
+    for ( let i = 0; i < known_segments.length; i++ ) {
+        t = known_segments[i]
+        x_ = t[0][0]
+        y_ = t[0][1]
+        u_ = t[1][0]
+        v_ = t[1][1]
+        if
+         ( ( ( x == x_ ) && ( y == y_ ) && ( u == u_ ) && ( v == v_ ) )
+            || ( ( x == u_ ) && ( y == v_ ) && ( u == x_ ) && ( v == y_ ) ) ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function draw_connections(degree){
+    edges = [...document.getElementsByClassName("edges")];
+    for ( let i = 0; i < edges.length; i++ ){
+        edges[i].remove()
+    }
+    // distance graphing
+    d_ = {};
+    connection_marked = {};
+
+    for ( k in d ) {
+        dist_arr = []
+        //console.log(d[k]);
+        for ( w in d[k] ) {
+            dist_arr.push([[click_history[w]],d[k][w]])
+        }
+        dist_arr=dist_arr.sort(function(x,y){return x[1]-y[1]}).slice(1)
+        d_[k] = dist_arr
+        connection_marked[click_history[k]] = []
+    }
+
+    known_segments = []
+
+    for ( k in d_ ) {
+        k = parseInt(k)
+        t = click_history[k]
+        x = t[0]
+        y = t[1]
+        //console.log(t)
+        for ( let i = 0; ( ( i < d_[k].length ) && ( i < degree + parseInt(3*Math.random() - 0.5)) ) ; i++ ) {
+            i = parseInt(i)
+            t = d_[k][i][0][0]
+            u = t[0]
+            v = t[1]
+            // TODO: fix "in" condition to work in js
+            if ( !(               segment_known(x,y,u,v) )
+              && !( click_history[k] == click_history[i] ) )
+            {
+                known_segments = known_segments.concat([[click_history[k],click_history[i]]])
+                //console.log([x,y,u,v])
+                draw_classy_line(x,y,u,v,'edges')
+            }
+        }
+    }
+}
+
+function draw_classy_line(x,y,u,v,cls) {
     l = document.createElementNS( "http://www.w3.org/2000/svg", "line" )
-    l.setAttribute("x1",click1[0])
-    l.setAttribute("y1",click1[1])
-    l.setAttribute("x2",click2[0])
-    l.setAttribute("y2",click2[1])
-    l.setAttribute("stroke",random_rgb())
-    l.setAttribute('stroke-width',4)
-    l.classList.add("cursor")
+    l.setAttribute("x1",x)
+    l.setAttribute("y1",y)
+    l.setAttribute("x2",u)
+    l.setAttribute("y2",v)
+    l.setAttribute("stroke",random_rgb_light())
+    l.setAttribute('stroke-width',2)
+    l.classList.add(cls)
     svg.appendChild(l)
-    cur_lines = document.getElementsByClassName('cur_line')
-    if (cur_lines.length > 0) {
-        cur_lines[0].remove()
-    }
 }
+
+function draw_classy_circle(cx,cy,r,cls){
+    c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+    c.setAttribute("cx",cx)
+    c.setAttribute("cy",cy)
+    c.setAttribute("r",r)
+    c.setAttribute("fill",random_rgb_light())
+    c.classList.add(cls)
+    front.appendChild(c)
+}
+
 function set_click_cd(evt){
-    click1 = click2;
-    click2 = last_mouse_svg_coods;
-    gen_click_line()
+    tmp = svg_xy_from_evt(evt)
+    x = tmp[0]; y = tmp[1];
+    click_history = click_history.concat([[x,y],])
+    mark_click_history()
+    draw_connections(2)
 }
+
 init=true;
 if (init) {
-    svg = document.getElementById("total_svg")
-    pt = svg.createSVGPoint();  // Created once for document
+    total_svg = document.getElementById("total_svg")
+    pt = total_svg.createSVGPoint();  // Created once for document
+    svg = document.getElementById("layer0")
+    front = document.getElementById("layer5")
     h = document.getElementsByTagName('html')[0]
     last_mouse_svg_coods = [0,0];
     last_click_svg_coods = [0,0];
@@ -137,8 +221,8 @@ if (init) {
     click_pts = {};
     click_arity = 0;
     is_a_click = false;
-    svg.addEventListener('mousemove',mouse_move)
-    svg.addEventListener('click',set_click_cd)
+    total_svg.addEventListener('mousemove',mouse_move)
+    total_svg.addEventListener('click',set_click_cd)
 }
 
 </script>
