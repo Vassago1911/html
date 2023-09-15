@@ -1,9 +1,54 @@
 <!DOCTYPE html><html><head></head><body></body>
 <script type="text/javascript">
-vbx = 2048;layer_count = 5// -> svg_canvas.js</script>
+vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
 <script src="svg_canvas.js"></script>
 <link href="std.css" rel="stylesheet"/><script src="colours.js"></script>
 <script type="text/javascript">
-
+    function update_model() {
+        model = { "dist": dist, "nodes": nodes} //, "edge_ixs": edge_ixs }
+    }
+    function add_node(evt) {
+        tmp = get_svg_xy_from_event(evt)
+        x = tmp[0]
+        y = tmp[1]
+        nodes = nodes.concat([[x,y]]);
+        nodes = nodes.sort( (a,b) => a[0] - b[0] )
+        gen_distance_matrix()
+        //gen_edges()
+        update_model()
+    }
+    //todo: distance calc'd => calc nneighbours
+    nneighbours = []
+    function gen_distance_matrix() {
+        dist = []
+        for ( let i = 0; i < nodes.length; i++ ) {
+            dist[i] = []
+        }
+        for ( let i = 0; i < nodes.length; i++ ) {
+            for ( let j = 0; j < nodes.length; j++) {
+                d = parseInt(Math.sqrt( (nodes[i][0]-nodes[j][0])**2+(nodes[i][1]-nodes[j][1])**2 ))
+                dist[j][i] = d
+                dist[i][j] = d
+            }
+        }
+    }
+    function gen_edges() {
+        edge_ixs = [];
+        _tmp_v_degree = [];
+        for ( let i = 0; i < nodes.length; i++ ) {
+            _tmp_v_degree[i]=0
+        }
+        for ( let i = 0; i < nodes.length; i++ ) {
+            for ( let j = i+1; j < nodes.length; j++ ) {
+                
+            }
+        }
+    }
+    nodes = []
+    model = {}
+    svg = document.getElementById("total_svg1")
+    bg = document.getElementById(`layer_${0}`)
+    fg = document.getElementById(`layer_${layer_count - 1}`)
+    svg.addEventListener("click",add_node)
 </script>
 </html>
