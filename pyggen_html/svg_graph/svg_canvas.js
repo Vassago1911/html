@@ -1,8 +1,4 @@
 b = document.getElementsByTagName("body")[0]
-
-vbx = 2048
-layer_count = 5
-
 svg_frame = document.createElementNS("http://www.w3.org/2000/svg","svg")
 svg_frame.id = 'total_svg1'
 svg_frame.setAttribute("width","90vw")
@@ -25,6 +21,12 @@ for ( let i = 0; i < layer_count; i++ ) {
     svg.setAttribute("viewBox",`0 0 ${vbx} ${vbx}`)
     svg.classList.add("layers")
     svg_frame.appendChild(svg)
+    if ( i == 0 ) {
+        first_layer = svg
+    }
+    if ( i == layer_count - 1 ) {
+        last_layer = svg
+    }
 }
 
 function get_all_layers(){
@@ -86,3 +88,25 @@ function get_mouse_svg_coods(evt) {
 }
 
 svg.addEventListener('mousemove',get_mouse_svg_coods)
+
+function draw_classy_line(x,y,u,v,cls) {
+    l = document.createElementNS( "http://www.w3.org/2000/svg", "line" )
+    l.setAttribute("x1",x)
+    l.setAttribute("y1",y)
+    l.setAttribute("x2",u)
+    l.setAttribute("y2",v)
+    l.setAttribute("stroke",random_rgb_light())
+    l.setAttribute('stroke-width',2)
+    l.classList.add(cls)
+    first_layer.appendChild(l)
+}
+
+function draw_classy_circle(cx,cy,r,cls){
+    c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+    c.setAttribute("cx",cx)
+    c.setAttribute("cy",cy)
+    c.setAttribute("r",r)
+    c.setAttribute("fill",random_rgb_light())
+    c.classList.add(cls)
+    last_layer.appendChild(c)
+}

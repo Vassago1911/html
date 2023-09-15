@@ -1,0 +1,22 @@
+html {
+   background-color: #000;
+   cursor: crosshair;
+}
+body {
+   margin: 0;
+}
+svg {
+ display: block;
+ border: 0px solid #ccc;
+ position: absolute;
+ top: 5%;
+ left: 5%;
+ width: 90%;
+ height: 90%;
+ background: #000;
+}
+.mono {
+font-family: 'Courier New', Courier, monospace;
+font-size: max(1vh,1vw);
+color: #ccc;
+}
