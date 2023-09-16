@@ -29,6 +29,12 @@ for ( let i = 0; i < layer_count; i++ ) {
     }
 }
 
+svg = document.createElementNS("http://www.w3.org/2000/svg","svg")
+svg.id = 'cursor_layer'
+svg.setAttribute("viewBox",`0 0 ${vbx} ${vbx}`)
+svg.classList.add("layers")
+svg_frame.appendChild(svg)
+
 function get_all_layers(){
     return [...document.getElementsByClassName("layers")];
 }
@@ -65,7 +71,7 @@ function get_mouse_svg_coods(evt) {
             d.setAttribute("r",20)
             d.setAttribute("fill",random_rgb())
             d.classList.add("cursor")
-            svg_frame = get_all_layers()[0]
+            svg_frame = document.getElementById('cursor_layer')
             svg_frame.appendChild(c)
             svg_frame.appendChild(d)
         }

@@ -4,22 +4,64 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
 <script src="svg_canvas.js"></script>
 <link href="std.css" rel="stylesheet"/><script src="colours.js"></script>
 <script type="text/javascript">
-    function update_model() {
-        model = { "dist": dist, "nodes": nodes} //, "edge_ixs": edge_ixs }
+    class Guard {
+        show_svg_visual () {
+            if ( [...document.getElementsByClassName(this.name)].length == 0 ) {
+                draw_classy_circle(x,y,16,this.name)
+                draw_classy_circle(x,y,10,this.name)
+            }
+        }
+
+        constructor ( x, y ) {
+            this.x = x;
+            this.y = y;
+            this.name = `${Date.now()}`.substring(7)
+            this.show_svg_visual()
+        }
     }
+
+    class GuardNet {
+        constructor () {
+            this.guards = []
+            this.net = []
+        }
+
+        add_edge ( i, j ) {
+            if ( this.guards[i].name >= this.guards[j].name ) {
+                tmp = i; i=j; j=tmp;
+            }
+            g1 = this.guards[i]
+            g2 = this.guards[j]
+            e = g1.name+','+g2.name
+            if ( !( e in this.net )) {
+                this.net = this.net.concat([e])
+                
+            }
+        }
+
+        add_guard( g ) {
+
+
+            this.guards = this.guards.concat([g])
+        }
+    }
+
+    gnet = new GuardNet()
+
     function add_node(evt) {
         tmp = get_svg_xy_from_event(evt)
         x = tmp[0]
         y = tmp[1]
+        g = new Guard(x,y)
+        gnet.add_guard(g)
         nodes = nodes.concat([[x,y]]);
         nodes = nodes.sort( (a,b) => a[0] - b[0] )
-        gen_distance_matrix()
+        dist = gen_distance_matrix(nodes)
         //gen_edges()
-        update_model()
     }
     //todo: distance calc'd => calc nneighbours
     nneighbours = []
-    function gen_distance_matrix() {
+    function gen_distance_matrix(nodes) {
         dist = []
         for ( let i = 0; i < nodes.length; i++ ) {
             dist[i] = []
@@ -31,6 +73,7 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
                 dist[i][j] = d
             }
         }
+        return dist
     }
     function gen_edges() {
         edge_ixs = [];
