@@ -193,10 +193,17 @@ function draw_classy_arrow(x,y,u,v,cls,wdth) {
         g.appendChild(ls[i])
     }
     first_layer.appendChild(g)
+    return g
 }
 
-function draw_classy_square(x,y,width,cls) {
-    width = width + 10
+function draw_classy_square(x,y,width,cls,bg_clr) {
+    if ( (bg_clr == undefined) ){
+        bg_clr = "#805"
+        first_offset=16
+    } else {
+        first_offset=10
+    }
+    width = width + first_offset
     height = width
     x_ = parseInt(x - width/2)
     y_ = parseInt(y - height/2)
@@ -206,12 +213,15 @@ function draw_classy_square(x,y,width,cls) {
     r.setAttribute("y",y_)
     r.setAttribute("width",width)
     r.setAttribute("height",height)
-    r.setAttribute("fill","#440")
+    if ( (bg_clr == undefined) ){
+        bg_clr = "#805"
+    }
+    r.setAttribute("fill",bg_clr)
     r.setAttribute("rx",20)
     r.classList.add(cls)
     r.style.display = 'none';
     r1 = r
-    width = width - 10
+    width = width - first_offset
     height = width
     x_ = parseInt(x - width/2)
     y_ = parseInt(y - height/2)
@@ -240,6 +250,7 @@ function draw_classy_square(x,y,width,cls) {
     g.appendChild(r1)
     g.appendChild(r2)
     g.appendChild(r3)
+    g.classList.add(cls)
     last_layer.appendChild(g)
     return g
 }
