@@ -1,4 +1,8 @@
-<!DOCTYPE html><html><head></head><body></body>
+<!DOCTYPE html><html><head><style>
+    html.glowy:hover {
+        box-shadow: 0 0 48px rgba(255,255,32,.25);
+    }
+</style></head><body></body>
 <script type="text/javascript">
 vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
 <script src="svg_canvas.js"></script>
@@ -7,8 +11,7 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
     class Guard {
         show_svg_visual () {
             if ( [...document.getElementsByClassName(this.name)].length == 0 ) {
-                draw_classy_circle(x,y,16,this.name)
-                draw_classy_circle(x,y,10,this.name)
+                this.svg = draw_classy_square(x,y,64,this.name)
             }
         }
 
@@ -18,35 +21,233 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
             this.name = `${Date.now()}`.substring(7)
             this.show_svg_visual()
         }
+
+        display_label() {
+
+        }
+
+        remove_label() {
+
+        }
+
+        set_label ( ix ) {
+            this.ix = ix;
+        }
+    }
+
+    class Edge {
+        show_svg_visual () {
+            this.arrow = draw_classy_arrow(this.g1.x,this.g1.y,this.g2.x,this.g2.y,this.cls,16)
+            this.button = draw_classy_square( this.cx, this.cy, 52, this.cls )
+        }
+
+        delete_svg_visual() {
+
+        }
+
+        dist( x, y ){
+            return parseInt( Math.sqrt( (x-this.cx)**2 + (y-this.cy)**2 ) )
+        }
+
+        constructor ( g , h ) {
+            this.g1 = g;
+            this.g2 = h;
+            this.cx = parseInt((this.g1.x + this.g2.x)/2);
+            this.cy = parseInt((this.g1.y + this.g2.y)/2);
+            this.name = `${Date.now()}`.substring(7)
+            this.cls = `arrow_${this.name}`
+            this.show_svg_visual()
+        }
+
+        set_label ( ix ) {
+            this.ix = ix;
+        }
+
+        flip() {
+            x = this.g1;
+            this.g1 = this.g2;
+            this.g2 = x;
+            this.delete_svg_visual()
+            this.show_svg_visual()
+        }
     }
 
     class GuardNet {
         constructor () {
             this.guards = []
             this.net = []
-        }
-
-        add_edge ( i, j ) {
-            if ( this.guards[i].name >= this.guards[j].name ) {
-                tmp = i; i=j; j=tmp;
-            }
-            g1 = this.guards[i]
-            g2 = this.guards[j]
-            e = g1.name+','+g2.name
-            if ( !( e in this.net )) {
-                this.net = this.net.concat([e])
-                
-            }
+            this.neighbours = {}
+            this.edge_list = []
+            this.edge_buttons = []
         }
 
         add_guard( g ) {
-
-
             this.guards = this.guards.concat([g])
+            g.set_label( this.guards.length - 1 )
+            this.gen_distance_matrix()
+        }
+
+        add_edge( g , h ) {
+            this.edge_list = this.edge_list.concat([new Edge( g , h )]);
+            var ix = this.edge_list.length - 1
+            this.edge_list[ix].set_label(ix)
+            this.edge_buttons = this.edge_buttons.concat([this.edge_list[ix].button]);
+        }
+
+        button_close( x, y ) {
+            for ( let i = 0; i < this.edge_list.length; i++ ) {
+                g = this.edge_list[i]
+                x_ = g.cx - x
+                y_ = g.cy - y
+                var dist = Math.sqrt( x_**2 + y_**2 )
+                if ( dist <= 64 ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        get_closest_button( x, y ) {
+            for ( let i = 0; i < this.edge_list.length; i++ ) {
+                g = this.edge_list[i]
+                x_ = g.cx - x
+                y_ = g.cy - y
+                var dist = Math.sqrt( x_**2 + y_**2 )
+                if ( dist <= 64 ) {
+                    return g;
+                }
+            }
+            return false;
+        }
+
+        node_close( x, y ) {
+            for ( let i = 0; i < this.guards.length; i++ ) {
+                g = this.guards[i]
+                x_ = g.x - x
+                y_ = g.y - y
+                var dist = Math.sqrt( x_**2 + y_**2 )
+                if ( dist <= 64 ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        get_closest_node( x, y ) {
+            for ( let i = 0; i < this.guards.length; i++ ) {
+                g = this.guards[i]
+                x_ = g.x - x
+                y_ = g.y - y
+                var dist = Math.sqrt( x_**2 + y_**2 )
+                if ( dist <= 64 ) {
+                    return g;
+                }
+            }
+            return false;
+        }
+
+        generate_edges() {
+            for (let i = 0; i<this.guards.length;i++) {
+                if (!( i in this.neighbours)) {
+                    this.neighbours[i] = {}
+                }
+                for (let j = i+1; j<this.guards.length;j++){
+                    if (!(j in this.neighbours[i])) {
+                        this.neighbours[i][j] = 1;
+                        this.add_edge( this.guards[i], this.guards[j] )
+                    }
+                }
+            }
+        }
+
+        gen_distance_matrix() {
+            this.dist = []
+            for ( let i = 0; i < this.guards.length; i++ ) {
+                this.dist[i] = []
+            }
+            for ( let i = 0; i < this.guards.length; i++ ) {
+                for ( let j = 0; j < this.guards.length; j++) {
+                    d = parseInt(Math.sqrt( (this.guards[i].x-this.guards[j].x)**2+(this.guards[i].y-this.guards[j].y)**2 ))
+                    this.dist[j][i] = d
+                    this.dist[i][j] = d
+                }
+            }
         }
     }
 
+    function bind_to_clock_tick(ticked_action, millisecond_step) {
+        function tick() {
+          //console.log("tick")
+          // ticked_action -> bool (weitermachen oder nicht?)
+          var cancel_tick = ticked_action(millisecond_step);
+          var now = Date.now();
+          if ( (cancel_tick == undefined) || !cancel_tick ) {
+            //if not cancelled, schedule next tick
+            setTimeout(tick, millisecond_step - (now%millisecond_step));
+          } else {
+            console.log("tick cancelled")
+          }
+        }
+        tick()
+    }
+
     gnet = new GuardNet()
+/*
+    function pulse_guards(){
+        guards = gnet.guards
+        for ( let i = 0; i < guards.length; i++ ){
+            g = guards[i]
+            r2 = parseInt(g.inner_circle.getAttribute("r"))
+            r1 = parseInt(g.outer_circle.getAttribute("r"))
+            r1 = r1 + 1
+            r2 = r2 + 1
+            if ( r1 >= 32) {
+                r1 = 16
+            }
+            if ( r2 >= 26){
+                r2 = 10
+            }
+            g.inner_circle.setAttribute("r",r2)
+            g.outer_circle.setAttribute("r",r1)
+        }
+        return false
+    }
+    //bind_to_clock_tick(pulse_guards,100)*/
+
+    function highlight_cursor_closest_node(evt) {
+        tmp = get_svg_xy_from_event(evt)
+        x = tmp[0]; y = tmp[1];
+        if ( gnet.node_close(x,y) ) {
+            g = gnet.get_closest_node(x,y)
+            squares = [...g.svg.children][0]
+            squares.style.display = "block"
+        } else {
+            for ( let i = 0; i < gnet.guards.length; i++ ){
+                g = gnet.guards[i]
+                g = g.svg.children
+                g = [...g][0]
+                g.style.display="none"
+            }
+        }
+    }
+
+    function highlight_cursor_closest_button(evt) {
+        tmp = get_svg_xy_from_event(evt)
+        x = tmp[0]; y = tmp[1];
+        if ( gnet.button_close(x,y) ) {
+            g = gnet.get_closest_button(x,y)
+            squares = [...g.button.children][0]
+            squares.style.display = "block"
+            console.log("test")
+        } else {
+            for ( let i = 0; i < gnet.edge_buttons.length; i++ ){
+                g = gnet.edge_list[i]
+                g = g.button.children
+                g = [...g][0]
+                g.style.display="none"
+            }
+        }
+    }
 
     function add_node(evt) {
         tmp = get_svg_xy_from_event(evt)
@@ -54,44 +255,12 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
         y = tmp[1]
         g = new Guard(x,y)
         gnet.add_guard(g)
-        nodes = nodes.concat([[x,y]]);
-        nodes = nodes.sort( (a,b) => a[0] - b[0] )
-        dist = gen_distance_matrix(nodes)
-        //gen_edges()
+        gnet.generate_edges()
     }
-    //todo: distance calc'd => calc nneighbours
-    nneighbours = []
-    function gen_distance_matrix(nodes) {
-        dist = []
-        for ( let i = 0; i < nodes.length; i++ ) {
-            dist[i] = []
-        }
-        for ( let i = 0; i < nodes.length; i++ ) {
-            for ( let j = 0; j < nodes.length; j++) {
-                d = parseInt(Math.sqrt( (nodes[i][0]-nodes[j][0])**2+(nodes[i][1]-nodes[j][1])**2 ))
-                dist[j][i] = d
-                dist[i][j] = d
-            }
-        }
-        return dist
-    }
-    function gen_edges() {
-        edge_ixs = [];
-        _tmp_v_degree = [];
-        for ( let i = 0; i < nodes.length; i++ ) {
-            _tmp_v_degree[i]=0
-        }
-        for ( let i = 0; i < nodes.length; i++ ) {
-            for ( let j = i+1; j < nodes.length; j++ ) {
-                
-            }
-        }
-    }
-    nodes = []
-    model = {}
+
     svg = document.getElementById("total_svg1")
-    bg = document.getElementById(`layer_${0}`)
-    fg = document.getElementById(`layer_${layer_count - 1}`)
     svg.addEventListener("click",add_node)
+    svg.addEventListener('mousemove',highlight_cursor_closest_node)
+    svg.addEventListener('mousemove',highlight_cursor_closest_button)
 </script>
 </html>
