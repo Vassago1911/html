@@ -35,6 +35,12 @@ svg.setAttribute("viewBox",`0 0 ${vbx} ${vbx}`)
 svg.classList.add("layers")
 svg_frame.appendChild(svg)
 
+svg = document.createElementNS("http://www.w3.org/2000/svg","svg")
+svg.id = 'button_layer'
+svg.setAttribute("viewBox",`0 0 ${vbx} ${vbx}`)
+svg.classList.add("layers")
+svg_frame.appendChild(svg)
+
 function get_all_layers(){
     return [...document.getElementsByClassName("layers")];
 }

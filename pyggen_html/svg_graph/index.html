@@ -64,30 +64,30 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
         }
 
         play_sound() {
-            node_sounds[Date.now() % 4].play()
-        }
-
-        invert_connections() {
-            if ( this.nnet == undefined ) {
-                return;
-            }
-            var connected_nodes = []
-            var nodes = this.nnet.nodes
-            var edges = this.nnet.edges
-            for (let n = 0; n < this.nnet.nodes.length; n++ ) {
-                var node = this.nnet.nodes[n]
-                var x = this.x; var y = this.y;
-                var x_ = node.x; var y_ = node.y;
-                var cx = parseInt((x+x_)/2)
-                var cy = parseInt((y+y_)/2)
-                var btn = this.nnet.get_closest_edge_button(cx,cy)
-
-            }
+            var snd = node_sounds[Date.now() % 4]
+            snd.volume = .17
+            snd.play()
         }
 
         click() {
             //invert connections to other nodes
-            //TODO
+            //i.e. disconnect all connected nodes
+            //and connect all unconnected
+            // (no flips, edges always point normally)
+            //find all edges this node is a part of
+            var edges = this.nnet.edge_list
+            var res = []
+            for ( var e = 0; e<edges.length; e++){
+                var edge = edges[e]
+                if ( (edge.g1==this) || (edge.g2==this) ){
+                    res = res.concat([edge])
+                    if ( edge.switch == 0 ) {
+                        edge.flip()
+                    }
+                    edge.flip()
+                }
+            }
+            //console.log(res)
         }
     }
 
@@ -130,7 +130,9 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
         }
 
         play_sound() {
-            edge_sounds[Date.now() % 3].play()
+            var snd = edge_sounds[Date.now() % 3]
+            snd.volume = .17
+            snd.play()
         }
 
         flip() {
@@ -146,8 +148,17 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
             } else { console.log("PANIC!!!! this should not happen!!!");}
         }
 
+        en_disable() {
+            if ( this.arrow.style.display == 'none' ) {
+                this.arrow.style.display = 'block'
+            } else {
+                this.arrow.style.display = 'none'
+            }
+        }
+
         click() {
-            this.flip()
+            //this.flip()
+            this.en_disable()
         }
     }
 
@@ -247,11 +258,11 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
         }
 
         play_sound() {
-            hover_sounds[Date.now()%2].play()
+            var snd = hover_sounds[Date.now() % 2]
+            snd.volume = .17
+            snd.play()
         }
     }
-
-    gnet = new NodeNet()
 
     function find_hovered(evt) {
         tmp = get_svg_xy_from_event(evt)
@@ -298,9 +309,16 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
         }
     }
 
+    function start_new_graph(){
+        gnet = new NodeNet()
+    }
+
+    start_new_graph()
+
     svg = document.getElementById("total_svg1")
     svg.addEventListener('mousemove',find_hovered)
-
     svg.addEventListener("mousedown",if_nothing_hovered_add_node)
+
+
 </script>
 </html>
