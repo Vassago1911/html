@@ -70,12 +70,7 @@ class Graph():
             else:
                 break
             #print(self._flags[i])
-
-
         self.calc_boundaries()
-        #TODOOOOOO:!!!! self.calc_boundaries()
-
-
         #TODO: besser kaltstarten, nur ne kante oder knoten mehr heisst nicht, noch mal alles
 
     def bdy(self,ss,ts):
@@ -83,7 +78,7 @@ class Graph():
         def signed_b(s):
             return tuple( ( (-1)**i, s[:i]+s[i+1:]) for i in range(len(s)) )
 
-        D_tmp = [ [0 for _ in range(len(ss)) ] for _ in range(len(ts)) ]
+        D_tmp = [ [0 for _ in range(len(ts)) ] for _ in range(len(ss)) ]
         #print(ss,ts)
         for i in range(len(ss)):
             s = ss[i]
@@ -96,7 +91,7 @@ class Graph():
                 c = 0
                 for x0,x1 in hit_list:
                     c += x0
-                D_tmp[j][i] = c
+                D_tmp[i][j] = c
         return D_tmp
 
     # TODO: downward and upward ( homology / cohomology ) zips for valid s,t combinations per boundary degree
@@ -104,23 +99,30 @@ class Graph():
     def calc_boundaries(self):
         fgs = list(reversed(self._flags))
         downward_chain = list( zip( fgs[:-1], fgs[1:] ) )
-        #print(downward_chain)
         self.ds = list()
         for ss,ts in downward_chain:
-            if len(ss) == 0: #top degree
+            if len(ss) == 0:
                 self.ds = [[ len(self.nodes)*[0,],],]
-            else: #we have source flags, now calc honest bdy
+            else:
                 self.ds = self.ds + [self.bdy(ss,ts),]
-        self.ds = self.ds + [len(self.ds[-1])*[1,]]
+        for i,d in enumerate(self.ds):
+            self.ds[i] = list(zip(*d))
+        self.ds = self.ds + [[len(self.ds[-1])*[1,]]]
         self.ds = list(reversed(self.ds))
 
     def print_boundaries(self):
-        print("------------------------------------------------")
-        for d in self.ds:
+        def print_line(line):
+            return " ".join(list(map(lambda x: f"{x: 2d}",line)))
+        print("================================================")
+        N = len(self.ds)
+        for i,d in enumerate(self.ds):
             print()
             for c in d:
-                print(c)
+                print(f"{i-1: 2d}: ",print_line(c))
         print("------------------------------------------------")
+        print("================================================")
+        print()
+        print("================================================")
 
 complete = Graph()
 for _ in range(5):
