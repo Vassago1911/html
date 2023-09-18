@@ -8,6 +8,24 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
 <script src="svg_canvas.js"></script>
 <link href="std.css" rel="stylesheet"/><script src="colours.js"></script>
 <script type="text/javascript">
+    node_sounds = [
+        new Audio("latin_guitar03_01.wav"),
+        new Audio("latin_guitar03_02.wav"),
+        new Audio("latin_guitar03_03.wav"),
+        new Audio("latin_guitar03_04.wav")
+        ]
+
+    edge_sounds = [
+        new Audio("latin_brass01_01.wav"),
+        new Audio("latin_brass01_02.wav"),
+        new Audio("latin_brass01_03.wav")
+        ]
+
+    hover_sounds = [
+        new Audio("latin_guitar01_01.wav"),
+        new Audio("latin_guitar01_02.wav"),
+        ]
+
     class Node {
         show_svg_visual () {
             if ( [...document.getElementsByClassName(this.name)].length == 0 ) {
@@ -33,11 +51,43 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
             this.ix = ix;
         }
 
+        set_nnet ( nodes ) {
+            this.nnet = nodes
+        }
+
         constructor ( x, y ) {
             this.x = x;
             this.y = y;
             this.name = `${Date.now()}`.substring(7)
             this.show_svg_visual()
+            this.type = "Node"
+        }
+
+        play_sound() {
+            node_sounds[Date.now() % 4].play()
+        }
+
+        invert_connections() {
+            if ( this.nnet == undefined ) {
+                return;
+            }
+            var connected_nodes = []
+            var nodes = this.nnet.nodes
+            var edges = this.nnet.edges
+            for (let n = 0; n < this.nnet.nodes.length; n++ ) {
+                var node = this.nnet.nodes[n]
+                var x = this.x; var y = this.y;
+                var x_ = node.x; var y_ = node.y;
+                var cx = parseInt((x+x_)/2)
+                var cy = parseInt((y+y_)/2)
+                var btn = this.nnet.get_closest_edge_button(cx,cy)
+
+            }
+        }
+
+        click() {
+            //invert connections to other nodes
+            //TODO
         }
     }
 
@@ -46,6 +96,8 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
             this.arrow = draw_classy_arrow(this.g1.x,this.g1.y,this.g2.x,this.g2.y,this.name,16)
             var bg_clr = "#132"
             this.button = draw_classy_square( this.cx, this.cy, 52, this.name, bg_clr )
+            this.back_arrow = draw_classy_arrow(this.g2.x,this.g2.y,this.g1.x,this.g1.y,this.name,16);
+            this.back_arrow.style.display = 'none';
         }
 
         highlight() {
@@ -72,34 +124,30 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
             this.cx = parseInt((this.g1.x + this.g2.x)/2);
             this.cy = parseInt((this.g1.y + this.g2.y)/2);
             this.name = `${Date.now()}`.substring(7)
+            this.type="Edge"
             this.show_svg_visual()
-            this.normal_=false;
-            this.flipped=false;
-            this.deleted=false;
+            this.switch = 0;
         }
 
-
+        play_sound() {
+            edge_sounds[Date.now() % 3].play()
+        }
 
         flip() {
-            if ( this.normal_ ) {
-                this.normal_=false;
-                this.flipped=true;
-            } else if ( this.flipped ) {
-                this.flipped=false;
-                this.deleted=true;
-            } else if ( this.deleted ) {
-                this.normal_=true;
-                this.flipped=false;
-                this.deleted=false;
+            this.switch = ( this.switch + 1 ) % 3
+            if ( this.switch == 1 ) {
+                this.arrow.style.display = 'none'
+                this.back_arrow.style.display = 'block'
+            } else if ( this.switch == 2 ) {
+                this.back_arrow.style.display = 'none'
+                this.arrow.style.display = 'none'
+            } else if ( this.switch == 0 ) {
+                this.arrow.style.display = 'block'
             } else { console.log("PANIC!!!! this should not happen!!!");}
-            if (!(this.normal_)) {
-                x = this.g1;
-                this.g1 = this.g2;
-                this.g2 = x;
-            }
+        }
 
-            this.delete_svg_visual()
-            this.show_svg_visual()
+        click() {
+            this.flip()
         }
     }
 
@@ -110,6 +158,8 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
             this.neighbours = {}
             this.edge_list = []
             this.edge_buttons = []
+            this.type = "NodeNet"
+            this.offset = 0;
         }
 
         add_node( evt ) {
@@ -119,7 +169,13 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
             g = new Node(x,y)
             this.nodes = this.nodes.concat([g])
             g.set_label( this.nodes.length - 1 )
+            g.set_nnet( this )
+            //console.log(evt)
             this.generate_edges()
+            setTimeout( 100*Math.random() ,this.nodes[0].play_sound());
+            if ( this.edge_list.length > 0 ) {
+                setTimeout( 100*Math.random() ,this.edge_list[0].play_sound());
+            }
         }
 
         add_edge( g , h ) {
@@ -127,6 +183,10 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
             var ix = this.edge_list.length - 1
             this.edge_list[ix].set_label(ix)
             this.edge_buttons = this.edge_buttons.concat([this.edge_list[ix].button]);
+        }
+
+        set_offset() {
+            this.offset = this.nodes.length - 1;
         }
 
         button_close( x, y ) {
@@ -137,6 +197,19 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
                 var dist = Math.sqrt( x_**2 + y_**2 )
                 if ( dist <= 128 ) {
                     return true;
+                }
+            }
+            return false;
+        }
+
+        get_closest_edge_button( x, y ) {
+            for ( let i = 0; i < this.edge_list.length; i++ ) {
+                g = this.edge_list[i]
+                x_ = g.cx - x
+                y_ = g.cy - y
+                var dist = Math.sqrt( x_**2 + y_**2 )
+                if ( dist <= 128 ) {
+                    return g;
                 }
             }
             return false;
@@ -172,6 +245,10 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
                 }
             }
         }
+
+        play_sound() {
+            hover_sounds[Date.now()%2].play()
+        }
     }
 
     gnet = new NodeNet()
@@ -182,7 +259,6 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
         y = tmp[1]
         nodes = gnet.nodes;
         edges = gnet.edge_list;
-        res = []
         toggles = []
         for ( let n = 0; n < nodes.length; n++ ){
             if ( nodes[n].dist(x,y) <= 70 ) {
@@ -200,11 +276,6 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
                 edges[e].highlight_off()
             }
         }
-        if (evt.type == "click") {
-            console.log("I know you're a click!")
-            console.log(evt)
-            return res;
-        }
         return toggles;
     }
 
@@ -213,17 +284,23 @@ vbx = 4096;layer_count = 5// -> svg_canvas.js</script>
         x = tmp[0]
         y = tmp[1]
         sth_close = gnet.node_or_button_close(x,y)
+        if ( evt.buttons == 4 ) {
+            gnet.set_offset()
+        }
         if ( !sth_close ) {
             gnet.add_node(evt);
-            console.log(evt)
         } else {
             buttons = find_hovered(evt);
+            for ( let b = 0; b < buttons.length; b++ ){
+                buttons[b].click()
+            }
+            gnet.play_sound();
         }
     }
 
     svg = document.getElementById("total_svg1")
-    //svg.addEventListener('mousemove',find_hovered)
+    svg.addEventListener('mousemove',find_hovered)
 
-    svg.addEventListener("click",if_nothing_hovered_add_node)
+    svg.addEventListener("mousedown",if_nothing_hovered_add_node)
 </script>
 </html>
