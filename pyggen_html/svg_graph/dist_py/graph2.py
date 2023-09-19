@@ -4,6 +4,7 @@ class Special_Digraph():
     def __init__(self,):
         self.nodes = tuple()
         self.edges = tuple()
+        self.known_morphisms = list()
         self.still_special()
 
     def still_special(self):
@@ -34,8 +35,15 @@ class Special_Digraph():
                             valid = False
                             break
                     if valid:
-                        self.flags[ix] = self.flags[ix] + [ tuple( sorted(list(flag) + list((VV,))) ) ]
-            self.flags[ix] = tuple(self.flags[ix])
+                        self.flags[ix] = self.flags[ix] + [ tuple( list(flag) + list((VV,)) ) ]
+            self.flags[ix] = tuple(sorted(self.flags[ix]))
+
+    def get_top_flags(self):
+        self.get_my_flags()
+        if len(self.flags)>=2:
+            return self.flags[len(self.flags)-3]
+        else:
+            return self.flags
 
     def add_node(self):
         self.nodes = tuple(sorted(list(self.nodes) + [(len(self.nodes),)]))
@@ -61,18 +69,60 @@ class Special_Digraph():
                 tmp.add_edge(n[0],t[0])
         return tmp
 
-class Chain_Complex():
-    def __init__(self,graph):
-        self.max_degree = len(graph.nodes) + 1
-        self.simplices = self.calc_flag_cx(graph)
+    def cone(self):
+        tmp = Special_Digraph()
+        for _ in range(len(self.nodes)+1):
+            tmp.add_node()
+        for e in self.edges:
+            tmp.add_edge(*e)
+        t = tmp.nodes[-1]
+        for n in tmp.nodes[:-1]:
+            tmp.add_edge(n[0],t[0])
+        return tmp
 
-    def calc_flag_cx(self,graph):
-        pass
+    #def product(self,other):
+
+    # def add_morphism(self,ts:list[int]):
+    #TODO: pushout s.t. po((cone,i1),(cone,i2))=suspension(i)
+
+# class DiGraph_Morphism():
+#     def __init__(self,g:Special_Digraph,h:Special_Digraph,map:list[int]):
+
+# class Chain_Complex():
+#     def __init__(self,graph):
+#         self.max_degree = len(graph.nodes) + 1
+#         self.simplices = self.calc_flag_cx(graph)
+
+#     def calc_flag_cx(self,graph):
+#         pass
+
+# pt = Special_Digraph(); pt.add_node() # pt = pt
+# I = Special_Digraph(); I.add_node(); I.add_node(); I.add_node(); I.add_edge(0,1); I.add_edge(0,2) # I = [.<-.->.]
+# I = I.suspend(); I = I.suspend(); I = I.suspend();
 
 g = Special_Digraph()
 g.add_node()
-g.add_node()
-#S0
-g = g.suspend() #S1
-g = g.suspend() #S2
-g = g.suspend() #S3
+g.add_node()     #S0
+s0 = g
+
+spheres = [s0]
+cones = [s0.cone()]
+for _ in range(6):
+    print()
+    print()
+    spheres = spheres + [ spheres[-1].suspend() ]
+    #cones = cones + [ spheres[-1].cone() ]
+    print(spheres[-1].get_top_flags())
+    print()
+    #print(cones[-1].get_top_flags())
+
+d2 = Special_Digraph()
+d2.add_node()
+d2.add_node()
+d2.add_node()
+d2.add_edge(0,1)
+d2.add_edge(0,2)
+d2.add_edge(1,2)
+
+# d2 = minimal simplicial D^2
+# todo d2 x S1 and find, homology knows it's an S1
