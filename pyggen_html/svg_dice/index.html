@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+<svg id="total_svg" class="frame" xmlns="http://www.w3.org/2000/svg" width="90vw" height="95vh" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
+    <rect x=0 y=0 width=2048 height=2048 fill="#111"/>
+    <svg class='layers' id="layer0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+</svg>
+</body>
+
+<script type="text/javascript">
+function get_all_layers(){
+    return [...document.getElementsByClassName("layers")];
+}
+
+function random_rgb() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ')';
+}
+
+function random_rgb_light() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ',.95)';
+}
+
+function spawn_skyscraper(l,r,h) {
+    svg_frame = get_all_layers()[0]
+    re = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+    re.setAttribute("x",l);
+    re.setAttribute("y",2048-h);
+    re.setAttribute("width",r-l);
+    re.setAttribute("height",h);
+    re.setAttribute("fill",random_rgb());
+    re.setAttribute("stroke-width",8);
+    re.setAttribute("stroke","#111")
+    re.classList.add("gen_re");
+    re.addEventListener("click",get_element_click_coods);
+    svg_frame.appendChild(re);
+}
+
+function move_cursor(x,y) {
+    cursors = document.getElementsByClassName("cursor")
+    if ( cursors.length == 0 ) {
+        c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+        c.setAttribute("cx",x)
+        c.setAttribute("cy",y)
+        c.setAttribute("r",16)
+        c.setAttribute("fill",random_rgb_light())
+        c.classList.add("cursor")
+        d = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+        d.setAttribute("cx",x)
+        d.setAttribute("cy",y)
+        d.setAttribute("r",10)
+        d.setAttribute("fill",random_rgb())
+        d.classList.add("cursor")
+        svg_frame = get_all_layers()[0]
+        svg_frame.appendChild(c)
+        svg_frame.appendChild(d)
+    }
+    cursor = document.getElementsByClassName("cursor")[0]
+    cursor.setAttribute("cx",x)
+    cursor.setAttribute("cy",y)
+    cursor = document.getElementsByClassName("cursor")[1]
+    cursor.setAttribute("cx",x)
+    cursor.setAttribute("cy",y)
+}
+
+
+svg = document.getElementById("total_svg")
+pt = svg.createSVGPoint();  // Created once for document
+h = document.getElementsByTagName('html')[0]
+last_mouse_svg_coods = [0,0];
+function get_mouse_svg_coods(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    x = cursorpt.x;
+    y = cursorpt.y;
+    if ((x <= 0) || (x>=2048) || (y <= 0) || (y>=2048)) {
+        h.style.cursor = 'crosshair'
+        return
+    }
+    h.style.cursor = 'none'
+    last_mouse_svg_coods = [x,y];
+    move_cursor(x,y)
+}
+svg.addEventListener('mousemove',get_mouse_svg_coods)
+
+gen_cube()
+
+function gen_cube() {
+    c1 = cube_face(1)
+    c2 = cube_face(2)
+    c3 = cube_face(3)
+    c4 = cube_face(4)
+    c5 = cube_face(5)
+    c6 = cube_face(6)
+}
+
+function die_face_rectangle(i) {
+    i = Math.min(6,i)
+    i = Math.max(1,i)
+    odd = i % 2
+    if ( odd != 0 ){
+        // add rect-center circle
+    }
+    i = i - odd
+    // now i is even
+    i = parseInt(i/2)
+    // i in [1,2,3]
+    for ( let i_ = 0; i_ < i; i++ ) {
+
+    }
+}
+
+function cube_face(i) {
+    i = Math.min(6,i)
+    i = Math.max(1,i)
+
+    width = 32
+    height = 32
+    h_offset = 4*width
+    v_offset = 4*height
+
+    r = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+    r.setAttribute("x", h_offset + i*( width + 8 ) )
+    r.setAttribute("y", v_offset)
+    r.setAttribute("width",width)
+    r.setAttribute("height",height)
+    r.setAttribute("fill","#050505")
+    r.setAttribute("stroke-width","1")
+    r.setAttribute("stroke-location","inside")
+    r.setAttribute("stroke","#636")
+    svg = get_all_layers()[5]
+    svg.appendChild(r)
+}
+
+</script>
+
+<style type="text/css">
+       html {
+           background-color: #000;
+           cursor: crosshair;
+       }
+       body {
+           margin: 0;
+       }
+       svg {
+         display: block;
+         border: 0px solid #ccc;
+         position: absolute;
+         top: 5%;
+         left: 5%;
+         width: 90%;
+         height: 90%;
+         background: #000;
+       }
+       .mono {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: max(1vh,1vw);
+        color: #ccc;
+       }
+</style>
+
+</html>

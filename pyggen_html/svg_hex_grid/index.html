@@ -36,7 +36,7 @@ function dark_random_rgb() {
 }
 
 function stone_fill() {
-    var o = Math.round, r = Math.random, s = 10 ; offset=0;
+    var o = Math.round, r = Math.random, s = 5 ; offset=12;
     g = r()*s
     return 'rgba(' + o(g + offset ) +
                ',' + o(g + offset ) +
@@ -75,14 +75,30 @@ function spawn_skyscraper(l,r,h) {
 
 
 player_pos = [14,7]
-player_scales = [85,112]
-board_size = [11,8]
-coin_positions = []
+player_scales = [82,112]
+board_size = [16,12]
+
+function get_random_legal_board_position(){
+    i = 0
+    j = 0
+    len_x = board_size[0]
+    len_y = board_size[1]
+    while ( ( i < 1 )
+         || ( i > len_x )
+         || ( j < 1 )
+         || ( j > len_y ) ) {
+        i = parseInt( len_x * Math.random() )
+        j = parseInt( len_y * Math.random() )
+    }
+    return [i,j]
+}
+
+coins = []
 
 function player_pos_from_index(ixs){
     i = ixs[0]; j = ixs[1];
-    return [ i*player_scales[0],
-             j*player_scales[1]
+    return [ 128+i*player_scales[0],
+             256+j*player_scales[1]
              + ( i%2 )*parseInt(player_scales[1]/2) ]
 }
 
@@ -93,12 +109,14 @@ function move_cursor(x,y) {
         c.setAttribute("cx",x)
         c.setAttribute("cy",y)
         c.setAttribute("r",16)
+        //c.setAttribute("r",0)
         c.setAttribute("fill",random_rgb_light())
         c.classList.add("cursor")
         d = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
         d.setAttribute("cx",x)
         d.setAttribute("cy",y)
         d.setAttribute("r",10)
+        //d.setAttribute("r",0)
         d.setAttribute("fill",random_rgb())
         d.classList.add("cursor")
         svg_frame = get_all_layers()[5]
@@ -137,21 +155,23 @@ function get_mouse_svg_coods(evt) {
 }
 
 function gen_hex_grid() {
-    player_pos[0] = parseInt(board_size[0]/2)
-    player_pos[1] = parseInt(board_size[1]/2)
+    player_pos[0] = parseInt(board_size[0]/5)
+    player_pos[1] = parseInt(board_size[1]/5)
     for ( let i = 1; i<board_size[0]; i++ ) {
         for ( let j = 1; j<board_size[1] + ((i+1)%2); j++ ) {
             p = document.createElementNS( "http://www.w3.org/2000/svg", "path" )
             offset = player_pos_from_index([i,j])
-            console.log(offset)
             h_offset = offset[0]
             v_offset = offset[1]
             //h_offset = player_scales[0]*i
             //v_offset = player_scales[1]*j + ( i % 2 ) * parseInt( player_scales[1] / 2 )
             p.setAttribute("transform",`translate(${h_offset} ${v_offset}) scale(${player_scales[1]/4} ${player_scales[1]/4})`)
             p.setAttribute("d","M 2,0 L 1,2 L -1,2 L -2,0 L -1,-2 L 1,-2 z")
-            p.setAttribute("fill",dark_random_rgb())
-            p.setAttribute("stroke-width",0)
+            p.setAttribute("fill","#000c00")
+                //dark_random_rgb())
+            p.setAttribute('stroke-location','outside')
+            p.setAttribute("stroke-width",.1)
+            p.setAttribute('stroke','#201')
             svg_frame = get_all_layers()[4]
             svg_frame.appendChild(p)
         }
@@ -160,8 +180,9 @@ function gen_hex_grid() {
     i=0
     for ( let j = 0; j<board_size[1] + ((i+1)%2) + 1; j++ ) {
         p = document.createElementNS( "http://www.w3.org/2000/svg", "path" )
-        h_offset = player_scales[0]*i
-        v_offset = player_scales[1]*j + ( i % 2 ) * parseInt( player_scales[1] / 2 )
+        offset = player_pos_from_index([i,j])
+        h_offset = offset[0]
+        v_offset = offset[1]
         p.setAttribute("transform",`translate(${h_offset} ${v_offset}) scale(${player_scales[1]/4} ${player_scales[1]/4})`)
         p.setAttribute("d","M 2,0 L 1,2 L -1,2 L -2,0 L -1,-2 L 1,-2 z")
         p.setAttribute("fill",stone_fill())
@@ -175,8 +196,9 @@ function gen_hex_grid() {
     i=board_size[0]
     for ( let j = 0; j<board_size[1] + ((i+1)%2) + 1; j++ ) {
         p = document.createElementNS( "http://www.w3.org/2000/svg", "path" )
-        h_offset = player_scales[0]*i
-        v_offset = player_scales[1]*j + ( i % 2 ) * parseInt( player_scales[1] / 2 )
+        offset = player_pos_from_index([i,j])
+        h_offset = offset[0]
+        v_offset = offset[1]
         p.setAttribute("transform",`translate(${h_offset} ${v_offset}) scale(${player_scales[1]/4} ${player_scales[1]/4})`)
         p.setAttribute("d","M 2,0 L 1,2 L -1,2 L -2,0 L -1,-2 L 1,-2 z")
         p.setAttribute("fill",stone_fill())
@@ -188,10 +210,25 @@ function gen_hex_grid() {
     }
 
     for ( let i = 1; i<board_size[0]; i++ ) {
+        j = -1
+        p = document.createElementNS( "http://www.w3.org/2000/svg", "path" )
+        offset = player_pos_from_index([i,j])
+        h_offset = offset[0]
+        v_offset = offset[1]
+        p.setAttribute("transform",`translate(${h_offset} ${v_offset}) scale(${player_scales[1]/4} ${player_scales[1]/4})`)
+        p.setAttribute("d","M 2,0 L 1,2 L -1,2 L -2,0 L -1,-2 L 1,-2 z")
+        p.setAttribute("fill",stone_fill())
+        p.setAttribute('stroke-width','.25')
+        p.setAttribute('stroke-location','inside')
+        p.setAttribute('stroke',dark_stroke())
+        svg_frame = get_all_layers()[4]
+        svg_frame.appendChild(p)
+
         j = 0
         p = document.createElementNS( "http://www.w3.org/2000/svg", "path" )
-        h_offset = player_scales[0]*i
-        v_offset = player_scales[1]*j + ( i % 2 ) * parseInt( player_scales[1] / 2 )
+        offset = player_pos_from_index([i,j])
+        h_offset = offset[0]
+        v_offset = offset[1]
         p.setAttribute("transform",`translate(${h_offset} ${v_offset}) scale(${player_scales[1]/4} ${player_scales[1]/4})`)
         p.setAttribute("d","M 2,0 L 1,2 L -1,2 L -2,0 L -1,-2 L 1,-2 z")
         p.setAttribute("fill",stone_fill())
@@ -203,8 +240,9 @@ function gen_hex_grid() {
 
         j = board_size[1] + ( ( i + 1 ) % 2 )
         p = document.createElementNS( "http://www.w3.org/2000/svg", "path" )
-        h_offset = player_scales[0]*i
-        v_offset = player_scales[1]*j + ( i % 2 ) * parseInt( player_scales[1] / 2 )
+        offset = player_pos_from_index([i,j])
+        h_offset = offset[0]
+        v_offset = offset[1]
         p.setAttribute("transform",`translate(${h_offset} ${v_offset}) scale(${player_scales[1]/4} ${player_scales[1]/4})`)
         p.setAttribute("d","M 2,0 L 1,2 L -1,2 L -2,0 L -1,-2 L 1,-2 z")
         p.setAttribute("fill",stone_fill())
@@ -216,8 +254,9 @@ function gen_hex_grid() {
 
         j = board_size[1] + ( i % 2 )
         p = document.createElementNS( "http://www.w3.org/2000/svg", "path" )
-        h_offset = player_scales[0]*i
-        v_offset = player_scales[1]*j + ( i % 2 ) * parseInt( player_scales[1] / 2 )
+        offset = player_pos_from_index([i,j])
+        h_offset = offset[0]
+        v_offset = offset[1]
         p.setAttribute("transform",`translate(${h_offset} ${v_offset}) scale(${player_scales[1]/4} ${player_scales[1]/4})`)
         p.setAttribute("d","M 2,0 L 1,2 L -1,2 L -2,0 L -1,-2 L 1,-2 z")
         p.setAttribute("fill",stone_fill())
@@ -228,45 +267,81 @@ function gen_hex_grid() {
         svg_frame.appendChild(p)
     }
 
-    gen_coins()
+    place_coins()
 }
 
-function gen_coins() {
-    c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
-    pos = player_pos_from_index(player_pos)
-    c.setAttribute("cx",pos[0])
-    c.setAttribute("cy",pos[1])
-    c.setAttribute("r",5)
-    c.setAttribute("fill","#333")
-    svg_frame = get_all_layers()[4]
-    svg_frame.appendChild(c)
+function place_coins() {
+    wth = 18; hgt = 18;
+    while (coins.length < 10) {
+        r = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+        ix = get_random_legal_board_position()
+        pos = player_pos_from_index(ix)
+        r.setAttribute("x",pos[0]-parseInt(wth/2))
+        r.setAttribute("y",pos[1]-parseInt(hgt/2))
+        r.setAttribute("width",wth)
+        r.setAttribute("height",hgt)
+        r.setAttribute("rx",parseInt(Math.min(wth,hgt)/3))
+        r.setAttribute("fill","#991")
+        r.classList.add("coin")
+        svg_frame = get_all_layers()[4]
+        svg_frame.appendChild(r)
+        coins = coins.concat([ [ix,r] ] )
+    }
 }
 
 function gen_player() {
-    c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+    svg_frame = get_all_layers()[4]
     pos = player_pos_from_index(player_pos)
+
+    player = document.createElementNS( "http://www.w3.org/2000/svg", "path" )
+    player.setAttribute("fill","#014")
+    player.setAttribute('stroke-location','outside')
+    player.setAttribute("stroke-width",.1)
+    player.setAttribute('stroke','#301')
+    player.setAttribute('d','M 0,0 L 1,0 L 0,2 L -1,0 z')
+    player.setAttribute("transform",
+        `translate(${pos[0]} ${pos[1]}) translate(0 -${player_scales[1]/5}) scale(${player_scales[1]/4} ${player_scales[1]/4})`)
+    player.classList.add("player")
+
+    svg_frame.appendChild(player)
+
+    player = document.createElementNS( "http://www.w3.org/2000/svg", "path" )
+    player.setAttribute("fill","#304")
+    player.setAttribute('stroke-location','outside')
+    player.setAttribute("stroke-width",.1)
+    player.setAttribute('stroke','#021')
+    player.setAttribute('d','M 0,0.5 L 1,0.5 L 0,-1.5 L -1,0.5 z')
+    player.setAttribute("transform",
+        `translate(${pos[0]} ${pos[1]}) scale(${player_scales[1]/4} ${player_scales[1]/4})`)
+    player.classList.add("player")
+    svg_frame.appendChild(player)
+
+    c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
     c.setAttribute("cx",pos[0])
     c.setAttribute("cy",pos[1])
-    c.setAttribute("r",5)
+    c.setAttribute("r",12)
     c.setAttribute("fill","#724")
     c.classList.add("player")
-    svg_frame = get_all_layers()[4]
     svg_frame.appendChild(c)
+
 }
 
 function move_player() {
-    p = [...document.getElementsByClassName('player')][0]
+    p = [...document.getElementsByClassName('player')][2]
     pos = player_pos_from_index(player_pos)
     p.setAttribute("cx",pos[0])
     p.setAttribute("cy",pos[1])
 }
 
-function gen_enemies() {
-
-}
-
-function move_enemies() {
-
+score = 0
+function pickup_things() {
+    for ( let i = 0; i < coins.length; i++ ) {
+        if ( ( player_pos[0] == coins[i][0][0] )
+          && ( player_pos[1] == coins[i][0][1] ) ) {
+            coins[i][1].remove()
+            score += 5
+        }
+    }
 }
 
 function get_key_press(evt) {
@@ -304,12 +379,30 @@ function get_key_press(evt) {
         }
     }
     move_player()
+    pickup_things()
+    //collide_guards()
     update_score()
+}
+
+function gen_enemies() {
+    for (let i = 0; i<6; i++){
+        pos = get_random_legal_board_position()
+        pos = player_pos_from_index(pos)
+        enemy = document.createElementNS("http://www.w3.org/2000/svg", "path")
+        enemy.setAttribute("fill","#144")
+        enemy.setAttribute('stroke-location','inside')
+        enemy.setAttribute("stroke-width",.3)
+        enemy.setAttribute('stroke','#136')
+        enemy.setAttribute('d','M 0,0.5 L 1,0.5 L 0,-1.5 L -1,0.5 z')
+        enemy.setAttribute("transform",
+            `translate(${pos[0]} ${pos[1]}) scale(${player_scales[1]/6} ${player_scales[1]/6})`)
+        svg_frame.appendChild(enemy)
+    }
 }
 
 function update_score(){
     score_screen = [...document.getElementsByClassName("score_screen")][0]
-    score_screen.innerHTML = "0"
+    score_screen.innerHTML = `${score}`
 }
 
 function gen_score_screen() {
@@ -329,6 +422,7 @@ svg.addEventListener('mousemove',get_mouse_svg_coods)
 window.addEventListener('keyup',get_key_press)
 gen_hex_grid()
 gen_player()
+gen_enemies()
 gen_score_screen()
 
 </script>
