@@ -29,6 +29,8 @@
     <svg class='layers' id="layer3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
     <svg class='layers' id="layer4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
     <svg class='layers' id="layer5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <text id='nut_score' x=1056 y=76 font-size=64></text>
+    <text id='lives_score' x=32 y=76 font-size=64></text>
     <svg id='pause_overlay' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
         <rect x=0 y=0 width=2048 height=2048 fill="#6666" stroke='#111' stroke-width='32'/>
         <text x=50% y=25% font-family=monospace font-size=256 text-anchor=middle>PAUSED</text>
@@ -156,8 +158,6 @@ function place_enemy(x,y) {
     var layers = [...document.getElementsByClassName('layers')]
     l = layers[0]
     var enemy = document.createElementNS("http://www.w3.org/2000/svg", "text" )
-    // TODO: snap crab to kleinstes wall-y, das groesser als y ist
-    // mit x zwischen x0 und x1
     enemy.setAttribute("x",x)
     enemy.setAttribute("y",y)
     enemy.setAttribute("font-size",82)
@@ -169,6 +169,21 @@ function place_enemy(x,y) {
         enemy.dataset.direction = "-1"
     }
     l.appendChild(enemy)
+}
+
+var nuts = [];
+var nut_count = 0;
+
+function place_nut(x,y) {
+    var layers = [...document.getElementsByClassName('layers')]
+    l = layers[0]
+    var nut = document.createElementNS("http://www.w3.org/2000/svg", "text" )
+    nut.setAttribute("x",x)
+    nut.setAttribute("y",y)
+    nut.setAttribute("font-size",64)
+    nut.classList.add("nuts")
+    nut.innerHTML = '🥜'
+    l.appendChild(nut)
 }
 
 var got_in_timer_acc = 0;
@@ -202,10 +217,20 @@ function gen_level(stage) {
     walls = walls.concat(basic_walls)
     got_in_timer_acc = 0; //fade out "GOT IN!" message
 
+    //TODO nuts 🥜
+    var nuts = levels[stage%(levels.length)]['nuts']
+    nut_count=0
+    if (nuts!=undefined) {
+        for (nut_ix in nuts) {
+            nut = nuts[nut_ix]
+            place_nut(nut[0],nut[1])
+        }
+    }
+
     //TODO enemies 🦀
     var enemies = levels[stage % (levels.length)]['enemies']
     if (enemies!=undefined) {
-        console.log(enemies)
+        //console.log(enemies)
         for ( enemy_ix in enemies ) {
             enemy = enemies[enemy_ix]
             place_enemy(enemy[0],enemy[1])
@@ -378,6 +403,7 @@ squirrel_left.style.visibility = 'hidden'
 var direction = 0.;
 var vertical_direction = 0.;
 var speed = .5;
+var lives = 0;
 
 function is_on_floor() {
     if ( squirrel_position[1] >= 1920 ) {
@@ -502,9 +528,24 @@ function move_enemies(delta) {
             dir = -dir
             enemy.dataset.direction=dir
         }
-        new_x = x+ (Math.random()*.1+1)*delta*speed*dir
+        new_x = x+ (Math.random()*.1+1)*.75*delta*speed*dir
         enemy.setAttribute('x', new_x)
         //console.log(enemy)
+    }
+    // touched squirrel?
+    for ( en_ix in enemies ) {
+        enemy = enemies[en_ix]
+        x = parseInt( enemy.getAttribute('x') )
+        y = parseInt( enemy.getAttribute('y') )
+        sq_x = squirrel_position[0]
+        sq_y = squirrel_position[1]+64
+
+        if ( ( Math.abs(y-sq_y) < 45 ) && (Math.abs(x-sq_x) < 64 ) ) {
+            lives = lives+1
+            lives_score = document.getElementById("lives_score")
+            lives_score.innerHTML = lives_score.innerHTML + '🐿️'
+            squirrel_position[0] = 128; squirrel_position[1] = 128
+        }
     }
 }
 
@@ -578,6 +619,23 @@ function move_squirrel(delta) {
         //squirrel_position[0] = squirrel_position[0] - (squirrel_position[0]%8) + 7
         squirrel_sprite.setAttribute('x',squirrel_position[0] - (squirrel_position[0]%2) )
         squirrel_sprite.setAttribute('y',squirrel_position[1] - (squirrel_position[1]%2) )
+
+        nuts = [...document.getElementsByClassName('nuts')]
+        for (nut_ix in nuts) {
+            sq_x = squirrel_position[0]
+            sq_y = squirrel_position[1]
+            x = parseInt(nuts[nut_ix].getAttribute('x'))+16
+            y = parseInt(nuts[nut_ix].getAttribute('y'))-16
+            dx = Math.abs(sq_x - x); dy = Math.abs(sq_y - y)
+            if ( dx+dy < 64 ) {
+                nuts[nut_ix].remove()
+                nut_count = nut_count + 1
+                nut_score = document.getElementById('nut_score')
+                nut_score.innerHTML = nut_score.innerHTML+'🥜'
+                //console.log(nut_count)
+            }
+        }
+
         //console.log('move done')
         return false; //don't cancel
     } else {
