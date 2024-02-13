@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<head>
+<title>Squirrel on a Mission🐿️</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+<svg id="total_svg" class="frame" xmlns="http://www.w3.org/2000/svg" width="90vw" height="95vh" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
+    <image id="stone_texture" x=0 y=0 href="./stone.png" height=128 width=128 />
+    <image id="stone_texture_1" x=-128 y=0 href="./stone.png" height=128 width=128 transform='scale(-1 1)' />
+    <image id="stone_texture_2" x=0 y=0 href="./stone.png" height=128 width=128 transform='rotate(1.7)' />
+    <image id="wood_texture"  x=0 y=0 href="./wood.png" height=64 width=128 />
+    <image id="vstone_texture"  x=0 y=0 href="./vertical_stone.png" height=64 width=96 />
+    <rect x=0 y=0 width=2048 height=2048 fill="#111"/>
+    <image id="background" x=0 y=0 height=2048 width=2048 href="./background.png" />
+    <text id="in_label"  x=256 y=230 font-size=96   fill="#6663" font-family=monospace>GOT IN!</text>
+    <text id="nuts_label"  x=1000 y=1700 font-size=96 fill="#6663" font-family=monospace>GET NUTS!</text>
+    <text id="out_label"  x=1340 y=230 font-size=96  fill="#6663" font-family=monospace>GET OUT! ↘️</text>
+    <svg class='layers' id="layer0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg y=120 width=136 height=96 class='protagonist' id="squirrel" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+        <text id='facing_left'  x=0   y=48 color="#ccc" font-size=64 transform="scale( 1 1)">🐿️</text>
+        <text id='facing_right' x=-64 y=48 color="#ccc" font-size=64 transform="scale(-1 1)">🐿️</text>
+    </svg>
+    <svg class='layers' id="layer2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+    </svg>
+    <svg class='layers' id="layer3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg id='pause_overlay' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+        <rect x=0 y=0 width=2048 height=2048 fill="#6666" stroke='#111' stroke-width='32'/>
+        <text x=50% y=25% font-family=monospace font-size=256 text-anchor=middle>PAUSED</text>
+        <text x=25% y=40% font-family=monospace font-size=128 text-anchor=left>THEME</text> <!-- TODO -->
+        <text x=52% y=40% font-family=monospace font-size=128 text-anchor=left>🐿️</text>
+        <text x=60% y=40% font-family=monospace font-size=128 text-anchor=left>🐇</text>
+        <text x=68% y=40% font-family=monospace font-size=128 text-anchor=left>🐓</text>
+        <text x=25% y=50% font-family=monospace font-size=128 text-anchor=left>LEVEL</text> <!-- TODO -->
+        <text x=52% y=50% font-family=monospace font-size=128 text-anchor=left>🙈</text>
+        <text x=60% y=50% font-family=monospace font-size=128 text-anchor=left>😐</text>
+        <text x=68% y=50% font-family=monospace font-size=128 text-anchor=left>😈</text>
+    </svg>
+</svg>
+</body>
+
+<!-- load level boundaries -->
+<script type="text/javascript" src="./basic_walls.js"></script>
+<!-- load levels -->
+<script type="text/javascript" src="./levels.js"></script>
+
+<!-- physics, rendering and such -->
+<script type="text/javascript">
+/*
+var stone_prototype = document.getElementById('stone_texture')
+stone_prototype.style.visibility = 'hidden'
+
+var wood_prototype = document.getElementById('wood_texture')
+wood_prototype.style.visibility = 'hidden'*/
+
+function random_grey() {
+    var o = Math.round, r = Math.random, s = 16 ; offset=32;
+    var z = o(r()*s + offset )
+    return 'rgba(' + z + ',' + z + ',' + z + ')';
+}
+
+function random_brown() {
+    var o = Math.round, r = Math.random, s = 16 ; offset=24;
+    var z = o(r()*s + offset )
+    return 'rgba(' + 2*z + ',' + z + ',' + 0 + ')';
+}
+
+function place_stone(x,y) {
+    var layers = [...document.getElementsByClassName('layers')]
+    l = layers[3]
+    var stone = document.createElementNS("http://www.w3.org/2000/svg", "use" )
+    stone.setAttribute("x",x)
+    stone.setAttribute("y",y)
+    if ( Math.random() > .33 ) {
+        stone.setAttribute('href','#stone_texture')
+    } else if ( Math.random() > .5 ) {
+        stone.setAttribute('href','#stone_texture_1')
+    } else {
+        stone.setAttribute('href','#stone_texture_2')
+    }
+    l.appendChild(stone)
+}
+
+function place_wood(x,y) {
+    var layers = [...document.getElementsByClassName('layers')]
+    l = layers[2]
+    var wood = document.createElementNS("http://www.w3.org/2000/svg", "use" )
+    wood.setAttribute("x",x)
+    wood.setAttribute("y",y)
+    wood.setAttribute('href','#wood_texture')
+    l.appendChild(wood)
+}
+
+function place_vstone(x,y) {
+    var layers = [...document.getElementsByClassName('layers')]
+    l = layers[1]
+    var vstone = document.createElementNS("http://www.w3.org/2000/svg", "use" )
+    vstone.setAttribute("x",x)
+    vstone.setAttribute("y",y)
+    vstone.setAttribute('href','#vstone_texture')
+    l.appendChild(vstone)
+}
+
+// empty layers and generate standard-stone frame
+function clean_level() {
+    var layers = [...document.getElementsByClassName('layers')]
+    for ( layer in layers ) {
+        var l = layers[layer]
+        while (l.firstChild) {
+            l.removeChild(l.lastChild)
+        }
+    }
+
+    for( let y = 2048; y > -128; y = y - 96) {
+        place_stone(-48,y)
+    }
+    for( let y = 2048+32; y > -128; y = y - 96) {
+        place_stone(-48,y)
+    }
+
+    for( let y = 2048; y > -128; y = y - 96) {
+        place_stone(2000-32,y)
+    }
+    for( let y = 2048+32; y > -128; y = y - 96) {
+        place_stone(2000-32,y)
+    }
+    for( let y = 2048; y > -128; y = y - 96) {
+        place_stone(2000-32,y)
+    }
+    for( let y = 2048+32; y > -128; y = y - 96) {
+        place_stone(2000-32,y)
+    }
+
+    for( let y = 2048; y > -128; y = y - 96) {
+        place_stone(y,-16)
+    }
+    for( let y = 2048+32; y > -128; y = y - 96) {
+        place_stone(y,-32)
+    }
+
+    for( let y = 2048+64; y > -128; y = y - 96) {
+        place_stone(y,2048-96-32)
+    }
+    for( let y = 2048+96; y > -128; y = y - 96) {
+        place_stone(y,2048-96-16)
+    }
+}
+
+var enemies = [];
+function place_enemy(x,y) {
+    var layers = [...document.getElementsByClassName('layers')]
+    l = layers[0]
+    var enemy = document.createElementNS("http://www.w3.org/2000/svg", "text" )
+    // TODO: snap crab to kleinstes wall-y, das groesser als y ist
+    // mit x zwischen x0 und x1
+    enemy.setAttribute("x",x)
+    enemy.setAttribute("y",y)
+    enemy.setAttribute("font-size",82)
+    enemy.classList.add("enemies")
+    enemy.innerHTML = '🦀'
+    if (Math.random() > .5) {
+        enemy.dataset.direction =  "1"
+    } else {
+        enemy.dataset.direction = "-1"
+    }
+    l.appendChild(enemy)
+}
+
+var got_in_timer_acc = 0;
+// draws walls and generates array "walls" for collision check
+function gen_level(stage) {
+    clean_level()
+    squirrel_position[0] = 128
+    squirrel_position[1] = 128
+    for ( basic_ix in basic_walls ) {
+        var wall = basic_walls[basic_ix]
+        var x0 = wall[0]
+        var y0 = wall[1]
+        var x1 = wall[2]
+        var y1 = wall[3]
+        draw_wall(x0,y0,x1,y1)
+    }
+    if(stage==undefined){
+        stage=0
+    }else{
+        stage=parseInt(stage)
+    }
+    walls = levels[stage % (levels.length) ]['walls']
+    for ( wall_ix in walls ) {
+        var wall = walls[wall_ix]
+        var x0 = wall[0]
+        var y0 = wall[1]
+        var x1 = wall[2]
+        var y1 = wall[3]
+        draw_wall(x0,y0,x1,y1)
+    }
+    walls = walls.concat(basic_walls)
+    got_in_timer_acc = 0; //fade out "GOT IN!" message
+
+    //TODO enemies 🦀
+    var enemies = levels[stage % (levels.length)]['enemies']
+    if (enemies!=undefined) {
+        console.log(enemies)
+        for ( enemy_ix in enemies ) {
+            enemy = enemies[enemy_ix]
+            place_enemy(enemy[0],enemy[1])
+        }
+    }
+}
+
+var squirrel_position = [ 128, 120 ];
+
+function win_condition() {
+    if ( ( squirrel_position[0] > 1800 ) && ( squirrel_position[1] < 280 ) ) {
+        //console.log('you won!')
+        squirrel_position[0] = 128
+        squirrel_position[1] = 128
+        return true
+    }
+    return false
+}
+
+function draw_wall(x0,y0,x1,y1) {
+    // only l1-walls allowed
+    var dx = x0 - x1; var dy = y0 - y1;
+    if ( ( Math.abs( dx ) < 32 ) || ( Math.abs( dy ) < 32 ) ) {
+        if ( Math.abs( dx ) < 32 ) {
+            x1 = x0;
+            dx = 0;
+            //console.log(x0,x1);
+        }
+        if ( Math.abs( dy ) < 32 ) {
+            y1 = y0;
+            dy = 0;
+            //console.log(y0,y1);
+        }
+        if ( Math.abs(dx)+Math.abs(dy) < 16 ) {
+            return;
+        }
+        svg_frame = document.getElementById('layer0')
+        re = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+        re.setAttribute("x",x0);
+        re.setAttribute("y",y0);
+        re.setAttribute("width",Math.abs(dx)+32);
+        re.setAttribute("height",Math.abs(dy)+32);
+        re.setAttribute("stroke-width",8);
+        if (
+                ( ( x1 < 128  ) || ( x0 > 1920 ) )
+            ||  ( ( y1 < 128  ) || ( y0 > 1920 ) )
+           )  {
+            // world boundary, grey and layer1
+            svg_frame = document.getElementById('layer1')
+            re.setAttribute("fill",random_grey());
+            re.setAttribute("stroke",random_grey())
+        } else if ( x1-x0 < 16 ) {
+            // vertical walls always grey
+            re.setAttribute("fill",random_grey());
+            re.setAttribute("stroke",random_grey())
+            for ( let y = y1 - 20; y > y0-32; y = y - 48 ) {
+                place_vstone(x0-16,y)
+            }
+        }
+        else { // => y1-y0 < 16
+            // rest wood, TODO: crossdash
+            re.setAttribute("fill",random_brown());
+            re.setAttribute("stroke",random_brown())
+            for ( let x = x0-16; x < x1; x=x+127 ) {
+                place_wood(x,y1-6)
+            }
+        }
+        svg_frame.appendChild(re);
+        //console.log(x0,y0,x1,y1)
+    } else {
+        return;
+    }
+}
+
+var current_stage = 0
+gen_level(current_stage)
+
+svg = document.getElementById("total_svg")
+pt = svg.createSVGPoint();  // Created once for document
+h = document.getElementsByTagName('html')[0]
+last_mouse_svg_coods = [0,0];
+function get_mouse_svg_coods(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    x = cursorpt.x;
+    y = cursorpt.y;
+    if ((x <= 0) || (x>=2048) || (y <= 0) || (y>=2048)) {
+        h.style.cursor = 'crosshair'
+        return
+    }
+    h.style.cursor = 'none'
+    last_mouse_svg_coods = [x,y];
+}
+svg.addEventListener('mousemove',get_mouse_svg_coods)
+
+var PAUSED = false;
+var up_pressed = false;
+var left_pressed = false;
+var right_pressed = false;
+
+function keyboard_listener(event) {
+    if(event.keyCode == 37) {
+        //console.log('left pressed')
+        left_pressed = true
+        direction = -1
+    } else if(event.keyCode == 39) {
+        //console.log('right pressed')
+        right_pressed = true
+        direction = 1
+    } else if(event.keyCode == 38) {
+        up_pressed = true;
+        //console.log('up pressed')
+    } else if(event.keyCode == 40) {
+        //console.log('down pressed')
+    } else if(event.keyCode == 27) {
+        PAUSED = !PAUSED;
+    }else {
+        //console.log(`${event.keyCode} pressed`)
+    }
+}
+
+function keyup_listener(event) {
+    if(event.keyCode == 37) {
+        //console.log('left released')
+        left_pressed = false
+        if ( direction < 0 ) {
+            direction = 0
+        }
+    } else if(event.keyCode == 39) {
+        //console.log('right released')
+        right_pressed = false
+        if ( direction > 0 ) {
+            direction = 0
+        }
+    } else if(event.keyCode == 38) {
+        up_pressed = false
+        //console.log('up released')
+    } else if(event.keyCode == 40) {
+        //console.log('down released')
+    } else {
+        //console.log(`${event.keyCode} released`)
+    }
+}
+
+document.addEventListener('keydown',keyboard_listener)
+document.addEventListener('keyup',keyup_listener)
+
+function bind_to_clock_tick(ticked_action) {
+    function tick() {
+      var millisecond_step = 15;
+      // ticked_action -> bool (weitermachen oder nicht?)
+      var cancel_tick = ticked_action(millisecond_step);
+      var now = Date.now();
+      if ( !cancel_tick ) {
+        //if not cancelled, schedule next tick
+        setTimeout(tick, millisecond_step - (now%millisecond_step));
+      }
+    }
+    tick()
+}
+
+var squirrel_sprite = document.getElementById('squirrel')
+var squirrel_left = squirrel_sprite.getElementById('facing_left')
+squirrel_left.style.visibility = 'hidden'
+
+var direction = 0.;
+var vertical_direction = 0.;
+var speed = .5;
+
+function is_on_floor() {
+    if ( squirrel_position[1] >= 1920 ) {
+        squirrel_position[1] = 1920
+        return true
+    }
+    if ( vertical_direction > 0 ) {
+        // only if falling need to check if barrier to vertical velocity (=> jump through ceilings)
+        for ( wall_ix in walls ) {
+            var wall = walls[wall_ix]
+            var x0 = wall[0]; var y0 = wall[1];
+            var x1 = wall[2]; var y1 = wall[3];
+            if ( ( squirrel_position[0] >= x0 - 64 ) && ( squirrel_position[0] <= x1 + 16 ) ){
+                if ( ( - squirrel_position[1] + y0 >= -8 ) && ( - squirrel_position[1] + y0 <= 96 ) ) {
+                    squirrel_position[1]=y0-95
+                    return true;
+                }
+            }
+        }
+    }
+    if ( !( left_pressed && right_pressed ) ) // ignore left+right for flight correction
+    {
+        if ( left_pressed ) {
+            direction = -1
+        } else if ( right_pressed ) {
+            direction = 1
+        } else {
+            direction = 0
+        }
+    }
+
+    // correct for wall collision from the wall-left
+    if ( direction > 0 ) {
+        // only if going right need to check for walls with x0 >= squirrel_position[0]
+        // and y1-y0 < 32
+        for ( wall_ix in walls ) {
+            var wall = walls[wall_ix]
+            var x0 = wall[0]; var y0 = wall[1];
+            var x1 = wall[2]; var y1 = wall[3];
+            if ( x1-x0 > 16 ) {
+                continue //we don't care about horizontal platforms in this pass
+            }
+            // now x1==x0 (almost)
+            if ( ( Math.abs(squirrel_position[0]-x0) < 96 )
+                && ( squirrel_position[1] > y0 ) && ( squirrel_position[1] <= y1-32 ) ){
+                // collide from left
+                if ( x0 > squirrel_position[0] ) {
+                    squirrel_position[0]=x0-96
+                    direction=0
+                }
+            }
+        }
+    }
+    // correct for wall collision from the wall-right
+    if ( direction < 0 ) {
+        // only if going left need to check for walls with x1 >= squirrel_position[0]
+        // and y1-y0 < 32
+        for ( wall_ix in walls ) {
+            var wall = walls[wall_ix]
+            var x0 = wall[0]; var y0 = wall[1];
+            var x1 = wall[2]; var y1 = wall[3];
+            if ( x1-x0 > 16 ) {
+                continue //we don't care about horizontal platforms in this pass
+            }
+            // now x1==x0 (almost)
+            if ( ( Math.abs( squirrel_position[0]-x0) < 8 )
+                && ( squirrel_position[1] > y0 ) && ( squirrel_position[1] <= y1-32 ) ){
+                //collide from right
+                squirrel_position[0] = x0 + 14
+                direction=0
+            }
+        }
+    }
+    return false
+}
+
+function move_enemies(delta) {
+    var enemies = [...document.getElementsByClassName('enemies')]
+    // snap all to nearest horizontal platform,
+    // set x_min and x_max according to that platform
+    for ( en_ix in enemies ) {
+        enemy = enemies[en_ix]
+        // find limits if not yet set
+        if ( ( enemy.getAttribute('data-xmin')==undefined )
+           ||( enemy.getAttribute('data-xmax')==undefined ) ) {
+            var cur_min = 4096
+            var dx_min = -4096
+            var dx_max = 4096
+            for ( wall_ix in walls ) {
+                wall = walls[wall_ix]
+                xx = parseInt(enemy.getAttribute('x'))
+                yy = parseInt(enemy.getAttribute('y'))
+                if ( ( xx >= wall[0] ) && ( xx <= wall[2] ) //same vertical slice
+                  && ( wall[2]-wall[0] >= 64 ) //horizontal platform
+                  && ( yy-32 <= wall[1] ) //under enemy
+                  && ( wall[1] <= cur_min ) //higher than last know platform
+                  ){
+                    dx_min = wall[0]; dx_max = wall[2]; cur_min = wall[1]
+                }
+            }
+            // found a genuine minimum
+            if ( ( dx_min > -4096 ) && ( dx_max < 4096 ) && ( cur_min < 1920 ) ) {
+                enemy.dataset.dxMin = Math.max(dx_min,64)
+                enemy.dataset.dxMax = Math.min(dx_max,1900)
+                enemy.dataset.y = cur_min
+                enemy.setAttribute('y',parseInt(enemy.dataset.y)-16)
+            } else //nothing to snap to
+            { // remove enemy
+                enemy.remove()
+            }
+        }
+    }
+    // move according to direction, change direction if x_min or x_max hit
+    for ( en_ix in enemies ) {
+        enemy = enemies[en_ix]
+        dir = parseInt( enemy.getAttribute('data-direction') )
+        x = parseInt( enemy.getAttribute('x') )
+        L_x = parseInt( enemy.getAttribute('data-dx-min') )
+        R_x = parseInt( enemy.getAttribute('data-dx-max') )
+        new_x = x+ 1.1*delta*speed*dir
+        if ( ( new_x < L_x ) || ( new_x > R_x ) ) {
+            dir = -dir
+            enemy.dataset.direction=dir
+        }
+        new_x = x+ (Math.random()*.1+1)*delta*speed*dir
+        enemy.setAttribute('x', new_x)
+        //console.log(enemy)
+    }
+}
+
+function move_squirrel(delta) {
+    squirrel_position[0] = Math.max(squirrel_position[0],64)
+    squirrel_position[0] = Math.min(squirrel_position[0],2048-64)
+    squirrel_position[1] = Math.max(squirrel_position[1],64)
+    squirrel_position[1] = Math.min(squirrel_position[1],2048-64)
+    if (!PAUSED) {
+        var overlay = document.getElementById('pause_overlay')
+        overlay.style.visibility = 'hidden'
+
+        got_in_timer_acc = got_in_timer_acc + delta
+        var fader = got_in_timer_acc / 1000
+        if (fader <= 1 ) {
+            var in_label = document.getElementById("in_label")
+            in_label.setAttribute("fill","#6666")
+        } else if (fader <= 4) {
+            var in_label = document.getElementById("in_label")
+            in_label.setAttribute("fill","#3332")
+        } else {
+            var in_label = document.getElementById("in_label")
+            in_label.setAttribute("fill","#6660")
+        }
+
+        if ( win_condition() ) {
+            squirrel_position[0] = 128
+            squirrel_position[1] = 128
+            current_stage = current_stage + 1
+            gen_level(current_stage)
+        }
+
+        move_enemies(delta)
+        var squirrel_sprite = document.getElementById('squirrel')
+        var squirrel_left = squirrel_sprite.getElementById('facing_left')
+        var squirrel_right = squirrel_sprite.getElementById('facing_right')
+        if ( direction > 0 ) {
+            squirrel_left.style.visibility = 'hidden'
+            squirrel_right.style.visibility = 'visible'
+        } else if ( direction < 0 ) {
+            squirrel_left.style.visibility = 'visible'
+            squirrel_right.style.visibility = 'hidden'
+        }
+
+        //apply horizontal user input
+        if ( Math.abs(direction) > .2 ) {
+            squirrel_position[0] = squirrel_position[0] + speed*delta*direction
+            squirrel_position[0] = Math.max(squirrel_position[0],-16)
+            squirrel_position[0] = Math.min(squirrel_position[0],2048-128)
+        }
+
+        //apply jump and gravity
+        if ( !is_on_floor() ) {
+            var g = .05;
+            vertical_direction = vertical_direction + g*delta;
+        } else { //is on floor
+            //stop falling
+            if ( vertical_direction >= 0) {
+                vertical_direction = 0
+            }
+            //try jumping -- we're in "is on floor" => no coyote jump
+            if ( ( up_pressed ) && ( vertical_direction > -8 ) ) {
+                vertical_direction = -20
+            }
+        }
+        squirrel_position[1] = squirrel_position[1] + vertical_direction;
+        if ( squirrel_position[1] < 64 ) {
+            squirrel_position[1] = 64; vertical_direction = 0
+        }
+
+        //squirrel_position[0] = squirrel_position[0] - (squirrel_position[0]%8) + 7
+        squirrel_sprite.setAttribute('x',squirrel_position[0] - (squirrel_position[0]%2) )
+        squirrel_sprite.setAttribute('y',squirrel_position[1] - (squirrel_position[1]%2) )
+        //console.log('move done')
+        return false; //don't cancel
+    } else {
+        var overlay = document.getElementById('pause_overlay')
+        overlay.style.visibility = 'visible'
+        return false;
+    }
+}
+
+
+bind_to_clock_tick(move_squirrel)
+
+</script>
+
+<style type="text/css">
+       html {
+           background-color: #000;
+           cursor: crosshair;
+       }
+       body {
+           margin: 0;
+       }
+       svg {
+         display: block;
+         border: 0px solid #ccc;
+         position: absolute;
+         top: 5%;
+         left: 5%;
+         width: 90%;
+         height: 90%;
+         background: #000;
+       }
+       .mono {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: max(1vh,1vw);
+        color: #ccc;
+       }
+</style>
+
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+<svg id="total_svg" class="frame" xmlns="http://www.w3.org/2000/svg" width="80vw" height="95vh" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
+    <rect x=0 y=0 width=2048 height=2048 fill="#111"/>
+    <svg class='layers' id="layer0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+</svg>
+</body>
+
+<script type="text/javascript">
+function get_lowest_layer(){
+  return [...document.getElementsByClassName('layers')][0]
+}
+
+
+function random_rgb() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgb(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ')';
+}
+
+function bind_to_clock_tick(ticked_action, millisecond_step) {
+    function tick() {
+      // ticked_action -> bool (weitermachen oder nicht?)
+      var cancel_tick = ticked_action(millisecond_step);
+      var now = Date.now();
+      if ( !cancel_tick ) {
+        //if not cancelled, schedule next tick
+        setTimeout(tick, millisecond_step - (now%millisecond_step));
+      }
+    }
+    tick()
+}
+
+var r = Math.random
+X = 2048; Y = X;
+DEFAULT_R = 32
+min_l = 4*DEFAULT_R+2*DEFAULT_R; max_r = 2048-min_l
+max_y = max_r
+
+var r_int = function () { return parseInt(r()*X) }
+var r_int_in_bdy = function() { return min_l + DEFAULT_R
+          + parseInt(r()*(X-2*min_l-DEFAULT_R)) }
+
+class physics_world {
+  constructor() {
+    this.particles = []
+  }
+
+  add_particle() {
+    var p = new particle(  )
+  }
+}
+
+class particle {
+  constructor(x,y,rad) {
+    if ( x == undefined ) {
+      var x = r_int_in_bdy()
+      //console.log("undefined x")
+    }
+    if ( y == undefined ) {
+      var y = r_int_in_bdy()
+      //console.log("undefined y")
+    }
+    if ( rad == undefined ) {
+      //var rad = parseInt(32*r())
+      var rad = DEFAULT_R
+      //console.log("undefined radius")
+    }
+
+    var l0 = get_lowest_layer();
+    var clr = random_rgb()
+    var c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+    var xy = [x,y]
+    c.setAttribute("cx",xy[0]); c.setAttribute("cy",xy[1]); c.setAttribute("r",rad)
+    c.setAttribute("fill",clr);
+    c.classList.add("particles");
+    l0.appendChild(c);
+  }
+}
+
+function gen_field_bdy(){
+  var l0 = get_lowest_layer();
+  var clr = random_rgb();
+  var pgn = document.createElementNS("http://www.w3.org/2000/svg",'polygon')
+  pgn.setAttribute("fill",clr)
+  var x0 = 128; var bdy_size = 64
+  var y0 = x0;
+  var xs = [ x0, x0+bdy_size, X-x0-bdy_size, X-x0 ]
+  var ys = [ Y - y0, Y - y0 - bdy_size, y0 ]
+  var vs = [ [xs[0],ys[0]], [xs[3],ys[0]],
+             [xs[3],ys[2]], [xs[2],ys[2]],
+             [xs[2],ys[1]], [xs[1],ys[1]],
+             [xs[1],ys[2]], [xs[0],ys[2]] ]
+  pgn.setAttribute("points",`${vs[0][0]},${vs[0][1]} ${vs[1][0]},${vs[1][1]} ${vs[2][0]},${vs[2][1]} ${vs[3][0]},${vs[3][1]} ${vs[4][0]},${vs[4][1]} ${vs[5][0]},${vs[5][1]} ${vs[6][0]},${vs[6][1]} ${vs[7][0]},${vs[7][1]}`)
+  pgn.setAttribute("stroke-width","16px")
+  pgn.setAttribute("stroke","#323")
+  l0.appendChild(pgn)
+}
+
+svg = document.getElementById("total_svg")
+pt = svg.createSVGPoint();  // Created once for document
+last_mouse_svg_coods = [0,0];
+function get_mouse_svg_coods(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    x = cursorpt.x;
+    y = cursorpt.y;
+    last_mouse_svg_coods = [x,y];
+    //move_cursor(x,y)
+    return x,y
+}
+svg.addEventListener('mousemove',get_mouse_svg_coods)
+
+gen_field_bdy()
+var x0 = 128; var bdy_size = 64
+var y0 = x0;
+var xs = [ x0, x0+bdy_size, X-x0-bdy_size, X-x0 ]
+var ys = [ Y - y0, Y - y0 - bdy_size, y0 ]
+for ( let i = 0; i < 8; i++ ) {
+  var p = new particle()
+}
+
+/*function physics_process(delta) {
+    verletables.move_verletables(delta)
+}
+bind_to_clock_tick(physics_process,50)*/
+</script>
+
+<style type="text/css">
+       html {
+           background-color: #000;
+           cursor: none;
+       }
+       table, th, td {
+        border: 0px solid black;
+       }
+       body {
+           margin: 0;
+       }
+       svg {
+         display: block;
+         border: 0px solid #ccc;
+         position: absolute;
+         top: 5%;
+         left: 5%;
+         width: 90%;
+         height: 90%;
+         background: #000;
+       }
+       .mono {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: max(1vh,1vw);
+        color: #ccc;
+       }
+</style>
+
+</html>

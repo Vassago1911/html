@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>Vanguard Shield</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+<svg id="total_svg" class="frame" xmlns="http://www.w3.org/2000/svg" width="90vw" height="95vh" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
+    <rect x=0 y=0 width=2048 height=2048 fill="#051005"/>
+    <svg class='layers' id="menu_layer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+<rect x=16 y=16 width=444 height=592 fill="#000" stroke-width="2px" stroke="#333" />
+<text x=32 y=96 fill="#ddd" font-size='80px' font-family="Vanguard">vanguard</text>
+<rect class="button" x=86 y=126 width=350 height=96 fill="#000" stroke-width="2px" stroke="#222" />
+<rect class="button" x=86 y=218 width=350 height=96 fill="#000" stroke-width="2px" stroke="#222" />
+<rect class="button" x=86 y=314 width=350 height=96 fill="#000" stroke-width="2px" stroke="#222" />
+<rect class="button" x=86 y=410 width=350 height=96 fill="#000" stroke-width="2px" stroke="#222" />
+<rect class="button" x=86 y=506 width=350 height=96 fill="#000" stroke-width="2px" stroke="#222" />
+<text id="item_radar" x=110 y=200 fill="#ddd">Radar</text>
+<text id="item_topic" x=110 y=292 fill="#ddd">Topic</text>
+<text id="item_group" x=110 y=388 fill="#ddd">Group</text>
+<text id="item_count" x=110 y=484 fill="#ddd">Count</text>
+<text id="item_aides" x=110 y=580 fill="#ddd">Aides</text>
+    </svg>
+    <svg class='layers' id="layer0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+    </svg>
+</svg>
+</body>
+
+<script type="text/javascript">
+
+var xxxx = document.getElementById('item_radar')
+xxxx.innerHTML = '📊 Radar'
+var xxxx = document.getElementById('item_topic')
+xxxx.innerHTML = '🎩 Topic'
+var xxxx = document.getElementById('item_group')
+xxxx.innerHTML = '🫂 Group'
+var xxxx = document.getElementById('item_count')
+xxxx.innerHTML = '🏦 Count'
+var xxxx = document.getElementById('item_aides')
+xxxx.innerHTML = '🧚 Aides'
+
+function get_all_layers(){
+    return [...document.getElementsByClassName("layers")];
+}
+
+function random_rgb() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ')';
+}
+
+function random_rgb_light() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ',.95)';
+}
+
+function spawn_skyscraper(l,r,h) {
+    svg_frame = get_all_layers()[0]
+    re = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+    re.setAttribute("x",l);
+    re.setAttribute("y",2048-h);
+    re.setAttribute("width",r-l);
+    re.setAttribute("height",h);
+    re.setAttribute("fill",random_rgb());
+    re.setAttribute("stroke-width",8);
+    re.setAttribute("stroke","#111")
+    re.classList.add("gen_re");
+    re.addEventListener("click",get_element_click_coods);
+    svg_frame.appendChild(re);
+}
+
+function move_cursor(x,y) {
+    cursors = document.getElementsByClassName("cursor")
+    //var a = 21; var b = 34; var c = 55;
+    var a = 55; var b = 89; var c = 144; var y_offset = a; var x_offset = 0;
+    var coods1_str = `${   x + x_offset },${ 0  +y + y_offset } ${ a+x+ x_offset },${-b  +y + y_offset } ${-a+x + x_offset },${-b  +y + y_offset }`
+    var coods2_str = `${   x + x_offset },${-a  +y + y_offset } ${ a+x+ x_offset },${-b-a+y + y_offset } ${-a+x + x_offset },${-b-a+y + y_offset }`
+    if ( cursors.length == 0) {
+        triangle1 = document.createElementNS("http://www.w3.org/2000/svg","polygon")
+        triangle1.setAttribute("points",coods1_str)
+        triangle1.setAttribute("fill","#0006")
+        triangle1.setAttribute("stroke","#999")
+        triangle1.setAttribute("stroke-width","1px")
+        triangle1.setAttribute("stroke-linejoin","miter")
+        triangle1.classList.add("cursor")
+        triangle2 = document.createElementNS("http://www.w3.org/2000/svg","polygon")
+        triangle2.setAttribute("points",coods2_str)
+        triangle2.setAttribute("fill","#922")
+        triangle2.setAttribute("stroke","#999")
+        triangle2.setAttribute("stroke-width","1px")
+        triangle2.setAttribute("stroke-linejoin","miter")
+        triangle2.classList.add("cursor")
+        svg_frame = get_all_layers()[0]
+        svg_frame.appendChild(triangle1)
+        svg_frame.appendChild(triangle2)
+    }
+    cursor = document.getElementsByClassName("cursor")[0]
+    cursor.setAttribute("points",coods1_str)
+    cursor = document.getElementsByClassName("cursor")[1]
+    cursor.setAttribute("points",coods2_str)
+}
+
+svg = document.getElementById("total_svg")
+pt = svg.createSVGPoint();  // Created once for document
+h = document.getElementsByTagName('html')[0]
+last_mouse_svg_coods = [0,0];
+function get_mouse_svg_coods(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    x = cursorpt.x;
+    y = cursorpt.y;
+    if ((x <= 0) || (x>=2048) || (y <= 0) || (y>=2048)) {
+        h.style.cursor = 'crosshair'
+        return
+    }
+    h.style.cursor = 'none'
+    last_mouse_svg_coods = [x,y];
+    move_cursor(x,y)
+}
+svg.addEventListener('mousemove',get_mouse_svg_coods)
+
+</script>
+
+<style type="text/css">
+       @font-face {
+          font-family: Vanguard;
+          src: url('drexs.ttf');
+       }
+       html {
+           background-color: #000;
+           cursor: crosshair;
+       }
+       body {
+           margin: 0;
+       }
+       svg {
+       font-family: monospace;
+       font-size: min(max(10vh,10vw),64px);
+       fill: #ccc;
+
+         display: block;
+         border: 0px solid #ccc;
+         position: absolute;
+         top: 5%;
+         left: 5%;
+         width: 90%;
+         height: 90%;
+         background: #000;
+       }
+       button:hover {
+            fill: #333;
+       }
+</style>
+
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+<div class='korken_frame'>
+    <img class='kronkorken' src='flaschenpost_icon.svg' />
+    <img class='kronkorken1' src='flaschenpost_icon.svg' />
+</div>
+</body>
+
+<script type="text/javascript">
+</script>
+
+<style type="text/css">
+       html {
+           background-color: #000;
+           cursor: crosshair;
+       }
+       body {
+           margin: 5;
+           width: 90vmin;
+           height: 90vmin;
+       }
+       svg,img {
+         height: 64px;
+         width: 64px;
+       }
+       @keyframes rot {
+         0% {transform: rotate(0deg)}
+         100% {transform: rotate(360deg)}
+       }
+       @keyframes antirot {
+         0% {transform: rotate(-80deg)}
+         100% {transform: rotate(-440deg)}
+       }
+       .kronkorken {
+         animation-name: rot;
+         animation-duration: 4s;
+         animation-iteration-count: infinite;
+         animation-timing-function: linear;
+       }
+       .kronkorken1 {
+         animation-name: antirot;
+         animation-duration: 4s;
+         animation-iteration-count: infinite;
+         animation-timing-function: linear;
+       }
+       .korken_sprite {
+         fill: #507;
+       }
+</style>
+
+</html>

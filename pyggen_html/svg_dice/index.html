@@ -14,6 +14,7 @@
     <svg class='layers' id="layer4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
     <svg class='layers' id="layer5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
 </svg>
+<button name="roll" onclick="roll();"> Roll the Die </button>
 </body>
 
 <script type="text/javascript">
@@ -104,50 +105,103 @@ svg.addEventListener('mousemove',get_mouse_svg_coods)
 gen_cube()
 
 function gen_cube() {
-    c1 = cube_face(1)
-    c2 = cube_face(2)
-    c3 = cube_face(3)
-    c4 = cube_face(4)
-    c5 = cube_face(5)
-    c6 = cube_face(6)
-}
-
-function die_face_rectangle(i) {
-    i = Math.min(6,i)
-    i = Math.max(1,i)
-    odd = i % 2
-    if ( odd != 0 ){
-        // add rect-center circle
-    }
-    i = i - odd
-    // now i is even
-    i = parseInt(i/2)
-    // i in [1,2,3]
-    for ( let i_ = 0; i_ < i; i++ ) {
-
-    }
-}
-
-function cube_face(i) {
-    i = Math.min(6,i)
-    i = Math.max(1,i)
-
     width = 32
     height = 32
-    h_offset = 4*width
-    v_offset = 4*height
-
-    r = document.createElementNS("http://www.w3.org/2000/svg", "rect")
-    r.setAttribute("x", h_offset + i*( width + 8 ) )
-    r.setAttribute("y", v_offset)
-    r.setAttribute("width",width)
-    r.setAttribute("height",height)
-    r.setAttribute("fill","#050505")
-    r.setAttribute("stroke-width","1")
-    r.setAttribute("stroke-location","inside")
-    r.setAttribute("stroke","#636")
+    h_offset = .5*width
+    v_offset = .5*height
+    inter_dist = 32
+    loop_cnt_i = 34
+    loop_cnt_j = 34
+    loop_cnt_i = 14
+    loop_cnt_j = 14
     svg = get_all_layers()[5]
-    svg.appendChild(r)
+    ctr = 0
+    for ( let i = 1; i <= loop_cnt_i; i++ ) {
+        for ( let j = 1; j <= loop_cnt_j; j++ ) {
+            ctr += 1
+            r = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+            r.setAttribute("x", h_offset + i*( width + .75*inter_dist ) )
+            r.setAttribute("y", v_offset + j*( height + .75*inter_dist ) + (i%2)*inter_dist )
+            r.setAttribute("width",width)
+            r.setAttribute("height",height)
+            r.setAttribute("rx",12)
+            r.setAttribute("fill","#050505")
+            r.setAttribute("stroke-width","1")
+            r.setAttribute("stroke-location","inside")
+            r.setAttribute("stroke","#636")
+            r.classList.add("pip")
+            /*t = document.createElementNS("http://www.w3.org/2000/svg", "text")
+            t.setAttribute("fill","#fff")
+            t.setAttribute("x",h_offset +.35*inter_dist+ i*( width + inter_dist ) )
+            t.setAttribute("y",v_offset +.7*inter_dist+ j*( height + inter_dist ))
+            t.setAttribute("font-family","monospace")
+            t.setAttribute("font-size","2em")
+            t.innerHTML=`${ctr}`*/
+            svg.appendChild(r)
+            //svg.appendChild(t)
+        }
+    }
+    for ( let i = 0; i <= loop_cnt_i + 1 ; i = i + loop_cnt_i + 1) {
+        for ( let j = 0; j <= loop_cnt_j + 1 ; j++ ) {
+            ctr += 1
+            r = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+            r.setAttribute("x", h_offset + i*( width + .75*inter_dist ) )
+            r.setAttribute("y", v_offset + j*( height + .75*inter_dist ) + (i%2)*inter_dist )
+            r.setAttribute("width",width)
+            r.setAttribute("height",height)
+            r.setAttribute("rx",12)
+            r.setAttribute("fill","#000")
+            r.setAttribute("stroke-width","1")
+            r.setAttribute("stroke-location","inside")
+            r.setAttribute("stroke","#111")
+            r.classList.add("bdy")
+            /*t = document.createElementNS("http://www.w3.org/2000/svg", "text")
+            t.setAttribute("fill","#fff")
+            t.setAttribute("x",h_offset +.35*inter_dist+ i*( width + inter_dist ) )
+            t.setAttribute("y",v_offset +.7*inter_dist+ j*( height + inter_dist ))
+            t.setAttribute("font-family","monospace")
+            t.setAttribute("font-size","2em")
+            t.innerHTML=`${ctr}`*/
+            svg.appendChild(r)
+            //svg.appendChild(t)
+        }
+    }
+    for ( let i = 1; i <= loop_cnt_i ; i++) {
+        for ( let j = 0; j <= loop_cnt_j + 1 ; j = j + loop_cnt_j + 1 ) {
+            ctr += 1
+            r = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+            r.setAttribute("x", h_offset + i*( width + .75*inter_dist ) )
+            r.setAttribute("y", v_offset + j*( height + .75*inter_dist ) + (i%2)*inter_dist )
+            r.setAttribute("width",width)
+            r.setAttribute("height",height)
+            r.setAttribute("rx",12)
+            r.setAttribute("fill","#000")
+            r.setAttribute("stroke-width","1")
+            r.setAttribute("stroke-location","inside")
+            r.setAttribute("stroke","#111")
+            r.classList.add("bdy")
+            /*t = document.createElementNS("http://www.w3.org/2000/svg", "text")
+            t.setAttribute("fill","#fff")
+            t.setAttribute("x",h_offset +.35*inter_dist+ i*( width + inter_dist ) )
+            t.setAttribute("y",v_offset +.7*inter_dist+ j*( height + inter_dist ))
+            t.setAttribute("font-family","monospace")
+            t.setAttribute("font-size","2em")
+            t.innerHTML=`${ctr}`*/
+            svg.appendChild(r)
+            //svg.appendChild(t)
+        }
+    }
+}
+
+function roll() {
+    pips = [...document.getElementsByClassName('pip')]
+    for ( let p = 0; p < pips.length; p++ ) {
+        if ( Math.random() > .5 ) {
+            pips[p].setAttribute("fill","#a8e")
+        } else {
+            pips[p].setAttribute("fill","#323")
+        }
+    }
 }
 
 </script>

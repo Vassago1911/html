@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+<svg id="total_svg" class="frame" xmlns="http://www.w3.org/2000/svg" width="80vw" height="95vh" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
+    <rect x=0 y=0 width=2048 height=2048 fill="#111"/>
+    <svg class='layers' id="layer0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+</svg>
+</body>
+
+
+<script type="text/javascript">
+
+PREY_COUNT = 10;
+HUNTER_COUNT = 10;
+AREA_SIZE_X = 1024;
+AREA_SIZE_Y = 1024;
+STANDARD_RADIUS = 5;
+
+class prey {
+    constructor() {
+        this.position = [0,0]
+    }
+}
+
+class hunter {
+    constructor() {
+        this.position = [0,0]
+    }
+}
+
+function dist2(p,q) {
+    return ( p.position[0]-q.position[0] )**2 + (p.position[1] - q.position[1])**2
+}
+
+class population {
+    draw_population() {
+        for ( p in this.population ) {
+            p = this.population[p]
+            var cx = parseInt(p.position[0])
+            var cy = parseInt(p.position[1])
+            console.log(cx,cy)
+        }
+        console.log("drawing")
+    }
+
+    constructor() {
+        this.population = [];
+        this.pop_positions = [];
+        for ( let i = 0; i < PREY_COUNT; i++ ) {
+            this.population = this.population.concat([new prey()])
+        }
+        for ( let i = 0; i < HUNTER_COUNT; i++ ) {
+            this.population = this.population.concat([new hunter()])
+        }
+        this.min_distance = 0;
+        this.min_pair = [];
+        var resolved = false;
+        while ( !resolved ) {
+            var D = 100000;
+            //find worst collision
+            for ( let p = 0; p < this.population.length; p++ ) {
+                for ( let q = p+1; q < this.population.length; q++ ) {
+                    p = this.population[p]; q = this.population[q]
+                    var d = dist2(p,q)
+                    if ( d < D ) {
+                        this.min_distance = d
+                        D = d
+                        this.min_pair = [p,q]
+                    }
+                }
+            }
+            if ( this.min_distance < 2*STANDARD_RADIUS ) {
+                //resolve it via random / collision!?
+                var r = Math.random
+                this.min_pair[0].position = [ parseInt(AREA_SIZE_X*r()),parseInt(AREA_SIZE_Y*r()) ]
+            }
+            //is it resolved? check min_d
+            resolved = true
+
+            for ( let p in this.population ) {
+                p = this.population[p]
+                for ( let q in this.population ) {
+                    q = this.population[q]
+                    d = dist2(p,q)
+                    if ( d < 4*STANDARD_RADIUS**2 ) {
+                        resolved = false;
+                    }
+                }
+            }
+            console.log('not resolved')
+        }
+        console.log('done!')
+        this.draw_population()
+    }
+}
+
+
+function get_all_layers(){
+    return [...document.getElementsByClassName("layers")];
+}
+
+function random_rgb() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ')';
+}
+
+function random_rgb_light() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ',.95)';
+}
+
+svg = document.getElementById("total_svg")
+pt = svg.createSVGPoint();  // Created once for document
+last_mouse_svg_coods = [0,0];
+function get_mouse_svg_coods(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    x = cursorpt.x;
+    y = cursorpt.y;
+    last_mouse_svg_coods = [x,y];
+    //move_cursor(x,y)
+    return x,y
+}
+svg.addEventListener('mousemove',get_mouse_svg_coods)
+
+var p = new population()
+
+</script>
+
+<style type="text/css">
+       html {
+           background-color: #000;
+           cursor: none;
+       }
+       table, th, td {
+        border: 0px solid black;
+       }
+       body {
+           margin: 0;
+       }
+       svg {
+         display: block;
+         border: 0px solid #ccc;
+         position: absolute;
+         top: 5%;
+         left: 5%;
+         width: 90%;
+         height: 90%;
+         background: #000;
+       }
+       .mono {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: max(1vh,1vw);
+        color: #ccc;
+       }
+</style>
+
+</html>

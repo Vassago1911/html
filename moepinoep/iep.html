@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+<svg id="total_svg" class="frame" xmlns="http://www.w3.org/2000/svg" width="80vw" height="95vh" margin="max(4px,1vh,1vw)" viewBox="0 0 2048 2048">
+    <rect x=0 y=0 width=2048 height=2048 fill="#111"/>
+    <svg class='layers' id="layer0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+    <svg class='layers' id="layer5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"></svg>
+</svg>
+</body>
+
+<script type="text/javascript">
+function get_all_layers(){
+    return [...document.getElementsByClassName("layers")];
+}
+
+function random_rgb() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ')';
+}
+
+function random_rgb_light() {
+    var o = Math.round, r = Math.random, s = 32 ; offset=32;
+    return 'rgba(' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) +
+               ',' + o(r()*s + offset ) + ',.95)';
+}
+
+function spawn_skyscraper(l,r,h) {
+    svg_frame = get_all_layers()[0]
+    re = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+    re.setAttribute("x",l);
+    re.setAttribute("y",2048-h);
+    re.setAttribute("width",r-l);
+    re.setAttribute("height",h);
+    re.setAttribute("fill",random_rgb());
+    re.setAttribute("stroke-width",8);
+    re.setAttribute("stroke","#111")
+    re.classList.add("gen_re");
+    re.addEventListener("click",get_element_click_coods);
+    svg_frame.appendChild(re);
+}
+
+function spawn_tetrissy_board() {
+    svg_frame = get_all_layers()[0]
+    c = random_rgb()
+    l = 64; r = 64+64; h = 2048-64
+    re = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+    re.setAttribute("x",l);
+    re.setAttribute("y",2048-h);
+    re.setAttribute("width",r-l);
+    re.setAttribute("height",h-64);
+    re.setAttribute("fill",c);
+    re.setAttribute("stroke-width",0);
+    re.setAttribute("stroke","#111")
+    re.classList.add("gen_re");
+    l = 2048-64-64; r = 2048-64-64+64; h = 2048-64
+    svg_frame.appendChild(re);
+    re = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+    re.setAttribute("x",l);
+    re.setAttribute("y",2048-h);
+    re.setAttribute("width",r-l);
+    re.setAttribute("height",h-64);
+    re.setAttribute("fill",c);
+    re.setAttribute("stroke-width",0);
+    re.setAttribute("stroke","#111")
+    re.classList.add("gen_re");
+    svg_frame.appendChild(re);
+    re = document.createElementNS( "http://www.w3.org/2000/svg", "rect" )
+    l = 64; r = 2048-64; h = 64
+    re.setAttribute("x",l);
+    re.setAttribute("y",2048-64-h);
+    re.setAttribute("width",r-l);
+    re.setAttribute("height",h);
+    re.setAttribute("fill",c);
+    re.setAttribute("stroke-width",0);
+    re.setAttribute("stroke","#111")
+    re.classList.add("gen_re");
+    svg_frame.appendChild(re);
+}
+
+function move_cursor(x,y) {
+    cursors = document.getElementsByClassName("cursor")
+    if ( cursors.length == 0 ) {
+        c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+        c.setAttribute("cx",x)
+        c.setAttribute("cy",y)
+        c.setAttribute("r",16)
+        c.setAttribute("fill",random_rgb_light())
+        c.classList.add("cursor")
+        d = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+        d.setAttribute("cx",x)
+        d.setAttribute("cy",y)
+        d.setAttribute("r",10)
+        d.setAttribute("fill",random_rgb())
+        d.classList.add("cursor")
+        svg_frame = get_all_layers()[0]
+        svg_frame.appendChild(c)
+        svg_frame.appendChild(d)
+    }
+    cursor = document.getElementsByClassName("cursor")[0]
+    cursor.setAttribute("cx",x)
+    cursor.setAttribute("cy",y)
+    cursor = document.getElementsByClassName("cursor")[1]
+    cursor.setAttribute("cx",x)
+    cursor.setAttribute("cy",y)
+}
+
+
+svg = document.getElementById("total_svg")
+pt = svg.createSVGPoint();  // Created once for document
+last_mouse_svg_coods = [0,0];
+function get_mouse_svg_coods(evt) {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    // The cursor point, translated into svg coordinates
+    var cursorpt =  pt.matrixTransform(svg.getScreenCTM().inverse());
+    cursorpt.x = parseInt(cursorpt.x);
+    cursorpt.y = parseInt(cursorpt.y);
+    x = cursorpt.x;
+    y = cursorpt.y;
+    last_mouse_svg_coods = [x,y];
+    move_cursor(x,y)
+    return x,y
+}
+svg.addEventListener('mousemove',get_mouse_svg_coods)
+spawn_tetrissy_board()
+var active_gravity_tick = false
+
+function create_marble_svg() {
+    c = document.createElementNS( "http://www.w3.org/2000/svg", "circle" )
+    c.setAttribute("cx",x)
+    c.setAttribute("cy",y)
+    c.setAttribute("vx",0)
+    c.setAttribute("vy",2)
+    c.setAttribute("r",32)
+    c.setAttribute("fill",random_rgb_light())
+    c.classList.add("gravity")
+    svg_frame = get_all_layers()[0]
+    svg_frame.appendChild(c)
+    if (!active_gravity_tick) {
+        bind_to_clock_tick(apply_gravity, 50)
+    }
+}
+
+function spawn_marble(evt){
+    //console.log("thx for clicking!")
+    x = last_mouse_svg_coods[0]
+    y = last_mouse_svg_coods[1]
+    if ( ( x > 128 + 32 && x < 2048 - 128 - 32) &&
+       ( y < 2048 - 128 - 16 && y > 128 + 16  ) )
+    {
+        //console.log(last_mouse_svg_coods)
+        create_marble_svg(x,y)
+    }
+}
+
+svg.addEventListener("click",spawn_marble)
+
+//tickable things, like gravity
+function bind_to_clock_tick(ticked_action, millisecond_step) {
+    // ticked_action(millisecond_step) -> continue ticks?
+    function tick() {
+      // ticked_action -> bool (weitermachen oder nicht?)
+      var cancel_tick = ticked_action(millisecond_step);
+      var now = Date.now();
+      if ( !cancel_tick ) {
+        //if not cancelled, schedule next tick
+        setTimeout(tick, millisecond_step - (now%millisecond_step));
+      }
+    }
+    tick()
+}
+
+function apply_gravity() {
+    balls = [...document.getElementsByClassName("gravity")]
+    total_v = 0
+    g = 2
+
+    //collide them with other balls
+    //update v's accordingly
+    collision_pairs = [ ];
+    for ( let i = 0; i < balls.length; i++ ) {
+      for ( let j = i + 1; j < balls.length; j++ ) {
+        b1 = balls[i];
+        if (b1==undefined) { continue; }
+        b1cx = 1*b1.getAttribute("cx")
+        b1cy = 1*b1.getAttribute("cy")
+        b1vx = 1*b1.getAttribute("vx")
+        b1vy = 1*b1.getAttribute("vy")
+
+        b2 = balls[j];
+        if (b2==undefined) { continue; }
+        b2cx = 1*b2.getAttribute("cx")
+        b2cy = 1*b2.getAttribute("cy")
+        b2vx = 1*b2.getAttribute("vx")
+        b2vy = 1*b2.getAttribute("vy")
+
+        dx = b1cx - b2cx
+        dy = b1cy - b2cy
+        distance = Math.floor(Math.sqrt(dx*dx+dy*dy));
+        unit_distance_vector = [dx/distance,dy/distance];
+
+        coll_distance = 1*b1.getAttribute('r') + 1*b2.getAttribute('r') + 2
+
+        // if colliding, calc collision
+        if ( distance < coll_distance ) {
+          collision_pairs = collision_pairs.concat([[i,j,distance],])
+
+          // scp = < v1-v2 | x1-x2 >
+          scp = dx*(b1vx-b2vx)+dy*(b1vy-b2vy)
+
+          // 2d collision of circles
+          // https://en.wikipedia.org/wiki/Elastic_collision
+          b1_vx_new = b1vx - 1/(distance*distance)*dx*scp
+          b1_vy_new = b1vy - 1/(distance*distance)*dy*scp
+
+          b2_vx_new = b2vx + 1/(distance*distance)*dx*scp
+          b2_vy_new = b2vy + 1/(distance*distance)*dy*scp
+
+          b1.setAttribute("vx",b1_vx_new);
+          b1.setAttribute("vy",b1_vy_new);
+          b2.setAttribute("vx",b2_vx_new);
+          b2.setAttribute("vy",b2_vy_new);
+
+          b1.setAttribute("cx",1*b1.getAttribute("cx")+2*unit_distance_vector[0])
+          b1.setAttribute("cy",1*b1.getAttribute("cy")+2*unit_distance_vector[1])
+        }
+      }
+    }
+
+    // move the sprites
+    ms_step = 5000
+    total_v = 0
+    for ( let i = 0; i < balls.length; i++ ){
+      b = balls[i];
+      if ( 1.*b.getAttribute("vy") < 0 ) {
+        b.setAttribute("vy",-1*b.getAttribute("vy"))
+      }
+      if ( b!= undefined) {
+      balls[i].setAttribute("cx",
+        1*balls[i].getAttribute("cx")+(ms_step/1000)*balls[i].getAttribute("vx"))
+      balls[i].setAttribute("cy",
+        1*balls[i].getAttribute("cy")+(ms_step/1000)*balls[i].getAttribute("vy"))
+      total_v = total_v + ( 1.*b.getAttribute("vx") )**2 + ( 1.*b.getAttribute("vy") )**2
+     }
+    }
+
+    // collide with walls (lrd)
+    for ( b in balls ) {
+        b = balls[b]
+        if ( 1*b.getAttribute("cy") > 2048-128-32 ) {
+            b.setAttribute("cy",2048-128-32)
+            b.setAttribute("vy",0)
+        }
+        if ( 1*b.getAttribute("cx") < 128+32 ) {
+            b.setAttribute("cx", 128+32)
+            b.setAttribute("vx", -1*b.getAttribute("vx"))
+        }
+        if ( 1*b.getAttribute("cx") > 2048 - (128+32) ) {
+            b.setAttribute("cx", 2048 - 128 - 32)
+            b.setAttribute("vx", -1*b.getAttribute("vx"))
+        }
+    }
+
+    total_v = Math.sqrt(total_v)
+    if ( total_v > .0000001 ) {
+        active_gravity_tick = true;
+        //console.log('maintaining gravity loop')
+        return false;
+    }
+    active_gravity_tick = false;
+    //console.log('killing gravity loop')
+    return true;
+}
+
+</script>
+
+<style type="text/css">
+       html {
+           background-color: #000;
+           cursor: none;
+       }
+       table, th, td {
+        border: 0px solid black;
+       }
+       body {
+           margin: 0;
+       }
+       svg {
+         display: block;
+         border: 0px solid #ccc;
+         position: absolute;
+         top: 5%;
+         left: 5%;
+         width: 90%;
+         height: 90%;
+         background: #000;
+       }
+       .mono {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: max(1vh,1vw);
+        color: #ccc;
+       }
+</style>
+
+</html>

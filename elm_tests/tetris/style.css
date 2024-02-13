@@ -1,0 +1,14 @@
+body {
+    background-color: #000
+}
+
+svg {
+ display: block;
+ border: 0px solid #ccc;
+ position: absolute;
+ top: 2%;
+ left: 2%;
+ width: 96%;
+ height: 96%;
+ background: #000;
+}
