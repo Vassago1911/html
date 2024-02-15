@@ -34,14 +34,18 @@
     <svg id='pause_overlay' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
         <rect x=0 y=0 width=2048 height=2048 fill="#6666" stroke='#111' stroke-width='32'/>
         <text x=50% y=25% font-family=monospace font-size=256 text-anchor=middle>PAUSED</text>
+        <g style="visibility: hidden">
         <text x=25% y=40% font-family=monospace font-size=128 text-anchor=left>THEME</text> <!-- TODO -->
         <text x=52% y=40% font-family=monospace font-size=128 text-anchor=left>🐿️</text>
         <text x=60% y=40% font-family=monospace font-size=128 text-anchor=left>🐇</text>
         <text x=68% y=40% font-family=monospace font-size=128 text-anchor=left>🐓</text>
+        <text x=76% y=40% font-family=monospace font-size=128 text-anchor=left>🐀</text>
+        <text x=84% y=40% font-family=monospace font-size=128 text-anchor=left>🦫</text>
         <text x=25% y=50% font-family=monospace font-size=128 text-anchor=left>LEVEL</text> <!-- TODO -->
         <text x=52% y=50% font-family=monospace font-size=128 text-anchor=left>🙈</text>
         <text x=60% y=50% font-family=monospace font-size=128 text-anchor=left>😐</text>
         <text x=68% y=50% font-family=monospace font-size=128 text-anchor=left>😈</text>
+        </g>
     </svg>
 </svg>
 </body>
@@ -521,6 +525,7 @@ function move_enemies(delta) {
         enemy = enemies[en_ix]
         dir = parseInt( enemy.getAttribute('data-direction') )
         x = parseInt( enemy.getAttribute('x') )
+        y = parseInt( enemy.getAttribute('y') )
         L_x = parseInt( enemy.getAttribute('data-dx-min') )
         R_x = parseInt( enemy.getAttribute('data-dx-max') )
         new_x = x+ 1.1*delta*speed*dir
@@ -530,7 +535,6 @@ function move_enemies(delta) {
         }
         new_x = x+ (Math.random()*.1+1)*.75*delta*speed*dir
         enemy.setAttribute('x', new_x)
-        //console.log(enemy)
     }
     // touched squirrel?
     for ( en_ix in enemies ) {
